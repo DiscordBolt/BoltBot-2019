@@ -16,6 +16,9 @@ hs_err_pid*
 .project
 .settings/
 
+# Project Special Files
+config.txt
+
 
 # =========================
 # Operating System Files
