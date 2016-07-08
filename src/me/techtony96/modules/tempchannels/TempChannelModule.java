@@ -1,18 +1,17 @@
-package me.techtony96.modules.chat;
+package me.techtony96.modules.tempchannels;
 
 import me.techtony96.utils.Logger;
-import sx.blah.discord.api.EventDispatcher;
-import sx.blah.discord.api.EventSubscriber;
 import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.modules.IModule;
 
-public class ChatModule implements IModule {
-
-	private String moduleName = "Chat Module";
+public class TempChannelModule implements IModule{
+	
+	private String moduleName = "Temporary Voice Channels";
 	private String moduleVersion = "1.0";
-	private String moduleMinimumVersion = "2.3.0";
-	private String author = "Tony Pappas";
+	private String moduleMinimumVersion = "2.5.0-SNAPSHOT";
+	private String author = "Techtony96";
 	public static IDiscordClient client;
 
 	@Override
@@ -22,9 +21,8 @@ public class ChatModule implements IModule {
 
 	@Override
 	public boolean enable(IDiscordClient client) {
-		this.client = client;
-		EventDispatcher dispatcher = client.getDispatcher();
-		dispatcher.registerListener(new MessageHandler());
+		TempChannelModule.client = client;
+		client.getDispatcher().registerListener(new MessageHandler());
 		return true;
 	}
 

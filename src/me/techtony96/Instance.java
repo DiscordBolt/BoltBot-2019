@@ -1,12 +1,12 @@
 package me.techtony96;
 
 import sx.blah.discord.api.ClientBuilder;
-import sx.blah.discord.api.EventSubscriber;
 import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.DiscordDisconnectedEvent;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.HTTP429Exception;
+import sx.blah.discord.util.RateLimitException;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -52,7 +52,7 @@ public class Instance {
 		reconnect.set(false);
 		try {
 			client.logout();
-		} catch (HTTP429Exception | DiscordException e) {
+		} catch (RateLimitException | DiscordException e) {
 			Logger.warning("Logout failed");
 			Logger.debug(e);
 		}
