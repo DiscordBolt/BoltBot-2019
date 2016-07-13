@@ -1,6 +1,7 @@
 package me.techtony96;
 
 import me.techtony96.modules.tempchannels.TempChannelModule;
+import me.techtony96.modules.userstatus.UserStatusModule;
 import me.techtony96.utils.Config;
 import me.techtony96.utils.Logger;
 import sx.blah.discord.modules.ModuleLoader;
@@ -27,6 +28,7 @@ public class Discord {
 
 	private static void loadModules() {
 		ModuleLoader.addModuleClass(TempChannelModule.class);
+		ModuleLoader.addModuleClass(UserStatusModule.class);
 	}
 
 }
