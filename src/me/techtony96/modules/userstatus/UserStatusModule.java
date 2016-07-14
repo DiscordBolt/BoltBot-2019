@@ -82,9 +82,7 @@ public class UserStatusModule implements IModule {
 				updateUser(user);
 			}
 		}
-			
-				
-			
+	
 	}
 
 	/**

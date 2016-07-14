@@ -37,6 +37,10 @@ public class TemporaryChannel {
 		return channel;
 	}
 	
+	/**
+	 * Create an invite for the voice channel created
+	 * @return
+	 */
 	public IInvite getInvite(){
 		try {
 			return channel.createInvite(0, 0, false);
@@ -53,6 +57,10 @@ public class TemporaryChannel {
 		return null;
 	}
 
+	/**
+	 * Create a voice channel in the guild
+	 * @param name of new voice channel
+	 */
 	private void createChannel(String name) {
 		try {
 			channel = guild.createVoiceChannel(name);
@@ -71,6 +79,9 @@ public class TemporaryChannel {
 		}
 	}
 
+	/**
+	 * Remove channel from Guild
+	 */
 	private void deleteChannel() {
 		try {
 			channel.delete();
