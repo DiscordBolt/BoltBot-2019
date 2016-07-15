@@ -74,11 +74,8 @@ public class UserStatusModule implements IModule {
 	 * Update information on all users
 	 */
 	private void updateAllUsers() {
-		Logger.info("Getting info on all users");
 		for (IGuild guild : client.getGuilds()){
-			Logger.info("Updating users in " + guild.getName());
 			for (IUser user : guild.getUsers()){
-				Logger.info("Updating user " + user.getName());
 				updateUser(user);
 			}
 		}
@@ -90,8 +87,6 @@ public class UserStatusModule implements IModule {
 	 * @param user The User to update
 	 */
 	public void updateUser(IUser user) {
-		Logger.info("Updating user info for " + user.getName());
-
 		PrintWriter writer = null;
 		try {
 			writer = new PrintWriter(FILE_LOCATION + user.getID() + FILE_TYPE, "UTF-8");
