@@ -1,4 +1,4 @@
-package me.techtony96.modules.userstatus;
+package main.java.Techtony96.Discord.modules.userstatus;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -6,7 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import me.techtony96.utils.Logger;
+import main.java.Techtony96.Discord.utils.Logger;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.PresenceUpdateEvent;
@@ -23,11 +23,11 @@ import sx.blah.discord.modules.IModule;
 
 public class UserStatusModule implements IModule {
 
+	public static IDiscordClient client;
 	private String moduleName = "User Status Tracker";
 	private String moduleVersion = "1.0";
 	private String moduleMinimumVersion = "2.5.0-SNAPSHOT";
 	private String author = "Techtony96";
-	public static IDiscordClient client;
 
 	private final IVoiceChannel NOT_CONNECTED = new VoiceChannel(client, "$Not_Connected", "", null, "", 0, 0, 0);
 	private final String FILE_LOCATION = "/var/www/api/discord/user/";
@@ -69,21 +69,50 @@ public class UserStatusModule implements IModule {
 		Logger.info("[Discord.java] " + getName() + " version " + getVersion() + " is READY.");
 		updateAllUsers();
 	}
-	
+
+	@EventSubscriber
+	public void onUserGameUpdate(PresenceUpdateEvent e) {
+		updateUser(e.getUser());
+	}
+
+	/*
+	 * Listeners
+	 */
+	@EventSubscriber
+	public void onUserStatusChange(StatusChangeEvent e) {
+		updateUser(e.getUser());
+	}
+
+	@EventSubscriber
+	public void onVoiceChannelChange(UserVoiceChannelJoinEvent e) {
+		updateUser(e.getUser());
+	}
+
+	@EventSubscriber
+	public void onVoiceChannelChange(UserVoiceChannelLeaveEvent e) {
+		updateUser(e.getUser());
+	}
+
+	@EventSubscriber
+	public void onVoiceChannelChange(UserVoiceChannelMoveEvent e) {
+		updateUser(e.getUser());
+	}
+
 	/**
 	 * Update information on all users
 	 */
 	private void updateAllUsers() {
-		for (IGuild guild : client.getGuilds()){
-			for (IUser user : guild.getUsers()){
+		for (IGuild guild : client.getGuilds()) {
+			for (IUser user : guild.getUsers()) {
 				updateUser(user);
 			}
 		}
-	
+
 	}
 
 	/**
 	 * Update the information stored on a user
+	 *
 	 * @param user The User to update
 	 */
 	public void updateUser(IUser user) {
@@ -106,33 +135,5 @@ public class UserStatusModule implements IModule {
 		} finally {
 			writer.close();
 		}
-	}
-
-	/*
-	 * Listeners
-	 */
-	@EventSubscriber
-	public void onUserStatusChange(StatusChangeEvent e) {
-		updateUser(e.getUser());
-	}
-
-	@EventSubscriber
-	public void onUserGameUpdate(PresenceUpdateEvent e) {
-		updateUser(e.getUser());
-	}
-
-	@EventSubscriber
-	public void onVoiceChannelChange(UserVoiceChannelJoinEvent e) {
-		updateUser(e.getUser());
-	}
-
-	@EventSubscriber
-	public void onVoiceChannelChange(UserVoiceChannelLeaveEvent e) {
-		updateUser(e.getUser());
-	}
-
-	@EventSubscriber
-	public void onVoiceChannelChange(UserVoiceChannelMoveEvent e) {
-		updateUser(e.getUser());
 	}
 }

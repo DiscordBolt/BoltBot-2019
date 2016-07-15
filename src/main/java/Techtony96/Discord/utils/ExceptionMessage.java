@@ -1,7 +1,7 @@
-package me.techtony96.utils;
+package main.java.Techtony96.Discord.utils;
 
 public interface ExceptionMessage {
-	
+
 	String API_LIMIT = "Sending Discord too many requests. Rate limit hit.";
 
 }

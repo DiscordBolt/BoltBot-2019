@@ -1,9 +1,9 @@
-package me.techtony96.modules.tempchannels;
+package main.java.Techtony96.Discord.modules.tempchannels;
 
 import java.util.EnumSet;
 
-import me.techtony96.utils.ExceptionMessage;
-import me.techtony96.utils.Logger;
+import main.java.Techtony96.Discord.utils.ExceptionMessage;
+import main.java.Techtony96.Discord.utils.Logger;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.GuildLeaveEvent;
 import sx.blah.discord.handle.impl.events.UserVoiceChannelLeaveEvent;
@@ -23,6 +23,7 @@ public class TemporaryChannel {
 	private IUser owner;
 	private IVoiceChannel channel;
 	private IGuild guild;
+	private IInvite invite;
 	private boolean privateChannel;
 
 	public TemporaryChannel(IUser owner, String name, IGuild guild, boolean privateChannel) {
@@ -30,56 +31,29 @@ public class TemporaryChannel {
 		this.owner = owner;
 		this.privateChannel = privateChannel;
 
-		TempChannelModule.client.getDispatcher().registerListener(this);
 		createChannel(name);
 
+		TempChannelModule.client.getDispatcher().registerListener(this);
+
+		// Create a timer to check if the channel is still empty in one minute
 		new java.util.Timer().schedule(new java.util.TimerTask() {
 			@Override
 			public void run() {
-				Logger.debug("Checking if channel should be deleted after 60s");
 				checkChannel();
 			}
 		}, 60000);
 	}
 
-	public IUser getOwner() {
-		return owner;
-	}
-
-	public IChannel getChannel() {
-		return channel;
-	}
-
-	public boolean isPrivate() {
-		return privateChannel;
-	}
-
-	/**
-	 * Create an invite for the voice channel created
-	 * 
-	 * @return
-	 */
-	public IInvite getInvite() {
-		try {
-			return channel.createInvite(0, 0, false);
-		} catch (RateLimitException e) {
-			Logger.error(ExceptionMessage.API_LIMIT);
-			Logger.debug(e);
-		} catch (MissingPermissionsException e) {
-			Logger.error("Missing permissions to create invite link.");
-			Logger.debug(e);
-		} catch (DiscordException e) {
-			Logger.error("Discord Exception: " + e.getErrorMessage());
-			Logger.debug(e);
+	private void checkChannel() {
+		if (channel.getConnectedUsers().isEmpty()) {
+			ChannelManager.removeChannel(this);
 		}
-		return null;
 	}
 
 	/**
 	 * Create a voice channel in the guild
-	 * 
-	 * @param name
-	 *            of new voice channel
+	 *
+	 * @param name of new voice channel
 	 */
 	private void createChannel(String name) {
 		try {
@@ -104,6 +78,22 @@ public class TemporaryChannel {
 		}
 	}
 
+	private IInvite createInvite() {
+		try {
+			return channel.createInvite(0, 0, false);
+		} catch (RateLimitException e) {
+			Logger.error(ExceptionMessage.API_LIMIT);
+			Logger.debug(e);
+		} catch (MissingPermissionsException e) {
+			Logger.error("Missing permissions to create invite link.");
+			Logger.debug(e);
+		} catch (DiscordException e) {
+			Logger.error("Discord Exception: " + e.getErrorMessage());
+			Logger.debug(e);
+		}
+		return null;
+	}
+
 	/**
 	 * Remove channel from Guild
 	 */
@@ -120,6 +110,46 @@ public class TemporaryChannel {
 			Logger.error("Unable to delete channel " + channel.getName() + ". Missing Permissions.");
 			Logger.debug(e);
 		}
+	}
+
+	public IChannel getChannel() {
+		return channel;
+	}
+
+	public IInvite getInvite() {
+		if (invite == null) {
+			invite = createInvite();
+		}
+		return invite;
+	}
+
+	public IUser getOwner() {
+		return owner;
+	}
+
+	/**
+	 * Give a user access to the voice channel
+	 *
+	 * @param user
+	 */
+	public void giveUserPermission(IUser user) {
+		try {
+			channel.overrideUserPermissions(user, EnumSet.of(Permissions.VOICE_CONNECT), EnumSet.noneOf(Permissions.class));
+			TempChannelModule.client.getOrCreatePMChannel(user).sendMessage(owner.mention() + " has given you permission to join " + channel.getName() + " / " + guild.getName());
+		} catch (RateLimitException e) {
+			Logger.error(ExceptionMessage.API_LIMIT);
+			Logger.debug(e);
+		} catch (DiscordException e) {
+			Logger.error("Discord Exception: " + e.getErrorMessage());
+			Logger.debug(e);
+		} catch (MissingPermissionsException e) {
+			Logger.error("Unable to delete channel " + channel.getName() + ". Missing Permissions.");
+			Logger.debug(e);
+		}
+	}
+
+	public boolean isPrivate() {
+		return privateChannel;
 	}
 
 	/**
@@ -141,31 +171,9 @@ public class TemporaryChannel {
 		}
 	}
 
-	/**
-	 * Give a user access to the voice channel
-	 * 
-	 * @param user
-	 */
-	public void giveUserPermission(IUser user) {
-		try {
-			channel.overrideUserPermissions(user, EnumSet.of(Permissions.VOICE_CONNECT), EnumSet.noneOf(Permissions.class));
-			TempChannelModule.client.getOrCreatePMChannel(user).sendMessage(owner.mention() + " has given you permission to join " + channel.getName() + " / " + guild.getName());
-		} catch (RateLimitException e) {
-			Logger.error(ExceptionMessage.API_LIMIT);
-			Logger.debug(e);
-		} catch (DiscordException e) {
-			Logger.error("Discord Exception: " + e.getErrorMessage());
-			Logger.debug(e);
-		} catch (MissingPermissionsException e) {
-			Logger.error("Unable to delete channel " + channel.getName() + ". Missing Permissions.");
-			Logger.debug(e);
-		}
-	}
-
-	private void checkChannel() {
-		if (channel.getConnectedUsers().isEmpty()) {
-			ChannelManager.removeChannel(this);
-		}
+	@EventSubscriber
+	public void watchChannel(GuildLeaveEvent e) {
+		checkChannel();
 	}
 
 	@EventSubscriber
@@ -180,10 +188,5 @@ public class TemporaryChannel {
 		if (e.getOldChannel().getID().equals(channel.getID())) {
 			checkChannel();
 		}
-	}
-
-	@EventSubscriber
-	public void watchChannel(GuildLeaveEvent e) {
-		checkChannel();
 	}
 }
