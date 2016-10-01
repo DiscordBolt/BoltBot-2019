@@ -1,4 +1,4 @@
-package main.java.Techtony96.Discord.modules.tempchannels.exceptions;
+package Techtony96.Discord.modules.tempchannels.exceptions;
 
 public class DuplicateChannelException extends Exception {
 
@@ -9,5 +9,4 @@ public class DuplicateChannelException extends Exception {
 	public DuplicateChannelException(String message) {
 		super(message);
 	}
-
 }

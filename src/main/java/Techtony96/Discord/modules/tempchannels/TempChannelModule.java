@@ -1,6 +1,6 @@
-package main.java.Techtony96.Discord.modules.tempchannels;
+package Techtony96.Discord.modules.tempchannels;
 
-import main.java.Techtony96.Discord.utils.Logger;
+import Techtony96.Discord.utils.Logger;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
@@ -50,5 +50,4 @@ public class TempChannelModule implements IModule {
 	public void onReady(ReadyEvent e) {
 		Logger.info("[Discord.java] " + getName() + " version " + getVersion() + " is READY.");
 	}
-
 }

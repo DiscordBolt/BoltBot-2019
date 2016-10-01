@@ -1,25 +1,20 @@
-package main.java.Techtony96.Discord.modules.userstatus;
+package Techtony96.Discord.modules.userstatus;
+
+import Techtony96.Discord.utils.Logger;
+import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.handle.impl.events.*;
+import sx.blah.discord.handle.impl.obj.VoiceChannel;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.IVoiceChannel;
+import sx.blah.discord.modules.IModule;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import main.java.Techtony96.Discord.utils.Logger;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.PresenceUpdateEvent;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
-import sx.blah.discord.handle.impl.events.StatusChangeEvent;
-import sx.blah.discord.handle.impl.events.UserVoiceChannelJoinEvent;
-import sx.blah.discord.handle.impl.events.UserVoiceChannelLeaveEvent;
-import sx.blah.discord.handle.impl.events.UserVoiceChannelMoveEvent;
-import sx.blah.discord.handle.impl.obj.VoiceChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.IVoiceChannel;
-import sx.blah.discord.modules.IModule;
 
 public class UserStatusModule implements IModule {
 
@@ -28,7 +23,6 @@ public class UserStatusModule implements IModule {
 	private String moduleVersion = "1.0";
 	private String moduleMinimumVersion = "2.5.0-SNAPSHOT";
 	private String author = "Techtony96";
-
 	private final IVoiceChannel NOT_CONNECTED = new VoiceChannel(client, "$Not_Connected", "", null, "", 0, 0, 0);
 	private final String FILE_LOCATION = "/var/www/api/discord/user/";
 	private final String FILE_TYPE = ".txt";
@@ -107,7 +101,6 @@ public class UserStatusModule implements IModule {
 				updateUser(user);
 			}
 		}
-
 	}
 
 	/**

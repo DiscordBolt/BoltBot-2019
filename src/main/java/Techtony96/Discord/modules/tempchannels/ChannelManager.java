@@ -1,11 +1,11 @@
-package main.java.Techtony96.Discord.modules.tempchannels;
+package Techtony96.Discord.modules.tempchannels;
+
+import Techtony96.Discord.modules.tempchannels.exceptions.DuplicateChannelException;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import main.java.Techtony96.Discord.modules.tempchannels.exceptions.DuplicateChannelException;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IUser;
 
 public class ChannelManager {
 
@@ -13,10 +13,10 @@ public class ChannelManager {
 
 	/**
 	 * Create a temporary channel
-	 * 
-	 * @param owner User of the temporary channel
-	 * @param name Name of the channel
-	 * @param guild Guild to create the voice channel in
+	 *
+	 * @param owner          User of the temporary channel
+	 * @param name           Name of the channel
+	 * @param guild          Guild to create the voice channel in
 	 * @param privateChannel Boolean if channel should be locked to outside users
 	 * @throws DuplicateChannelException if owner already owns a private channel
 	 */
@@ -66,5 +66,4 @@ public class ChannelManager {
 		channel.deleteChannel();
 		return list.remove(channel);
 	}
-
 }

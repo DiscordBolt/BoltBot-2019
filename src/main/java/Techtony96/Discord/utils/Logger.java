@@ -1,4 +1,4 @@
-package main.java.Techtony96.Discord.utils;
+package Techtony96.Discord.utils;
 
 public class Logger {
 
@@ -27,5 +27,4 @@ public class Logger {
 	public static void warning(String s) {
 		System.out.println("[Warning] " + s);
 	}
-
 }

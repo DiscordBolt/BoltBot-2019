@@ -1,7 +1,7 @@
-package main.java.Techtony96.Discord.modules.tempchannels;
+package Techtony96.Discord.modules.tempchannels;
 
-import main.java.Techtony96.Discord.modules.tempchannels.exceptions.DuplicateChannelException;
-import main.java.Techtony96.Discord.utils.ChannelUtil;
+import Techtony96.Discord.modules.tempchannels.exceptions.DuplicateChannelException;
+import Techtony96.Discord.utils.ChannelUtil;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
@@ -42,7 +42,6 @@ public class MessageHandler {
 			} catch (DuplicateChannelException ex) {
 				ChannelUtil.sendMessage(channel, user.mention() + ", you already own a temporary channel, delete it with !Delete");
 			}
-
 		} else if (command.equals("!add")) {
 			TemporaryChannel ch = ChannelManager.getChannel(user);
 
@@ -64,7 +63,6 @@ public class MessageHandler {
 			for (IUser mentioned : message.getMentions()) {
 				ch.giveUserPermission(mentioned);
 			}
-
 		} else if (command.equals("!delete")) {
 			if (ChannelManager.getChannel(user) == null) {
 				ChannelUtil.sendMessage(channel, user.mention() + ", you do not have a temporary voice channel.");

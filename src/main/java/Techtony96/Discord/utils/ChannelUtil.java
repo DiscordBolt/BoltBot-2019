@@ -1,4 +1,4 @@
-package main.java.Techtony96.Discord.utils;
+package Techtony96.Discord.utils;
 
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.DiscordException;
@@ -16,5 +16,4 @@ public class ChannelUtil {
 			return;
 		}
 	}
-
 }
