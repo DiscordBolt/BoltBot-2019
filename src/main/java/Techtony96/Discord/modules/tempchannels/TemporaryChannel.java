@@ -1,22 +1,17 @@
-package main.java.Techtony96.Discord.modules.tempchannels;
+package Techtony96.Discord.modules.tempchannels;
 
-import java.util.EnumSet;
-
-import main.java.Techtony96.Discord.utils.ExceptionMessage;
-import main.java.Techtony96.Discord.utils.Logger;
+import Techtony96.Discord.utils.ExceptionMessage;
+import Techtony96.Discord.utils.Logger;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.GuildLeaveEvent;
 import sx.blah.discord.handle.impl.events.UserVoiceChannelLeaveEvent;
 import sx.blah.discord.handle.impl.events.UserVoiceChannelMoveEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IInvite;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.IVoiceChannel;
-import sx.blah.discord.handle.obj.Permissions;
+import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
+
+import java.util.EnumSet;
 
 public class TemporaryChannel {
 
@@ -65,7 +60,6 @@ public class TemporaryChannel {
 				TempChannelModule.client.getOrCreatePMChannel(owner).sendMessage("Use !Add @User to give a user permission to join your voice channel!");
 			}
 			owner.moveToVoiceChannel(channel);
-
 		} catch (RateLimitException e) {
 			Logger.error(ExceptionMessage.API_LIMIT);
 			Logger.debug(e);

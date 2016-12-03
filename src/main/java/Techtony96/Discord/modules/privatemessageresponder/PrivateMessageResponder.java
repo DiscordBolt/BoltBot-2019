@@ -1,7 +1,7 @@
-package main.java.Techtony96.Discord.modules.privatemessageresponder;
+package Techtony96.Discord.modules.privatemessageresponder;
 
-import main.java.Techtony96.Discord.utils.ChannelUtil;
-import main.java.Techtony96.Discord.utils.Logger;
+import Techtony96.Discord.utils.ChannelUtil;
+import Techtony96.Discord.utils.Logger;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
