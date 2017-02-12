@@ -1,6 +1,7 @@
 package Techtony96.Discord.modules.tempchannels;
 
 import Techtony96.Discord.modules.tempchannels.exceptions.DuplicateChannelException;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 
@@ -20,12 +21,12 @@ public class ChannelManager {
 	 * @param privateChannel Boolean if channel should be locked to outside users
 	 * @throws DuplicateChannelException if owner already owns a private channel
 	 */
-	public static void createChannel(IUser owner, String name, IGuild guild, boolean privateChannel) throws DuplicateChannelException {
+	public static void createChannel(IDiscordClient client, IUser owner, String name, IGuild guild, boolean privateChannel) throws DuplicateChannelException {
 		for (TemporaryChannel tc : list) {
 			if (tc.getOwner().equals(owner))
 				throw new DuplicateChannelException();
 		}
-		list.add(new TemporaryChannel(owner, name, guild, privateChannel));
+		list.add(new TemporaryChannel(client, owner, name, guild, privateChannel));
 	}
 
 	/**

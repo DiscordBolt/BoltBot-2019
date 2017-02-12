@@ -2,6 +2,7 @@ package Techtony96.Discord.modules.tempchannels;
 
 import Techtony96.Discord.utils.ExceptionMessage;
 import Techtony96.Discord.utils.Logger;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.GuildLeaveEvent;
 import sx.blah.discord.handle.impl.events.UserVoiceChannelLeaveEvent;
@@ -15,20 +16,22 @@ import java.util.EnumSet;
 
 public class TemporaryChannel {
 
+	private IDiscordClient client;
 	private IUser owner;
 	private IVoiceChannel channel;
 	private IGuild guild;
 	private IInvite invite;
 	private boolean privateChannel;
 
-	public TemporaryChannel(IUser owner, String name, IGuild guild, boolean privateChannel) {
+	public TemporaryChannel(IDiscordClient client, IUser owner, String name, IGuild guild, boolean privateChannel) {
+		this.client = client;
 		this.guild = guild;
 		this.owner = owner;
 		this.privateChannel = privateChannel;
 
 		createChannel(name);
 
-		TempChannelModule.client.getDispatcher().registerListener(this);
+		client.getDispatcher().registerListener(this);
 
 		// Create a timer to check if the channel is still empty in one minute
 		new java.util.Timer().schedule(new java.util.TimerTask() {
@@ -54,10 +57,10 @@ public class TemporaryChannel {
 		try {
 			channel = guild.createVoiceChannel(name);
 			channel.changeBitrate(96000);
-			TempChannelModule.client.getOrCreatePMChannel(owner).sendMessage("Use https://discord.gg/" + getInvite().getInviteCode() + " to join your voice channel or send it to your friends!");
+			client.getOrCreatePMChannel(owner).sendMessage("Use https://discord.gg/" + getInvite().getInviteCode() + " to join your voice channel or send it to your friends!");
 			if (privateChannel) {
 				lockChannel();
-				TempChannelModule.client.getOrCreatePMChannel(owner).sendMessage("Use !Add @User to give a user permission to join your voice channel!");
+				client.getOrCreatePMChannel(owner).sendMessage("Use !Add @User to give a user permission to join your voice channel!");
 			}
 			owner.moveToVoiceChannel(channel);
 		} catch (RateLimitException e) {
@@ -74,7 +77,7 @@ public class TemporaryChannel {
 
 	private IInvite createInvite() {
 		try {
-			return channel.createInvite(0, 0, false);
+			return channel.createInvite(0, 0, false, false);
 		} catch (RateLimitException e) {
 			Logger.error(ExceptionMessage.API_LIMIT);
 			Logger.debug(e);
@@ -129,7 +132,7 @@ public class TemporaryChannel {
 	public void giveUserPermission(IUser user) {
 		try {
 			channel.overrideUserPermissions(user, EnumSet.of(Permissions.VOICE_CONNECT), EnumSet.noneOf(Permissions.class));
-			TempChannelModule.client.getOrCreatePMChannel(user).sendMessage(owner.mention() + " has given you permission to join " + channel.getName() + " / " + guild.getName());
+			client.getOrCreatePMChannel(user).sendMessage(owner.mention() + " has given you permission to join " + channel.getName() + " / " + guild.getName());
 		} catch (RateLimitException e) {
 			Logger.error(ExceptionMessage.API_LIMIT);
 			Logger.debug(e);
