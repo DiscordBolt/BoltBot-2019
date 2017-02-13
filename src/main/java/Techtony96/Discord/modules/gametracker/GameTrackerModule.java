@@ -10,6 +10,7 @@ import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Status;
 import sx.blah.discord.modules.IModule;
 
+import java.sql.Date;
 import java.util.HashMap;
 
 /**
@@ -24,8 +25,7 @@ public class GameTrackerModule implements IModule {
 	private String author = "Techtony96";
 
 	protected static final String FILE_TYPE = ".txt";
-	protected static final String FILE_LOCATION = "/var/www/html/api/discord/gametracker/users";
-	protected static final String GAME_INDEX_LOCATION = "/var/www/html/api/discord/gametracker/games" + FILE_TYPE;
+	protected static final String USER_DIRECTORY = "/var/www/html/api/discord/gametracker/users";
 
 	private HashMap<IUser, Long> currentUsers = new HashMap<>();
 
@@ -74,7 +74,7 @@ public class GameTrackerModule implements IModule {
 				Logger.warning(e.getUser().getName() + " was not in currentUsers to store his game data.");
 				return;
 			}
-			FileIO.addGameTime(e.getUser(), e.getOldStatus().getStatusMessage(), currentUsers.get(e.getUser()), System.currentTimeMillis());
+			GameLog.addGameLog(e.getUser(), e.getOldStatus().getStatusMessage(), new Date(currentUsers.get(e.getUser())), new Date(System.currentTimeMillis()));
 		} else if (e.getNewStatus().getType() == Status.StatusType.GAME) {
 			currentUsers.put(e.getUser(), System.currentTimeMillis());
 		}
