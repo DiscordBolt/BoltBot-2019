@@ -10,6 +10,7 @@ import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Status;
 import sx.blah.discord.modules.IModule;
 
+import java.sql.Date;
 import java.util.HashMap;
 
 /**
