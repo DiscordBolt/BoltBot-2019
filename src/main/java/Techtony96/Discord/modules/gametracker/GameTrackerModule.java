@@ -24,9 +24,6 @@ public class GameTrackerModule implements IModule {
 	private String moduleMinimumVersion = "2.5.0-SNAPSHOT";
 	private String author = "Techtony96";
 
-	protected static final String FILE_TYPE = ".txt";
-	protected static final String USER_DIRECTORY = "/var/www/html/api/discord/gametracker/users";
-
 	private HashMap<IUser, Long> currentUsers = new HashMap<>();
 
 	@Override
