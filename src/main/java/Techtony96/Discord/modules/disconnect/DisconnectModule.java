@@ -1,5 +1,6 @@
 package Techtony96.Discord.modules.disconnect;
 
+import Techtony96.Discord.api.CustomModule;
 import Techtony96.Discord.utils.ChannelUtil;
 import Techtony96.Discord.utils.ExceptionMessage;
 import Techtony96.Discord.utils.Logger;
@@ -18,43 +19,11 @@ import java.util.UUID;
 /**
  * Created by Tony Pappas on 12/2/2016.
  */
-public class DisconnectModule implements IModule {
+public class DisconnectModule extends CustomModule implements IModule {
 
-	public static IDiscordClient client;
-	private String moduleName = "Disconnect";
-	private String moduleVersion = "1.0";
-	private String moduleMinimumVersion = "2.5.0";
-	private String author = "Techtony96";
 
-	@Override
-	public void disable() {
-		Logger.info("[Discord.java] " + getName() + " version " + getVersion() + " is disabled.");
-	}
-
-	@Override
-	public boolean enable(IDiscordClient client) {
-		DisconnectModule.client = client;
-		return true;
-	}
-
-	@Override
-	public String getAuthor() {
-		return author;
-	}
-
-	@Override
-	public String getMinimumDiscord4JVersion() {
-		return moduleMinimumVersion;
-	}
-
-	@Override
-	public String getName() {
-		return moduleName;
-	}
-
-	@Override
-	public String getVersion() {
-		return moduleVersion;
+	public DisconnectModule() {
+		super("Disconnect", "1.1");
 	}
 
 	@EventSubscriber
@@ -76,21 +45,23 @@ public class DisconnectModule implements IModule {
 			}
 
 			if (message.getMentions().size() < 1) {
-				ChannelUtil.sendMessage(channel, user.mention() + " Incorrect arguments. Usage: !Disconnect @User");
+				ChannelUtil.sendMessage(channel, user.mention() + " Incorrect arguments. Usage: !Disconnect [@User]");
 				return;
 			}
 			try {
 				boolean createChannel = false;
 				for (IUser u : message.getMentions()) {
-					if (u.getConnectedVoiceChannels().size() > 0)
+					if (u.getConnectedVoiceChannels().size() > 0) {
 						createChannel = true;
+						break;
+					}
 				}
 				if (!createChannel) {
-					ChannelUtil.sendMessage(channel, user.mention() + " No users were able to be removed from their voice channel.");
+					ChannelUtil.sendMessage(channel, user.mention() + " None of the users specified are connected to a voice channel.");
 					return;
 				}
 
-				IVoiceChannel temp = message.getGuild().createVoiceChannel(UUID.randomUUID().toString());
+				IVoiceChannel temp = message.getGuild().createVoiceChannel("Disconnect");
 				for (IUser u : message.getMentions()) {
 					if (u.getConnectedVoiceChannels().size() < 0)
 						continue;
@@ -109,10 +80,5 @@ public class DisconnectModule implements IModule {
 				Logger.debug(ex);
 			}
 		}
-	}
-
-	@EventSubscriber
-	public void onReady(ReadyEvent e) {
-		Logger.info("[Discord.java] " + getName() + " version " + getVersion() + " is READY.");
 	}
 }

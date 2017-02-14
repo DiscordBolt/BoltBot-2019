@@ -10,10 +10,15 @@ public class ChannelUtil {
 	public static void sendMessage(IChannel channel, String message) {
 		try {
 			channel.sendMessage(message);
-		} catch (RateLimitException | DiscordException | MissingPermissionsException e) {
-			Logger.error("Error while trying to send a message");
-			Logger.debug(e);
-			return;
+		} catch (RateLimitException ex) {
+			Logger.error(ExceptionMessage.API_LIMIT);
+			Logger.debug(ex);
+		} catch (DiscordException ex) {
+			Logger.error("Discord Exception: " + ex.getErrorMessage());
+			Logger.debug(ex);
+		} catch (MissingPermissionsException ex) {
+			Logger.error("Unable to send message in channel " + channel.getName() + ". Missing Permissions.");
+			Logger.debug(ex);
 		}
 	}
 }

@@ -2,6 +2,7 @@ package Techtony96.Discord.modules.tempchannels;
 
 import Techtony96.Discord.modules.tempchannels.exceptions.DuplicateChannelException;
 import Techtony96.Discord.utils.ChannelUtil;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
@@ -9,6 +10,12 @@ import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
 public class MessageHandler {
+
+	private IDiscordClient client;
+
+	public MessageHandler(IDiscordClient client){
+		this.client = client;
+	}
 
 	@EventSubscriber
 	public void OnMesageEvent(MessageReceivedEvent e) {
@@ -38,7 +45,7 @@ public class MessageHandler {
 			sb.deleteCharAt(sb.length() - 1);
 
 			try {
-				ChannelManager.createChannel(user, sb.toString(), e.getMessage().getGuild(), privateChannel);
+				ChannelManager.createChannel(client, user, sb.toString(), e.getMessage().getGuild(), privateChannel);
 			} catch (DuplicateChannelException ex) {
 				ChannelUtil.sendMessage(channel, user.mention() + ", you already own a temporary channel, delete it with !Delete");
 			}
