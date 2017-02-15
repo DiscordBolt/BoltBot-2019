@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>me.Techtony96</groupId>
     <artifactId>Discord.java</artifactId>
-    <version>0.1</version>
+    <version>1.0-SNAPSHOT</version>
     <url>https://github.com/Techtony96/Discord.java</url>
 
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.testTarget>1.8</maven.compiler.testTarget>
         <maven.compiler.testSource>1.8</maven.compiler.testSource>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,13 +30,23 @@
             <groupId>com.github.austinv11</groupId>
             <artifactId>Discord4j</artifactId>
             <version>2.7.0</version>
+            <scope>provided</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java-->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>6.0.5</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.1.0</version>
+            <scope>compile</scope>
         </dependency>
 
         <!--<dependency>
@@ -46,4 +56,22 @@
         </dependency>-->
 
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

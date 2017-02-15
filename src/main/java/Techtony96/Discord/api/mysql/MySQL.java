@@ -2,6 +2,7 @@ package Techtony96.Discord.api.mysql;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -25,7 +26,7 @@ public class MySQL {
     private static void constructDS(){
         try {
             Properties props = new Properties();
-            FileInputStream fis = new FileInputStream("database.properties");
+            FileInputStream fis = new FileInputStream(System.getProperty("user.dir") + File.separator + "database.properties");
             props.load(fis);
             ds = new MysqlDataSource();
             ds.setURL(props.getProperty("MYSQL_DB_URL"));

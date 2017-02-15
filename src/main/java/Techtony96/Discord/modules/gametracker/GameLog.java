@@ -40,7 +40,7 @@ public class GameLog {
         }
 
         try {
-            PreparedStatement ps = MySQL.getConnection().prepareStatement("INSERT INTO `Discord.java`.`game_log` (`user`, `game`, `startTime`, `endTime`) VALUES (?, (SELECT `id` FROM `Discord.java`.`games` WHERE `title` = ?), ?, ?);");
+            PreparedStatement ps = MySQL.getConnection().prepareStatement("INSERT INTO `game_log` (`user`, `game`, `startTime`, `endTime`) VALUES (?, (SELECT `id` FROM `games` WHERE `title` = ?), ?, ?);");
             ps.setString(1, user.getID());
             ps.setString(2, gameTitle);
             ps.setDate(3, startTime);
@@ -60,9 +60,9 @@ public class GameLog {
      * @param user
      * @return Number of rows inserted/updated in the table.
      */
-    private static int addUser(IUser user) {
+    public static int addUser(IUser user) {
         try {
-            PreparedStatement ps = MySQL.getConnection().prepareStatement("REPLACE INTO `Discord.java`.`users` (`id`, `name`) VALUES (?,?);");
+            PreparedStatement ps = MySQL.getConnection().prepareStatement("REPLACE INTO `users` (`id`, `name`) VALUES (?,?);");
             ps.setString(1, user.getID());
             ps.setString(2, user.getName());
             return ps.executeUpdate();
@@ -81,7 +81,7 @@ public class GameLog {
      */
     private static int addGame(String gameTitle) {
         try {
-            PreparedStatement ps = MySQL.getConnection().prepareStatement("INSERT IGNORE INTO `Discord.java`.`games` (`title`) VALUES (?);");
+            PreparedStatement ps = MySQL.getConnection().prepareStatement("INSERT IGNORE INTO `games` (`title`) VALUES (?);");
             ps.setString(1, gameTitle);
             return ps.executeUpdate();
         } catch (SQLException e) {

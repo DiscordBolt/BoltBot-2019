@@ -1,7 +1,7 @@
 package Techtony96.Discord.modules.gametracker;
 
+import Techtony96.Discord.api.CustomModule;
 import Techtony96.Discord.utils.Logger;
-import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.StatusChangeEvent;
@@ -16,51 +16,19 @@ import java.util.HashMap;
 /**
  * Created by Tony Pappas on 9/29/2016.
  */
-public class GameTrackerModule implements IModule {
-
-	public static IDiscordClient client;
-	private String moduleName = "Game Tracker";
-	private String moduleVersion = "1.0";
-	private String moduleMinimumVersion = "2.5.0-SNAPSHOT";
-	private String author = "Techtony96";
+public class GameTrackerModule extends CustomModule implements IModule {
 
 	private HashMap<IUser, Long> currentUsers = new HashMap<>();
 
-	@Override
-	public void disable() {
-		Logger.info("[Discord.java] " + getName() + " version " + getVersion() + " is disabled.");
-	}
 
-	@Override
-	public boolean enable(IDiscordClient client) {
-		GameTrackerModule.client = client;
-		return true;
-	}
-
-	@Override
-	public String getAuthor() {
-		return author;
-	}
-
-	@Override
-	public String getMinimumDiscord4JVersion() {
-		return moduleMinimumVersion;
-	}
-
-	@Override
-	public String getName() {
-		return moduleName;
-	}
-
-	@Override
-	public String getVersion() {
-		return moduleVersion;
+	public GameTrackerModule() {
+		super("GameTracker", "1.1");
 	}
 
 	@EventSubscriber
 	public void onReady(ReadyEvent e) {
+		//Updates all user's usernames
 		updateAllUsers();
-		Logger.info("[Discord.java] " + getName() + " version " + getVersion() + " is READY.");
 	}
 
 	@EventSubscriber
@@ -83,7 +51,10 @@ public class GameTrackerModule implements IModule {
 	private void updateAllUsers() {
 		for (IGuild guild : client.getGuilds()) {
 			for (IUser user : guild.getUsers()) {
-				if (user.isBot() || user.getStatus().getType() == Status.StatusType.NONE || user.getStatus().getType() == Status.StatusType.STREAM)
+                if (user.isBot())
+                    continue;
+			    GameLog.addUser(user);
+				if (user.getStatus().getType() == Status.StatusType.NONE || user.getStatus().getType() == Status.StatusType.STREAM)
 					continue;
 				currentUsers.put(user, System.currentTimeMillis());
 			}
