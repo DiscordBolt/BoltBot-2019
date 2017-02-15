@@ -1,13 +1,11 @@
 package Techtony96.Discord.modules.gametracker;
 
 import Techtony96.Discord.api.CustomModule;
-import Techtony96.Discord.utils.Logger;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
-import sx.blah.discord.handle.impl.events.StatusChangeEvent;
+import sx.blah.discord.handle.impl.events.user.PresenceUpdateEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Status;
 import sx.blah.discord.modules.IModule;
 
 import java.sql.Date;
@@ -18,7 +16,7 @@ import java.util.HashMap;
  */
 public class GameTrackerModule extends CustomModule implements IModule {
 
-	private HashMap<IUser, Long> currentUsers = new HashMap<>();
+	private HashMap<String, UserInfo> currentUsers = new HashMap<>();
 
 
 	public GameTrackerModule() {
@@ -31,17 +29,23 @@ public class GameTrackerModule extends CustomModule implements IModule {
 		updateAllUsers();
 	}
 
+
 	@EventSubscriber
-	public void onUserGameUpdate(StatusChangeEvent e) {
-		if (e.getNewStatus().getType() == Status.StatusType.NONE) {
-			if (currentUsers.get(e.getUser()) == null) {
-				// User is not stored in the list, we somehow missed him so we will ignore that he just stopped playing a game.
-				Logger.warning(e.getUser().getName() + " was not in currentUsers to store his game data.");
+	public void onGameChange(PresenceUpdateEvent e){
+
+		if (currentUsers.containsKey(e.getUser().getID())){ // User was already in a game
+			UserInfo ui = currentUsers.get(e.getUser().getID());
+
+			if (e.getNewPresence().getPlayingText().isPresent() && ui.getGame().equals(e.getNewPresence().getPlayingText().get())){ // Event was fired for same game they are already playing
 				return;
 			}
-			GameLog.addGameLog(e.getUser(), e.getOldStatus().getStatusMessage(), new Date(currentUsers.get(e.getUser())), new Date(System.currentTimeMillis()));
-		} else if (e.getNewStatus().getType() == Status.StatusType.GAME) {
-			currentUsers.put(e.getUser(), System.currentTimeMillis());
+			// User is finished playing their game
+			GameLog.addGameLog(e.getUser(), currentUsers.get(e.getUser().getID()).getGame(), ui.getStartTime(), System.currentTimeMillis());
+			currentUsers.remove(e.getUser().getID());
+		}
+
+		if (e.getNewPresence().getPlayingText().isPresent()){
+			currentUsers.put(e.getUser().getID(), new UserInfo(e.getUser(), e.getNewPresence().getPlayingText().get(), System.currentTimeMillis()));
 		}
 	}
 
@@ -54,9 +58,9 @@ public class GameTrackerModule extends CustomModule implements IModule {
                 if (user.isBot())
                     continue;
 			    GameLog.addUser(user);
-				if (user.getStatus().getType() == Status.StatusType.NONE || user.getStatus().getType() == Status.StatusType.STREAM)
+				if (!user.getPresence().getPlayingText().isPresent())
 					continue;
-				currentUsers.put(user, System.currentTimeMillis());
+				currentUsers.put(user.getID(), new UserInfo(user, user.getPresence().getPlayingText().get(), System.currentTimeMillis()));
 			}
 		}
 	}

@@ -26,12 +26,16 @@
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
+    <repository>
+      <id>jcenter.bintray.com</id>
+      <url>https://jcenter.bintray.com</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
       <groupId>com.github.austinv11</groupId>
       <artifactId>Discord4j</artifactId>
-      <version>2.7.0</version>
+      <version>5213b02</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -93,6 +97,10 @@
         <exclusion>
           <artifactId>tritonus-dsp</artifactId>
           <groupId>org.tritonus</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>emoji-java</artifactId>
+          <groupId>com.vdurmont</groupId>
         </exclusion>
       </exclusions>
     </dependency>

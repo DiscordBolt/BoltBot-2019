@@ -175,7 +175,7 @@ public class TemporaryChannel {
 
 	@EventSubscriber
 	public void watchChannel(UserVoiceChannelLeaveEvent e) {
-		if (e.getChannel().getID().equals(channel.getID())) {
+		if (e.getVoiceChannel().getID().equals(channel.getID())) {
 			checkChannel();
 		}
 	}

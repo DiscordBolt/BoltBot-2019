@@ -4,9 +4,9 @@ import Techtony96.Discord.api.mysql.MySQL;
 import Techtony96.Discord.utils.Logger;
 import sx.blah.discord.handle.obj.IUser;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 /**
@@ -27,10 +27,10 @@ public class GameLog {
      * @param endTime
      * @return True if successfully added entry
      */
-    protected static boolean addGameLog(IUser user, String gameTitle, Date startTime, Date endTime) {
-        if (user == null || startTime == null || endTime == null || gameTitle == null || gameTitle.length() <= 0)
+    protected static boolean addGameLog(IUser user, String gameTitle, long startTime, long endTime) {
+        if (user == null || startTime == 0 || endTime == 0 || gameTitle == null || gameTitle.length() <= 0)
             throw new IllegalArgumentException("A supplied argument was in an invalid state.");
-        if (startTime.after(endTime))
+        if (startTime - endTime > 0)
             throw new IllegalArgumentException("startTime must be before endTime.");
 
         // Perform a quick cache check to see if the game has already been added
@@ -43,8 +43,8 @@ public class GameLog {
             PreparedStatement ps = MySQL.getConnection().prepareStatement("INSERT INTO `game_log` (`user`, `game`, `startTime`, `endTime`) VALUES (?, (SELECT `id` FROM `games` WHERE `title` = ?), ?, ?);");
             ps.setString(1, user.getID());
             ps.setString(2, gameTitle);
-            ps.setDate(3, startTime);
-            ps.setDate(4, endTime);
+            ps.setTimestamp(3, new Timestamp(startTime));
+            ps.setTimestamp(4, new Timestamp(endTime));
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             Logger.error(e.getMessage());
