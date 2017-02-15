@@ -1,6 +1,6 @@
 # Discord.java
 
-[![Coverage Status](https://coveralls.io/repos/github/Techtony96/Discord.java/badge.svg?branch=master)](https://coveralls.io/github/Techtony96/Discord.java?branch=master)
+[![Build Status](https://travis-ci.org/Techtony96/Discord.java.svg?branch=master)](https://travis-ci.org/Techtony96/Discord.java) [![Coverage Status](https://coveralls.io/repos/github/Techtony96/Discord.java/badge.svg?branch=master)](https://coveralls.io/github/Techtony96/Discord.java?branch=master)
 ======
 
 ## Discord4J Documentation
