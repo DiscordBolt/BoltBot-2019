@@ -1,4 +1,6 @@
-Discord.java
+# Discord.java
+
+[![Coverage Status](https://coveralls.io/repos/github/Techtony96/Discord.java/badge.svg?branch=master)](https://coveralls.io/github/Techtony96/Discord.java?branch=master)
 ======
 
 ## Discord4J Documentation
