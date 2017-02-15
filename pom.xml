@@ -29,7 +29,7 @@
         <dependency>
             <groupId>com.github.austinv11</groupId>
             <artifactId>Discord4j</artifactId>
-            <version>2.7.0</version>
+            <version>e26517c</version>
             <scope>provided</scope>
         </dependency>
 
