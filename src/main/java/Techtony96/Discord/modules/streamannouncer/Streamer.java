@@ -12,29 +12,26 @@ public class Streamer {
     private IUser streamer;
     private long startTime, endTime = 0L;
 
-
-
-    public Streamer(IUser streamer){
+    public Streamer(IUser streamer) {
         this.streamer = streamer;
         this.startTime = System.currentTimeMillis();
     }
 
-
-    public boolean isTimePassed(long duration, TimeUnit source){
+    public boolean isTimePassed(long duration, TimeUnit source) {
         long ms = TimeUnit.MILLISECONDS.convert(duration, source);
-        if (startTime + ms <= System.currentTimeMillis()){
+        if (startTime + ms <= System.currentTimeMillis()) {
             return true;
         }
         return false;
     }
 
-    public boolean isTimeAfterElapsed(long duration, TimeUnit source){
-        if (endTime == 0L){
+    public boolean isTimeAfterElapsed(long duration, TimeUnit source) {
+        if (endTime == 0L) {
             return false;
         }
 
         long ms = TimeUnit.MILLISECONDS.convert(duration, source);
-        if (startTime + ms <= System.currentTimeMillis()){
+        if (startTime + ms <= System.currentTimeMillis()) {
             return true;
         }
         return false;

@@ -14,26 +14,25 @@ public class UserInfoTest extends TestCase {
         ui1 = new UserInfo(null, "Overwatch", 567L);
     }
 
-    public void testGetUser()  {
+    public void testGetUser() {
         assertNull(ui1.getUser());
     }
 
-    public void testGetGame()  {
+    public void testGetGame() {
         assertEquals("Overwatch", ui1.getGame());
     }
 
-    public void testSetGame()  {
+    public void testSetGame() {
         ui1.setGame("CS:GO");
         assertEquals("CS:GO", ui1.getGame());
     }
 
-    public void testGetStartTime()  {
+    public void testGetStartTime() {
         assertEquals(567L, ui1.getStartTime());
     }
 
-    public void testSetStartTime()  {
+    public void testSetStartTime() {
         ui1.setStartTime(10L);
         assertEquals(10L, ui1.getStartTime());
     }
-
 }

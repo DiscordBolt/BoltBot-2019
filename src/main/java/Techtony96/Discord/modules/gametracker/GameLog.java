@@ -20,7 +20,8 @@ public class GameLog {
      * Add a game log entry to the database
      *
      * By Running this method, a few assumptions have been made.
-     *      1. The user already exists in the `users` table.
+     * 1. The user already exists in the `users` table.
+     *
      * @param user
      * @param gameTitle
      * @param startTime
@@ -34,7 +35,7 @@ public class GameLog {
             throw new IllegalArgumentException("startTime must be before endTime.");
 
         // Perform a quick cache check to see if the game has already been added
-        if (!cachedGames.contains(gameTitle)){
+        if (!cachedGames.contains(gameTitle)) {
             addGame(gameTitle);
             cachedGames.add(gameTitle);
         }
@@ -53,14 +54,14 @@ public class GameLog {
         }
     }
 
-
     /**
      * Add a user to the `users` table.
      * MySQL will automatically replace the old entry.
+     *
      * @param user
      * @return Number of rows inserted/updated in the table.
      */
-    public static int addUser(IUser user) {
+    protected static int addUser(IUser user) {
         try {
             PreparedStatement ps = MySQL.getConnection().prepareStatement("REPLACE INTO `users` (`id`, `name`) VALUES (?,?);");
             ps.setString(1, user.getID());
@@ -76,6 +77,7 @@ public class GameLog {
     /**
      * Add a game to the `games` table.
      * MySQL will not add duplicate games
+     *
      * @param gameTitle
      * @return Number of rows inserted into the table
      */
@@ -90,6 +92,4 @@ public class GameLog {
             throw new IllegalStateException("The MySQL Query could not be completed.", e);
         }
     }
-
-
 }

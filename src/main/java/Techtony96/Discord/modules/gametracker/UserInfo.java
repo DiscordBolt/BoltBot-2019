@@ -11,7 +11,7 @@ public class UserInfo {
     private String game;
     private long startTime;
 
-    public UserInfo(IUser user, String game, long startTime){
+    public UserInfo(IUser user, String game, long startTime) {
         setUser(user);
         setGame(game);
         setStartTime(startTime);

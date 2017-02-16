@@ -18,22 +18,18 @@ public class MySQL {
 
     public static Connection getConnection() throws SQLException {
        if (ds == null){
-            constructDS();
+           try {
+               Properties props = new Properties();
+               FileInputStream fis = new FileInputStream(System.getProperty("user.dir") + File.separator + "database.properties");
+               props.load(fis);
+               ds = new MysqlDataSource();
+               ds.setURL(props.getProperty("MYSQL_DB_URL"));
+               ds.setUser(props.getProperty("MYSQL_DB_USERNAME"));
+               ds.setPassword(props.getProperty("MYSQL_DB_PASSWORD"));
+           } catch (IOException e) {
+               e.printStackTrace();
+           }
        }
        return ds.getConnection();
-    }
-
-    private static void constructDS(){
-        try {
-            Properties props = new Properties();
-            FileInputStream fis = new FileInputStream(System.getProperty("user.dir") + File.separator + "database.properties");
-            props.load(fis);
-            ds = new MysqlDataSource();
-            ds.setURL(props.getProperty("MYSQL_DB_URL"));
-            ds.setUser(props.getProperty("MYSQL_DB_USERNAME"));
-            ds.setPassword(props.getProperty("MYSQL_DB_PASSWORD"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
