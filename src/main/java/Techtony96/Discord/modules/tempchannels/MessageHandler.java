@@ -1,12 +1,11 @@
 package Techtony96.Discord.modules.tempchannels;
 
+import Techtony96.Discord.api.commands.BotCommand;
+import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.modules.tempchannels.exceptions.DuplicateChannelException;
-import Techtony96.Discord.utils.ChannelUtil;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.obj.IUser;
 
 public class MessageHandler {
@@ -18,67 +17,79 @@ public class MessageHandler {
     }
 
     @EventSubscriber
-    public void OnMesageEvent(MessageReceivedEvent e) {
-        IMessage message = e.getMessage();
-        IUser user = e.getMessage().getAuthor();
-        IChannel channel = message.getChannel();
-        String messageString = message.getContent();
-        String[] args = messageString.split(" ");
-        String command = args[0].toLowerCase();
-
-        if (command.equals("!create")) {
-            // We need to handle the processing of creating a voice channel
-            if (args.length <= 1) {
-                ChannelUtil.sendMessage(channel, user.mention() + " Invalid syntax. !Create -Private [Channel Name]");
-                return;
-            }
-            boolean privateChannel = false;
-            StringBuilder sb = new StringBuilder();
-            for (int i = 1; i < args.length; i++) {
-                if (args[i].equalsIgnoreCase("-private") || args[i].equalsIgnoreCase("-p")) {
-                    privateChannel = true;
-                    continue;
+    public void onReady(ReadyEvent e) {
+        /*
+            !Create Command
+         */
+        new BotCommand(client, "create") {
+            @Override
+            public void execute(CommandContext cc) {
+                if (cc.getMentions().size() > 0 || cc.getMessage().getChannelMentions().size() > 0){
+                    cc.replyWith(cc.mentionUser() + ", you should not mention any users in this command.");
+                    return;
                 }
-                sb.append(args[i] + " ");
+
+                boolean privateChannel = cc.getArguments().containsIgnoreCase("-Private") || cc.getArguments().containsIgnoreCase("-P");
+                String channelName = cc.combineArgs(1, cc.getArgCount() - 1).replaceAll("(?i)-Private", "").replaceAll("(?i)-P", "").trim();
+
+                if (channelName.length() < 2 || channelName.length() > 100) {
+                    cc.replyWith(cc.mentionUser() + ", your channel name must be between 2 and 100 characters long.");
+                    return;
+                }
+
+                try {
+                    ChannelManager.createChannel(client, cc.getUser(), channelName, cc.getGuild(), privateChannel);
+                } catch (DuplicateChannelException ex) {
+                    cc.replyWith(cc.mentionUser() + ", you already own a temporary channel, delete it with !Delete");
+                }
             }
+        }.setArguments(2, 100).setUsage("!Create -Private [Channel Name]").setDescription("");
 
-            sb.deleteCharAt(sb.length() - 1);
+        /*
+            !Add Command
+         */
+        new BotCommand(client, "add") {
+            @Override
+            public void execute(CommandContext cc) {
+                TemporaryChannel ch = ChannelManager.getChannel(cc.getUser());
 
-            try {
-                ChannelManager.createChannel(client, user, sb.toString(), e.getMessage().getGuild(), privateChannel);
-            } catch (DuplicateChannelException ex) {
-                ChannelUtil.sendMessage(channel, user.mention() + ", you already own a temporary channel, delete it with !Delete");
+                if (ch == null) {
+                    cc.replyWith(cc.mentionUser() + ", you do not currently have a temporary voice channel. Create one with !Create");
+                    return;
+                }
+
+                if (!ch.isPrivate()) {
+                    cc.replyWith(cc.mentionUser() + ", your temporary voice channel isn't private.");
+                    return;
+                }
+
+                if (cc.getMentions().size() < 1) {
+                    cc.replyWith(cc.mentionUser() + ", no users were @Mentioned in your message.");
+                    return;
+                }
+
+                for (IUser mentioned : cc.getMentions()) {
+                    if (!(mentioned.isBot() || mentioned.equals(ch.getOwner()) || ch.getChannel().getUserOverrides().containsKey(mentioned.getID())))
+                        ch.giveUserPermission(mentioned);
+                }
             }
-        } else if (command.equals("!add")) {
-            TemporaryChannel ch = ChannelManager.getChannel(user);
+        }.setArguments(2, 100).setUsage("!Add @User1 @User2").setDescription("Give users permission to join your temporary channel.");
 
-            if (ch == null) {
-                ChannelUtil.sendMessage(channel, user.mention() + ", you do not currently have a temporary voice channel. Create one with !Create");
+        /*
+            !Delete Command
+         */
+        new BotCommand(client, "delete") {
+            @Override
+            public void execute(CommandContext cc) {
+                if (ChannelManager.getChannel(cc.getUser()) == null) {
+                    cc.replyWith(cc.mentionUser() + ", you do not have a temporary voice channel.");
+                    return;
+                }
+
+                ChannelManager.removeChannel(ChannelManager.getChannel(cc.getUser()));
+                cc.replyWith(cc.mentionUser() + ", successfully deleted your temporary channel.");
                 return;
             }
-
-            if (!ch.isPrivate()) {
-                ChannelUtil.sendMessage(channel, user.mention() + ", your temporary voice channel isn't private.");
-                return;
-            }
-
-            if (message.getMentions().size() < 1) {
-                ChannelUtil.sendMessage(channel, user.mention() + ", no users were @Mentioned in your message.");
-                return;
-            }
-
-            for (IUser mentioned : message.getMentions()) {
-                ch.giveUserPermission(mentioned);
-            }
-        } else if (command.equals("!delete")) {
-            if (ChannelManager.getChannel(user) == null) {
-                ChannelUtil.sendMessage(channel, user.mention() + ", you do not have a temporary voice channel.");
-                return;
-            }
-
-            ChannelManager.removeChannel(ChannelManager.getChannel(user));
-            ChannelUtil.sendMessage(channel, user.mention() + ", successfully deleted your temporary channel.");
-            return;
-        }
+        }.setArguments(1).setUsage("!Delete").setDescription("Delete your temporary voice channel.");
     }
 }
