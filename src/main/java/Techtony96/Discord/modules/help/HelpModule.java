@@ -28,9 +28,9 @@ public class HelpModule extends CustomModule implements IModule {
                     if (bc.isSecret())
                         continue;
                     if (bc.getUsage().length() > 0 && bc.getDescription().length() > 0){
-                        sb.append(bc.getUsage() + " | " + bc.getDescription() + '\n');
+                        sb.append(bc.getUsage()).append(" | ").append(bc.getDescription()).append('\n');
                     } else
-                        sb.append((bc.getUsage().length() > 0 ? bc.getUsage() : "!" + bc.getName() + " " + bc.getDescription()) + '\n');
+                        sb.append(bc.getUsage().length() > 0 ? bc.getUsage() : "!" + bc.getName() + " " + bc.getDescription()).append('\n');
                 }
                 cc.replyWith(sb.toString());
             }

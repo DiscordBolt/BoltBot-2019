@@ -13,8 +13,8 @@ public class ArgList extends ArrayList<String> {
     }
 
     public boolean containsIgnoreCase(String s) {
-        for (int i = 0; i < this.size(); i++)
-            if (s.equalsIgnoreCase(this.get(i)))
+        for (String s1 : this)
+            if (s.equalsIgnoreCase(s1))
                 return true;
         return false;
     }

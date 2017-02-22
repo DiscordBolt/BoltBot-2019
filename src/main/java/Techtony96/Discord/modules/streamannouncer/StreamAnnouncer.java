@@ -3,10 +3,10 @@ package Techtony96.Discord.modules.streamannouncer;
 import Techtony96.Discord.api.CustomModule;
 import Techtony96.Discord.utils.ChannelUtil;
 import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.StatusChangeEvent;
+import sx.blah.discord.handle.impl.events.user.PresenceUpdateEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.Status;
+import sx.blah.discord.handle.obj.StatusType;
 import sx.blah.discord.modules.IModule;
 
 import java.util.ArrayList;
@@ -27,8 +27,8 @@ public class StreamAnnouncer extends CustomModule implements IModule {
     }
 
     @EventSubscriber
-    public void onUserGameUpdate(StatusChangeEvent e) {
-        if (e.getNewStatus().getType() == Status.StatusType.STREAM) {
+    public void onUserGameUpdate(PresenceUpdateEvent e) {
+        if (e.getNewPresence().getStatus() == StatusType.STREAMING) {
             for (Streamer s : streamers) {
                 if (s.getStreamer().getID().equals(e.getUser().getID())) {
                     if (s.isTimePassed(2, TimeUnit.HOURS) || s.isTimeAfterElapsed(1, TimeUnit.HOURS)) {
@@ -45,7 +45,7 @@ public class StreamAnnouncer extends CustomModule implements IModule {
         }
     }
 
-    private void sendAnnouncement(StatusChangeEvent e) {
+    private void sendAnnouncement(PresenceUpdateEvent e) {
         List<IGuild> guilds = client.getGuilds();
         for (IGuild guild : guilds) {
             if (!guild.getUsers().contains(e.getUser()))
@@ -55,8 +55,8 @@ public class StreamAnnouncer extends CustomModule implements IModule {
             for (String channel : CHANNELS) {
                 List<IChannel> channels = guild.getChannelsByName(channel);
                 if (channels.size() > 0) {
-                    ChannelUtil.sendMessage(channels.get(0), e.getUser().mention() + " just started streaming " + e.getNewStatus().getStatusMessage());
-                    ChannelUtil.sendMessage(channels.get(0), "Come join in on the fun! " + e.getUser().getStatus().getUrl().orElseGet(null));
+                    ChannelUtil.sendMessage(channels.get(0), e.getUser().mention() + " just started streaming " + e.getNewPresence().getPlayingText().get());
+                    ChannelUtil.sendMessage(channels.get(0), "Come join in on the fun! " + e.getNewPresence().getStreamingUrl().orElseGet(null));
                     return;
                 }
             }

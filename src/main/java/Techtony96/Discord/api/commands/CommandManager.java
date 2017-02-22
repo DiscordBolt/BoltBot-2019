@@ -1,7 +1,6 @@
 package Techtony96.Discord.api.commands;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -19,7 +18,7 @@ public class CommandManager {
 
     public static void register(BotCommand command) {
         commands.add(command);
-        Collections.sort(commands, new CommandComparator());
+        commands.sort(new CommandComparator());
     }
 
     public static List<BotCommand> getCommands() {

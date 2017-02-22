@@ -18,11 +18,7 @@ public class Streamer {
     }
 
     public boolean isTimePassed(long duration, TimeUnit source) {
-        long ms = TimeUnit.MILLISECONDS.convert(duration, source);
-        if (startTime + ms <= System.currentTimeMillis()) {
-            return true;
-        }
-        return false;
+        return startTime + TimeUnit.MILLISECONDS.convert(duration, source) <= System.currentTimeMillis();
     }
 
     public boolean isTimeAfterElapsed(long duration, TimeUnit source) {
@@ -30,11 +26,7 @@ public class Streamer {
             return false;
         }
 
-        long ms = TimeUnit.MILLISECONDS.convert(duration, source);
-        if (startTime + ms <= System.currentTimeMillis()) {
-            return true;
-        }
-        return false;
+        return startTime + TimeUnit.MILLISECONDS.convert(duration, source) <= System.currentTimeMillis();
     }
 
     public IUser getStreamer() {

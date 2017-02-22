@@ -88,7 +88,6 @@ public class MessageHandler {
 
                 ChannelManager.removeChannel(ChannelManager.getChannel(cc.getUser()));
                 cc.replyWith(cc.mentionUser() + ", successfully deleted your temporary channel.");
-                return;
             }
         }.setArguments(1).setUsage("!Delete").setDescription("Delete your temporary voice channel.");
     }

@@ -6,6 +6,7 @@ import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.user.PresenceUpdateEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.StatusType;
 import sx.blah.discord.modules.IModule;
 
 import java.util.HashMap;
@@ -40,7 +41,7 @@ public class GameTrackerModule extends CustomModule implements IModule {
             currentUsers.remove(e.getUser().getID());
         }
 
-        if (e.getNewPresence().getPlayingText().isPresent()) {
+        if (e.getNewPresence().getPlayingText().isPresent() && !e.getNewPresence().getStatus().equals(StatusType.STREAMING)) {
             currentUsers.put(e.getUser().getID(), new UserInfo(e.getUser(), e.getNewPresence().getPlayingText().get(), System.currentTimeMillis()));
         }
     }
@@ -54,9 +55,8 @@ public class GameTrackerModule extends CustomModule implements IModule {
                 if (user.isBot())
                     continue;
                 GameLog.addUser(user);
-                if (!user.getPresence().getPlayingText().isPresent())
-                    continue;
-                currentUsers.put(user.getID(), new UserInfo(user, user.getPresence().getPlayingText().get(), System.currentTimeMillis()));
+                if (user.getPresence().getPlayingText().isPresent() && !user.getPresence().getStatus().equals(StatusType.STREAMING))
+                    currentUsers.put(user.getID(), new UserInfo(user, user.getPresence().getPlayingText().get(), System.currentTimeMillis()));
             }
         }
     }
