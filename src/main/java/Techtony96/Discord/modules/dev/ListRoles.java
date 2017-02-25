@@ -12,9 +12,9 @@ import sx.blah.discord.handle.obj.Permissions;
 public class ListRoles extends BotCommand {
 
     public ListRoles(IDiscordClient client) {
-        super(client, "listroles");
+        super(client, "ListRoles");
         setDescription("List the roles of the guild and their ID.");
-        setUsage("!listroles");
+        setUsage("!ListRoles");
         setArguments(1);
         setPermissions(Permissions.MANAGE_ROLES);
     }
