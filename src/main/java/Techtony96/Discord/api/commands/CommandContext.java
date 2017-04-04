@@ -40,6 +40,8 @@ public class CommandContext {
         return getUser().mention();
     }
 
+    public String getUserDisplayName() { return getUser().getDisplayName(getGuild()); }
+
     public List<IUser> getMentions() {
         return getMessage().getMentions();
     }

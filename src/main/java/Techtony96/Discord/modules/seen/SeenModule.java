@@ -5,6 +5,7 @@ import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.api.mysql.MySQL;
 import Techtony96.Discord.utils.Logger;
+import Techtony96.Discord.utils.UserUtil;
 import org.ocpsoft.prettytime.PrettyTime;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
@@ -37,21 +38,11 @@ public class SeenModule extends CustomModule implements IModule {
             @Override
             public void execute(CommandContext cc) {
 
-                IUser searchUser = null;
-
-                if (cc.getMentions().size() == 1) {
-                    searchUser = cc.getMentions().get(0);
-                } else {
-                    String userName = cc.getArgument(1);
-                    for (IUser user : cc.getGuild().getUsers()) {
-                        if (user.getName().equalsIgnoreCase(userName)) {
-                            searchUser = user;
-                        }
-                    }
-                }
+                IUser searchUser = UserUtil.findUser(cc.getMessage(), cc.getContent().indexOf(' ') + 1);
 
                 if (searchUser == null) {
-                    cc.replyWith("Sorry, we could not find a user that goes by \"" + cc.getArgument(1) + "\".");
+                    String name = cc.getContent().substring(cc.getContent().indexOf(' ') + 1, cc.getContent().length());
+                    cc.replyWith("Sorry, we could not find a user that goes by \"" + name + "\".");
                     return;
                 }
 
@@ -60,11 +51,11 @@ public class SeenModule extends CustomModule implements IModule {
                     cc.replyWith(searchUser.getName() + " has been " + status.name().toLowerCase() + " since " + format(getLastChange(searchUser)) + '.');
                     return;
                 } catch (IllegalStateException e) {
-                    cc.replyWith("An error has occured while processing your command. Please try again later.");
+                    cc.replyWith("An error has occurred while processing your command. Please try again later.");
                     return;
                 }
             }
-        }.setUsage("!Seen @User").setDescription("See when the user was last online.").setArguments(2);
+        }.setUsage("!Seen @User").setDescription("See when the user was last online.").setArguments(2, 100);
     }
 
     @EventSubscriber
