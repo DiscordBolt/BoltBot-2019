@@ -36,7 +36,7 @@ public class DisconnectModule extends CustomModule implements IModule {
                     }
                 }
                 if (!createChannel) {
-                    cc.replyWith(cc.mentionUser() + " None of the users specified are connected to a voice channel.");
+                    cc.replyWith(cc.getUserDisplayName() + ", none of the users specified are connected to a voice channel.");
                     return;
                 }
 
@@ -47,7 +47,7 @@ public class DisconnectModule extends CustomModule implements IModule {
                     u.moveToVoiceChannel(temp);
                 }
                 temp.delete();
-                cc.replyWith(cc.mentionUser() + " Successfully removed users from voice channels.");
+                cc.replyWith(cc.getUserDisplayName() + ", successfully removed users from voice channels.");
             }
         }.setAliases("dis").setPermissions(Permissions.VOICE_MOVE_MEMBERS).setUsage("!Disconnect @User1 @User2").setDescription("Disconnect user(s) from their voice channel.");
     }

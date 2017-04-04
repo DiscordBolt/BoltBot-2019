@@ -25,7 +25,7 @@ public class MessageHandler {
             @Override
             public void execute(CommandContext cc) {
                 if (cc.getMentions().size() > 0 || cc.getMessage().getChannelMentions().size() > 0){
-                    cc.replyWith(cc.mentionUser() + ", you should not mention any users in this command.");
+                    cc.replyWith(cc.getUserDisplayName() + ", you should not mention any users in this command.");
                     return;
                 }
 
@@ -33,14 +33,14 @@ public class MessageHandler {
                 String channelName = cc.combineArgs(1, cc.getArgCount() - 1).replaceAll("(?i)-Private", "").replaceAll("(?i)-P", "").trim();
 
                 if (channelName.length() < 2 || channelName.length() > 100) {
-                    cc.replyWith(cc.mentionUser() + ", your channel name must be between 2 and 100 characters long.");
+                    cc.replyWith(cc.getUserDisplayName() + ", your channel name must be between 2 and 100 characters long.");
                     return;
                 }
 
                 try {
                     ChannelManager.createChannel(client, cc.getUser(), channelName, cc.getGuild(), privateChannel);
                 } catch (DuplicateChannelException ex) {
-                    cc.replyWith(cc.mentionUser() + ", you already own a temporary channel, delete it with !Delete");
+                    cc.replyWith(cc.getUserDisplayName() + ", you already own a temporary channel, delete it with !Delete");
                 }
             }
         }.setArguments(2, 100).setUsage("!Create -Private [Channel Name]").setDescription("");
@@ -54,17 +54,17 @@ public class MessageHandler {
                 TemporaryChannel ch = ChannelManager.getChannel(cc.getUser());
 
                 if (ch == null) {
-                    cc.replyWith(cc.mentionUser() + ", you do not currently have a temporary voice channel. Create one with !Create");
+                    cc.replyWith(cc.getUserDisplayName() + ", you do not currently have a temporary voice channel. Create one with !Create");
                     return;
                 }
 
                 if (!ch.isPrivate()) {
-                    cc.replyWith(cc.mentionUser() + ", your temporary voice channel isn't private.");
+                    cc.replyWith(cc.getUserDisplayName() + ", your temporary voice channel isn't private.");
                     return;
                 }
 
                 if (cc.getMentions().size() < 1) {
-                    cc.replyWith(cc.mentionUser() + ", no users were @Mentioned in your message.");
+                    cc.replyWith(cc.getUserDisplayName() + ", no users were @Mentioned in your message.");
                     return;
                 }
 
@@ -82,12 +82,12 @@ public class MessageHandler {
             @Override
             public void execute(CommandContext cc) {
                 if (ChannelManager.getChannel(cc.getUser()) == null) {
-                    cc.replyWith(cc.mentionUser() + ", you do not have a temporary voice channel.");
+                    cc.replyWith(cc.getUserDisplayName() + ", you do not have a temporary voice channel.");
                     return;
                 }
 
                 ChannelManager.removeChannel(ChannelManager.getChannel(cc.getUser()));
-                cc.replyWith(cc.mentionUser() + ", successfully deleted your temporary channel.");
+                cc.replyWith(cc.getUserDisplayName() + ", successfully deleted your temporary channel.");
             }
         }.setArguments(1).setUsage("!Delete").setDescription("Delete your temporary voice channel.");
     }
