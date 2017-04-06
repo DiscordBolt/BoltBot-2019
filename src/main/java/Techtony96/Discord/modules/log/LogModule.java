@@ -4,10 +4,10 @@ import Techtony96.Discord.api.CustomModule;
 import Techtony96.Discord.utils.ChannelUtil;
 import Techtony96.Discord.utils.Logger;
 import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.api.internal.json.event.GuildMemberAddEventResponse;
-import sx.blah.discord.api.internal.json.event.GuildMemberRemoveEventResponse;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEvent;
+import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
+import sx.blah.discord.handle.impl.events.guild.member.UserLeaveEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.modules.IModule;
@@ -45,13 +45,13 @@ public class LogModule extends CustomModule implements IModule {
     }
 
     @EventSubscriber
-    public void onUserLeave(GuildMemberRemoveEventResponse e) {
-        ChannelUtil.sendMessage(logChannel, e.user.username + " left the server.");
+    public void onUserLeave(UserLeaveEvent e) {
+        ChannelUtil.sendMessage(logChannel, e.getUser().getName() + " left the server.");
     }
 
     @EventSubscriber
-    public void onUserLJoin(GuildMemberAddEventResponse e) {
-        ChannelUtil.sendMessage(logChannel, e.user.username + " joined the server.");
+    public void onUserLJoin(UserJoinEvent e) {
+        ChannelUtil.sendMessage(logChannel, e.getUser().getName() + " joined the server.");
     }
 
     private String formatName(IUser user) {

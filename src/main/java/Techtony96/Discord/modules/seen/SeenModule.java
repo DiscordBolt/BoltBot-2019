@@ -42,7 +42,7 @@ public class SeenModule extends CustomModule implements IModule {
 
                 if (searchUser == null) {
                     String name = cc.getContent().substring(cc.getContent().indexOf(' ') + 1, cc.getContent().length());
-                    cc.replyWith("Sorry, we could not find a user that goes by \"" + name + "\".");
+                    cc.replyWith("Sorry, we could not find \"" + name + "\".");
                     return;
                 }
 

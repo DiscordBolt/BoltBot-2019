@@ -30,7 +30,7 @@ public class DisconnectModule extends CustomModule implements IModule {
                 }
                 boolean createChannel = false;
                 for (IUser u : cc.getMentions()) {
-                    if (u.getConnectedVoiceChannels().size() > 0) {
+                    if (u.getVoiceStateForGuild(cc.getGuild()).getChannel() != null) {
                         createChannel = true;
                         break;
                     }
@@ -42,7 +42,7 @@ public class DisconnectModule extends CustomModule implements IModule {
 
                 IVoiceChannel temp = cc.getGuild().createVoiceChannel("Disconnect");
                 for (IUser u : cc.getMentions()) {
-                    if (u.getConnectedVoiceChannels().size() < 0)
+                    if (u.getVoiceStateForGuild(cc.getGuild()).getChannel() != null)
                         continue;
                     u.moveToVoiceChannel(temp);
                 }
