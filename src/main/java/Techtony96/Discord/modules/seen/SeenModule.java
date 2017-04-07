@@ -42,13 +42,13 @@ public class SeenModule extends CustomModule implements IModule {
 
                 if (searchUser == null) {
                     String name = cc.getContent().substring(cc.getContent().indexOf(' ') + 1, cc.getContent().length());
-                    cc.replyWith("Sorry, we could not find \"" + name + "\".");
+                    cc.replyWith("Sorry, I could not find \"" + name + "\".");
                     return;
                 }
 
                 StatusType status = searchUser.getPresence().getStatus();
                 try {
-                    cc.replyWith(searchUser.getName() + " has been " + status.name().toLowerCase() + " since " + format(getLastChange(searchUser)) + '.');
+                    cc.replyWith(searchUser.getName() + " has been " + status.name().toLowerCase().replace("dnd", "do not disturb") + " since " + format(getLastChange(searchUser)) + '.');
                     return;
                 } catch (IllegalStateException e) {
                     cc.replyWith("An error has occurred while processing your command. Please try again later.");
