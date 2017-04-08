@@ -2,6 +2,7 @@ package Techtony96.Discord.api.commands;
 
 import Techtony96.Discord.api.list.ArgList;
 import Techtony96.Discord.utils.ChannelUtil;
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
@@ -81,5 +82,9 @@ public class CommandContext {
 
     public void replyWith(String message) {
         ChannelUtil.sendMessage(getChannel(), message);
+    }
+
+    public void replyWith(EmbedObject embedObject) {
+        ChannelUtil.sendMessage(getChannel(), embedObject);
     }
 }

@@ -4,6 +4,7 @@ import Techtony96.Discord.api.CustomModule;
 import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.api.mysql.MySQL;
+import Techtony96.Discord.utils.ExceptionMessage;
 import Techtony96.Discord.utils.Logger;
 import Techtony96.Discord.utils.UserUtil;
 import org.ocpsoft.prettytime.PrettyTime;
@@ -51,7 +52,7 @@ public class SeenModule extends CustomModule implements IModule {
                     cc.replyWith(searchUser.getName() + " has been " + status.name().toLowerCase().replace("dnd", "do not disturb") + " since " + format(getLastChange(searchUser)) + '.');
                     return;
                 } catch (IllegalStateException e) {
-                    cc.replyWith("An error has occurred while processing your command. Please try again later.");
+                    cc.replyWith(ExceptionMessage.COMMAND_PROCESS_EXCEPTION);
                     return;
                 }
             }
@@ -81,7 +82,12 @@ public class SeenModule extends CustomModule implements IModule {
     private void updateUsers() {
         for (IGuild guild : client.getGuilds()) {
             for (IUser user : guild.getUsers()) {
-                updateUser(user);
+                try {
+                    updateUser(user);
+                } catch (IllegalStateException e) {
+
+                }
+
             }
         }
     }

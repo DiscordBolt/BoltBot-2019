@@ -2,7 +2,7 @@ package Techtony96.Discord.utils;
 
 public class Logger {
 
-    private static boolean debug = true;
+    private static boolean debug = false;
 
     public static void debug(Exception e) {
         if (debug) {
@@ -28,3 +28,5 @@ public class Logger {
         System.out.println("[Warning] " + s);
     }
 }
+
+// embed.withFooterText("Requested by: " + user.getName() + "#" + user.getDiscriminator() + " at " + new SimpleDateFormat("EEE MMM d, yyyy 'at' h:mm a").format(new Date()));

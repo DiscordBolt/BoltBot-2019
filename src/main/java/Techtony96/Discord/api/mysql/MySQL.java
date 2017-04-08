@@ -1,5 +1,6 @@
 package Techtony96.Discord.api.mysql;
 
+import Techtony96.Discord.utils.Logger;
 import com.mysql.cj.jdbc.MysqlDataSource;
 
 import java.io.File;
@@ -27,7 +28,7 @@ public class MySQL {
                ds.setUser(props.getProperty("MYSQL_DB_USERNAME"));
                ds.setPassword(props.getProperty("MYSQL_DB_PASSWORD"));
            } catch (IOException e) {
-               e.printStackTrace();
+               Logger.debug(e);
            }
        }
        return ds.getConnection();
