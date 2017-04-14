@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public class ArgList extends ArrayList<String> {
 
-    public ArgList(String[] args){
+    public ArgList(String[] args) {
         for (String s : args)
             add(s);
     }

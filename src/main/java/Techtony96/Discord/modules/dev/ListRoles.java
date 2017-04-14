@@ -1,27 +1,17 @@
 package Techtony96.Discord.modules.dev;
 
-import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
-import sx.blah.discord.api.IDiscordClient;
+import Techtony96.Discord.api.commands.BotCommand;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.Permissions;
 
 /**
  * Created by Tony on 2/25/2017.
  */
-public class ListRoles extends BotCommand {
+public class ListRoles {
 
-    public ListRoles(IDiscordClient client) {
-        super(client, "ListRoles");
-        setDescription("List the roles of the guild and their ID.");
-        setUsage("!ListRoles");
-        setArguments(1);
-        setPermissions(Permissions.MANAGE_ROLES);
-    }
-
-    @Override
-    public void execute(CommandContext cc) {
-
+    @BotCommand(command = "ListRoles", description = "List the roles of the guild and their ID.", usage = "!ListRoles", permissions = Permissions.MANAGE_ROLES)
+    public static void listRolesCommand(CommandContext cc) {
         StringBuilder sb = new StringBuilder(String.format("|%-20s|%-18s|%n", "Role", "ID"));
         sb.append("+--------------------+------------------+\n");
         for (IRole r : cc.getGuild().getRoles()) {

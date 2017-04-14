@@ -62,7 +62,8 @@ public class TemporaryChannel {
                 lockChannel();
                 client.getOrCreatePMChannel(owner).sendMessage("Use !Add @User to give a user permission to join your voice channel!");
             }
-            owner.moveToVoiceChannel(channel);
+            if (owner.getVoiceStateForGuild(channel.getGuild()).getChannel() != null)
+                owner.moveToVoiceChannel(channel);
         } catch (RateLimitException e) {
             Logger.error(ExceptionMessage.API_LIMIT);
             Logger.debug(e);

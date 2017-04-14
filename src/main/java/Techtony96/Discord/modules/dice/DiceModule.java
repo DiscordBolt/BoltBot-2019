@@ -1,20 +1,16 @@
 package Techtony96.Discord.modules.dice;
 
 import Techtony96.Discord.api.CustomModule;
-import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
+import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.utils.ChannelUtil;
 import Techtony96.Discord.utils.ExceptionMessage;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.modules.IModule;
 import sx.blah.discord.util.EmbedBuilder;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
@@ -23,48 +19,42 @@ import java.util.regex.Pattern;
  */
 public class DiceModule extends CustomModule implements IModule {
 
-    private final Pattern DIE_PATTERN = Pattern.compile("([dD]*[0-9]+)");
-    private final String HEADS_URL = "http://i.imgur.com/i68ZFNG.png";
-    private final String TAILS_URL = "http://i.imgur.com/nml8Sfx.png";
-    private final String DIE_URL_1 = "http://i.imgur.com/DVVjp7w.png";
-    private final String DIE_URL_2 = "http://i.imgur.com/VcRv20t.png";
-    private final String DIE_URL_3 = "http://i.imgur.com/rUdUe5L.png";
-    private final String DIE_URL_4 = "http://i.imgur.com/1JGHyXF.png";
-    private final String DIE_URL_5 = "http://i.imgur.com/KYgqzWC.png";
-    private final String DIE_URL_6 = "http://i.imgur.com/Exx1Pmz.png";
+    private static final Pattern DIE_PATTERN = Pattern.compile("([dD]*[0-9]+)");
+    private static final String HEADS_URL = "http://i.imgur.com/i68ZFNG.png";
+    private static final String TAILS_URL = "http://i.imgur.com/nml8Sfx.png";
+    private static final String DIE_URL_1 = "http://i.imgur.com/DVVjp7w.png";
+    private static final String DIE_URL_2 = "http://i.imgur.com/VcRv20t.png";
+    private static final String DIE_URL_3 = "http://i.imgur.com/rUdUe5L.png";
+    private static final String DIE_URL_4 = "http://i.imgur.com/1JGHyXF.png";
+    private static final String DIE_URL_5 = "http://i.imgur.com/KYgqzWC.png";
+    private static final String DIE_URL_6 = "http://i.imgur.com/Exx1Pmz.png";
 
     public DiceModule() {
         super("Dice Module", "1.0");
     }
 
-    @EventSubscriber
-    public void onReady(ReadyEvent e) {
-        new BotCommand(client, "roll") {
-
-            @Override
-            public void execute(CommandContext cc) {
-                for (String arg : cc.getArguments()) {
-                    if (DIE_PATTERN.matcher(arg).find()) {
-                        int die = -1;
-                        try {
-                            die = Integer.valueOf(arg.replaceAll("([dD])", ""));
-                        } catch (NumberFormatException e) {
-                            cc.replyWith(ExceptionMessage.COMMAND_PROCESS_EXCEPTION);
-                            return;
-                        }
-
-                        if (die < 2) {
-                            cc.replyWith(die + " is not a valid number.");
-                        } else if (die == 2) {
-                            cc.replyWith(getCoinEmbed());
-                        } else {
-                            cc.replyWith(getDieEmbed(die));
-                        }
-                        return;
-                    }
+    @BotCommand(command = "roll", description = "Roll a die!", usage = "!Roll d##")
+    public static void rollCommand(CommandContext cc) {
+        for (String arg : cc.getArguments()) {
+            if (DIE_PATTERN.matcher(arg).find()) {
+                int die = -1;
+                try {
+                    die = Integer.valueOf(arg.replaceAll("([dD])", ""));
+                } catch (NumberFormatException e) {
+                    cc.replyWith(ExceptionMessage.COMMAND_PROCESS_EXCEPTION);
+                    return;
                 }
+
+                if (die < 2) {
+                    cc.replyWith(die + " is not a valid number.");
+                } else if (die == 2) {
+                    cc.replyWith(getCoinEmbed());
+                } else {
+                    cc.replyWith(getDieEmbed(die));
+                }
+                return;
             }
-        }.setUsage("!Roll d##").setArguments(2);
+        }
     }
 
     @EventSubscriber
@@ -74,11 +64,11 @@ public class DiceModule extends CustomModule implements IModule {
         }
     }
 
-    private int random(int min, int max) {
+    private static int random(int min, int max) {
         return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
-    private EmbedObject getCoinEmbed() {
+    private static EmbedObject getCoinEmbed() {
         boolean heads = random(1, 2) == 1;
 
         EmbedBuilder embed = new EmbedBuilder();
@@ -88,7 +78,7 @@ public class DiceModule extends CustomModule implements IModule {
         return embed.build();
     }
 
-    private EmbedObject getDieEmbed(int max) {
+    private static EmbedObject getDieEmbed(int max) {
         int result = random(1, max);
 
         EmbedBuilder embed = new EmbedBuilder();
