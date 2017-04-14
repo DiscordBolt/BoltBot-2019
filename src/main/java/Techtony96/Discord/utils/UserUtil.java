@@ -14,7 +14,7 @@ public class UserUtil {
         }
 
         String name = msg.getContent().substring(startIndex, msg.getContent().length());
-        for (IUser user : msg.getGuild().getUsers()){
+        for (IUser user : msg.getGuild().getUsers()) {
             if (user.getName().equalsIgnoreCase(name) || user.getDisplayName(msg.getGuild()).equalsIgnoreCase(name))
                 return user;
         }

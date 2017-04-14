@@ -16,11 +16,13 @@ import java.util.List;
 public class CommandContext {
 
     private IMessage message;
+    private CustomCommand customCommand;
     private String command;
     private ArgList arguments;
 
-    public CommandContext(IMessage message) {
+    public CommandContext(CustomCommand bc, IMessage message) {
         this.message = message;
+        this.customCommand = bc;
         command = getContent().substring(1, getContent().contains(" ") ? getContent().indexOf(" ") : getContent().length());
         arguments = new ArgList(getContent().split(" "));
     }
@@ -41,7 +43,9 @@ public class CommandContext {
         return getUser().mention();
     }
 
-    public String getUserDisplayName() { return getUser().getDisplayName(getGuild()); }
+    public String getUserDisplayName() {
+        return getUser().getDisplayName(getGuild());
+    }
 
     public List<IUser> getMentions() {
         return getMessage().getMentions();
@@ -71,9 +75,9 @@ public class CommandContext {
         return arguments;
     }
 
-    public String combineArgs(int lowIndex, int highIndex){
+    public String combineArgs(int lowIndex, int highIndex) {
         StringBuilder sb = new StringBuilder();
-        for (int i = lowIndex; i <= highIndex; i++){
+        for (int i = lowIndex; i <= highIndex; i++) {
             sb.append(getArgument(i)).append(' ');
         }
         sb.deleteCharAt(sb.length() - 1);
@@ -86,5 +90,9 @@ public class CommandContext {
 
     public void replyWith(EmbedObject embedObject) {
         ChannelUtil.sendMessage(getChannel(), embedObject);
+    }
+
+    public void sendUsage() {
+        customCommand.sendUsage(this, false);
     }
 }

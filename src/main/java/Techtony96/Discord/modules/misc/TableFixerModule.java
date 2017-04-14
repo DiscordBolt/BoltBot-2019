@@ -1,11 +1,8 @@
-package Techtony96.Discord.modules.tablefixer;
+package Techtony96.Discord.modules.misc;
 
 import Techtony96.Discord.api.CustomModule;
-import Techtony96.Discord.api.commands.BotCommand;
-import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.utils.ChannelUtil;
 import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.modules.IModule;
 

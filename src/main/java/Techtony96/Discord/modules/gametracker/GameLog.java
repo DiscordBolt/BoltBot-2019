@@ -48,9 +48,9 @@ public class GameLog {
             ps.setTimestamp(4, new Timestamp(endTime));
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            Logger.error(e.getMessage());
+            Logger.error("Unable to insert " + user.getName() + "'s gamelog into the database.");
             Logger.debug(e);
-            throw new IllegalStateException("The MySQL Query could not be completed.", e);
+            return false;
         }
     }
 
@@ -68,9 +68,9 @@ public class GameLog {
             ps.setString(2, user.getName());
             return ps.executeUpdate();
         } catch (SQLException e) {
-            Logger.error(e.getMessage());
+            Logger.error("Unable to add " + user.getName() + " to the database.");
             Logger.debug(e);
-            throw new IllegalStateException("The MySQL Query could not be completed.", e);
+            return -1;
         }
     }
 
@@ -87,9 +87,9 @@ public class GameLog {
             ps.setString(1, gameTitle);
             return ps.executeUpdate();
         } catch (SQLException e) {
-            Logger.error(e.getMessage());
+            Logger.error("Unable to add " + gameTitle + " to the database.");
             Logger.debug(e);
-            throw new IllegalStateException("The MySQL Query could not be completed.", e);
+            return -1;
         }
     }
 }
