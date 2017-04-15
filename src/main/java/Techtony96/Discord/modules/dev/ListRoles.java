@@ -10,7 +10,7 @@ import sx.blah.discord.handle.obj.Permissions;
  */
 public class ListRoles {
 
-    @BotCommand(command = "ListRoles", description = "List the roles of the guild and their ID.", usage = "!ListRoles", permissions = Permissions.MANAGE_ROLES)
+    @BotCommand(command = "ListRoles", module = "dev", description = "List the roles of the guild and their ID.", usage = "!ListRoles", permissions = Permissions.MANAGE_ROLES)
     public static void listRolesCommand(CommandContext cc) {
         StringBuilder sb = new StringBuilder(String.format("|%-20s|%-18s|%n", "Role", "ID"));
         sb.append("+--------------------+------------------+\n");

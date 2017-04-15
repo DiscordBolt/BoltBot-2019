@@ -14,10 +14,10 @@ import sx.blah.discord.modules.IModule;
 public class DisconnectModule extends CustomModule implements IModule {
 
     public DisconnectModule() {
-        super("Disconnect", "1.1");
+        super("Disconnect Module", "1.1");
     }
 
-    @BotCommand(command = "disconnect", aliases = "dis", description = "Disconnect user(s) from their voice channel.", usage = "!Disconnect @User1 @User2", permissions = Permissions.VOICE_MOVE_MEMBERS)
+    @BotCommand(command = "disconnect", module = "Disconnect Module", aliases = "dis", description = "Disconnect user(s) from their voice channel.", usage = "!Disconnect @User1 @User2", permissions = Permissions.VOICE_MOVE_MEMBERS)
     public static void disconnectCommand(CommandContext cc) {
         if (cc.getMessage().getMentions().size() < 1) {
             cc.sendUsage();

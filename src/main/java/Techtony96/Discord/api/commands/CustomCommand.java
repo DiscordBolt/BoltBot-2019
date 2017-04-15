@@ -1,5 +1,6 @@
 package Techtony96.Discord.api.commands;
 
+import Techtony96.Discord.api.CustomModule;
 import Techtony96.Discord.utils.ChannelUtil;
 import Techtony96.Discord.utils.ExceptionMessage;
 import Techtony96.Discord.utils.Logger;
@@ -24,6 +25,7 @@ public class CustomCommand {
 
     private String name;
     private Method execute;
+    private String module;
     private String description = "";
     private String usage = "";
     private Set<String> aliases = new HashSet<>();
@@ -37,6 +39,7 @@ public class CustomCommand {
         BotCommand annotation = method.getAnnotation(BotCommand.class);
         setCommand(annotation.command());
         setMethod(method);
+        setModule(annotation.module());
         setDescription(annotation.description());
         setUsage(annotation.usage());
         setAliases(annotation.aliases());
@@ -55,6 +58,11 @@ public class CustomCommand {
 
     public CustomCommand setMethod(Method method) {
         this.execute = method;
+        return this;
+    }
+
+    public CustomCommand setModule(String module) {
+        this.module = module;
         return this;
     }
 
@@ -112,6 +120,10 @@ public class CustomCommand {
 
     public String getName() {
         return name;
+    }
+
+    public String getModule() {
+        return module;
     }
 
     public String getDescription() {

@@ -1,9 +1,14 @@
 package Techtony96.Discord.api;
 
+import Techtony96.Discord.api.commands.CommandManager;
+import Techtony96.Discord.api.commands.CustomCommand;
 import Techtony96.Discord.utils.Logger;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Tony on 12/24/2016.

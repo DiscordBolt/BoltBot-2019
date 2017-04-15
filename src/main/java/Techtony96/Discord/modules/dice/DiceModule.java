@@ -33,7 +33,7 @@ public class DiceModule extends CustomModule implements IModule {
         super("Dice Module", "1.0");
     }
 
-    @BotCommand(command = "roll", description = "Roll a die!", usage = "!Roll d##")
+    @BotCommand(command = "roll", module = "Dice Module", description = "Roll a die!", usage = "!Roll d##")
     public static void rollCommand(CommandContext cc) {
         for (String arg : cc.getArguments()) {
             if (DIE_PATTERN.matcher(arg).find()) {
