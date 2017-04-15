@@ -17,10 +17,16 @@ public class HelpModule extends CustomModule implements IModule {
         super("Help Module", "1.1");
     }
 
-    @BotCommand(command = "help", aliases = "h", module = "Help Module", description = "View all available commands.", usage = "!Help")
+    @BotCommand(command = "help", aliases = "h", module = "Help Module", description = "View all available commands.", usage = "!Help [All]")
     public static void helpCommand(CommandContext cc) {
         String currentModule = "";
         boolean first = true;
+        boolean all = false;
+        if (cc.getArgCount() >= 2) {
+            all = cc.getArgument(1).equalsIgnoreCase("all");
+        }
+
+
         EmbedBuilder embed = new EmbedBuilder();
         StringBuilder sb = new StringBuilder();
 
@@ -29,7 +35,7 @@ public class HelpModule extends CustomModule implements IModule {
 
         for (CustomCommand command : CommandManager.getCommands()) {
             // Check if the user has permission for the command.
-            if (!cc.getUser().getPermissionsForGuild(cc.getGuild()).containsAll(command.getPermissionss()))
+            if (!(all || cc.getUser().getPermissionsForGuild(cc.getGuild()).containsAll(command.getPermissionss())))
                 continue;
 
             if (!currentModule.equalsIgnoreCase(command.getModule())) {
