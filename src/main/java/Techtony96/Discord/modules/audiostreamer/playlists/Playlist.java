@@ -47,28 +47,34 @@ public class Playlist {
         return songs;
     }
 
-    public void addContributor(IUser user) {
+    public void addContributor(IUser user) throws IllegalArgumentException {
+        if (contributors.contains(user))
+            throw new IllegalArgumentException(user.getName() + " is already a contributor to " + title + ".");
         contributors.add(user.getID());
         PlaylistManager.writePlaylistFile(this);
     }
 
-    public void removeContributor(IUser user) {
-        contributors.remove(user);
+    public void removeContributor(IUser user) throws IllegalArgumentException {
+        if (contributors.remove(user) == false)
+            throw new IllegalArgumentException(user.getName() + " is not a contributor to " + title + ".");
         PlaylistManager.writePlaylistFile(this);
     }
 
-    public void addSong(Song song) {
+    public Song addSong(Song song) {
         songs.add(song);
         PlaylistManager.writePlaylistFile(this);
+        return song;
     }
 
-    public void removeSong(Song song) {
+    public Song removeSong(Song song) {
         songs.remove(song);
         PlaylistManager.writePlaylistFile(this);
+        return song;
     }
 
-    public void removeSong(int index) {
-        songs.remove(index);
+    public Song removeSong(int index) {
+        Song s = songs.remove(index);
         PlaylistManager.writePlaylistFile(this);
+        return s;
     }
 }
