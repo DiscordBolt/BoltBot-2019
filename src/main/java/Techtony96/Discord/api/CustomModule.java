@@ -15,7 +15,7 @@ import java.util.List;
  */
 public abstract class CustomModule {
 
-    protected IDiscordClient client;
+    private static IDiscordClient client;
     private String moduleName;
     private String moduleVersion;
     private String moduleMinimumVersion = "2.7.0";
@@ -57,7 +57,7 @@ public abstract class CustomModule {
         return moduleVersion;
     }
 
-    public IDiscordClient getClient() {
+    public static IDiscordClient getClient() {
         return client;
     }
 
