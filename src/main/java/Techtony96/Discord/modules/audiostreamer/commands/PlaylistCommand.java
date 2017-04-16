@@ -2,7 +2,7 @@ package Techtony96.Discord.modules.audiostreamer.commands;
 
 import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
-import Techtony96.Discord.modules.audiostreamer.playlists.PlayList;
+import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
 import Techtony96.Discord.utils.ExceptionMessage;
 
 /**
@@ -18,7 +18,7 @@ public class PlaylistCommand {
      * @param plName the name of the PlayList that the called wants returned
      * @return the PlayList object corresponding to the passed name
      */
-    private static PlayList getPl(String plName) {
+    private static Playlist getPl(String plName) {
         return null;
     }
 
@@ -52,7 +52,7 @@ public class PlaylistCommand {
             cc.sendUsage();
         }
         String instruction = cc.getArgument(1);
-        PlayList current = null;
+        Playlist current = null;
         if (instruction.equalsIgnoreCase("view")) {
             if (current == null) {
                 cc.replyWith(NOPLSELECTED);
@@ -71,7 +71,7 @@ public class PlaylistCommand {
         } else if (instruction.equalsIgnoreCase("add")) {
 
         } else if (instruction.equalsIgnoreCase("remove")) {
-            
+
         }
 
 //        if (cc.getMessage().getMentions().size() < 1) {
