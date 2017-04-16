@@ -1,6 +1,7 @@
 package Techtony96.Discord.modules.audiostreamer.playlists;
 
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
+import Techtony96.Discord.utils.Logger;
 import Techtony96.Discord.utils.UserUtil;
 import com.google.gson.Gson;
 import sx.blah.discord.handle.obj.IGuild;
@@ -26,17 +27,18 @@ public class PlaylistManager {
     private HashSet<Playlist> playlists = new HashSet<>();
 
     public PlaylistManager() {
-
         try {
             Files.walk(PLAYLIST_DIRECTORY).forEach(p -> {
                 try {
                     playlists.add(g.fromJson(new FileReader(p.toFile()), Playlist.class));
                 } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                    Logger.error("Unable to load playlist \"" + p.getFileName().toString() + "\"");
+                    Logger.debug(e);
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("Unable to walk playlist directory.");
+            Logger.debug(e);
         }
     }
 
@@ -46,16 +48,8 @@ public class PlaylistManager {
 
         Playlist pl = new Playlist(title, owner, guild);
 
-        //TODO save playlist to file
-        File file = getPlaylistPath(title).toFile();
-        try {
-            file.createNewFile();
-            FileWriter fw = new FileWriter(file);
-            fw.write(g.toJson(pl));
-            fw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Saves the playlist to disk
+        writePlaylistFile(pl);
 
         playlists.add(pl);
         return pl;
@@ -69,7 +63,7 @@ public class PlaylistManager {
         if (!UserUtil.hasRole(requestor, playlist.get().getGuild(), AudioStreamer.ADMIN_ROLE) || !playlist.get().getOwner().getID().equals(requestor.getID()))
             throw new IllegalArgumentException(requestor.getName() + " is not the owner of this playlist!");
 
-        // TODO delete playlist file
+        getPlaylistPath(title).toFile().delete();
         return playlists.removeIf(p -> p.getTitle().equalsIgnoreCase(title));
     }
 
@@ -90,5 +84,18 @@ public class PlaylistManager {
 
     private static Path getPlaylistPath(String title) {
         return Paths.get(PLAYLIST_DIRECTORY.toString(), title + ".json");
+    }
+
+    protected static void writePlaylistFile(Playlist playlist) {
+        File file = getPlaylistPath(playlist.getTitle()).toFile();
+        try {
+            file.createNewFile();
+            FileWriter fw = new FileWriter(file);
+            fw.write(g.toJson(playlist));
+            fw.close();
+        } catch (IOException e) {
+            Logger.error("Unable to write playlist \"" + playlist.getTitle() + "\" to file.");
+            Logger.debug(e);
+        }
     }
 }

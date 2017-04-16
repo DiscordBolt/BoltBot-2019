@@ -5,6 +5,7 @@ import Techtony96.Discord.modules.audiostreamer.songs.Song;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,7 +19,7 @@ public class Playlist {
     private String ownerID;
     private String guildID;
     private Set<String> contributors = new HashSet<>();
-    private Set<Song> songs = new HashSet<>();
+    private ArrayList<Song> songs = new ArrayList<>();
 
     Playlist(String title, IUser owner, IGuild guild) {
         this.title = title;
@@ -42,27 +43,32 @@ public class Playlist {
         return contributors.stream().map(c -> AudioStreamer.getClient().getUserByID(c)).collect(Collectors.toSet());
     }
 
-    public boolean addContributor(IUser user) {
-        // TODO update pl file
-        return contributors.add(user.getID());
-    }
-
-    public boolean removeContributor(IUser user) {
-        // TODO update pl file
-        return contributors.remove(user);
-    }
-
-    public Set<Song> getSongs() {
+    public ArrayList<Song> getSongs() {
         return songs;
     }
 
-    public boolean addSong(Song song) {
-        // TODO update pl file
-        return songs.add(song);
+    public void addContributor(IUser user) {
+        contributors.add(user.getID());
+        PlaylistManager.writePlaylistFile(this);
     }
 
-    public boolean removeSong(Song song) {
-        // TODO update pl file
-        return songs.remove(song);
+    public void removeContributor(IUser user) {
+        contributors.remove(user);
+        PlaylistManager.writePlaylistFile(this);
+    }
+
+    public void addSong(Song song) {
+        songs.add(song);
+        PlaylistManager.writePlaylistFile(this);
+    }
+
+    public void removeSong(Song song) {
+        songs.remove(song);
+        PlaylistManager.writePlaylistFile(this);
+    }
+
+    public void removeSong(int index) {
+        songs.remove(index);
+        PlaylistManager.writePlaylistFile(this);
     }
 }
