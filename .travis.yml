@@ -6,7 +6,7 @@ after_success:
 notifications:
   discord:
     channels:
-      - DISCORD_WEBHOOK_ID:DISCORD_WEBHOOK_SECRET
+      - 303270623570821120:Yl99C_bovwXSSS5HNBFh-rIJ94pbqYDcCDfgqgIsS7214OaXZOh02D8tjfDmHea7Y13S
     pull_request_template:
       - 'Build [#%{build_number}](%{build_url}) ([%{commit}](%{compare_url})) of %{repository}@%{branch} in PR [#%{pull_request_number}](%{pull_request_url}) by %{author} %{result} in %{duration}'
     branch_template:
