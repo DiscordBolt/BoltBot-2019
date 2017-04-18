@@ -3,3 +3,12 @@ jdk:
   - oraclejdk8
 after_success:
   - mvn clean test jacoco:report coveralls:report
+notifications:
+  webhooks:
+    urls:
+      - http://52.207.210.73/api/webhooks/travis-ci.php
+    on_success: always # default: always
+    on_failure: always # default: always
+    on_start: never   # default: never
+    on_cancel: always # default: always
+    on_error: always # default: always
