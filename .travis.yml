@@ -4,10 +4,11 @@ jdk:
 after_success:
   - mvn clean test jacoco:report coveralls:report
 notifications:
-  discord:
-    channels:
-      - 303270623570821120:Yl99C_bovwXSSS5HNBFh-rIJ94pbqYDcCDfgqgIsS7214OaXZOh02D8tjfDmHea7Y13S
-    pull_request_template:
-      - 'Build [#%{build_number}](%{build_url}) ([%{commit}](%{compare_url})) of %{repository}@%{branch} in PR [#%{pull_request_number}](%{pull_request_url}) by %{author} %{result} in %{duration}'
-    branch_template:
-      - 'Build [#%{build_number}](%{build_url}) ([%{commit}](%{compare_url})) of %{repository}@%{branch} by %{author} %{result} in %{duration}'
+  webhooks:
+    urls:
+      - http://52.207.210.73/api/webhooks/travis-ci.php
+    on_success: always # default: always
+    on_failure: always # default: always
+    on_start: never   # default: never
+    on_cancel: always # default: always
+    on_error: always # default: always
