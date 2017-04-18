@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  */
 public class PlaylistManager {
 
-    private static final Path PLAYLIST_DIRECTORY = Paths.get(System.getProperty("user.home"), "discord", "playlists");
+    private static final Path PLAYLIST_DIRECTORY = Paths.get(System.getProperty("user.dir"), "discord", "playlists");
     private static final Gson g = new Gson();
 
     private HashSet<Playlist> playlists = new HashSet<>();

@@ -1,4 +1,4 @@
-package Techtony96.Discord.modules.audiostreamer.songs;
+package Techtony96.Discord.modules.audiostreamer.playlists;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,5 +26,19 @@ public class Song {
 
     public Path getPath() {
         return Paths.get(path);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Song) {
+            Song that = (Song) obj;
+            return this.getId() == that.getId();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return getId().hashCode();
     }
 }

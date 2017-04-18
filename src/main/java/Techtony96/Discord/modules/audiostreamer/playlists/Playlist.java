@@ -1,13 +1,11 @@
 package Techtony96.Discord.modules.audiostreamer.playlists;
 
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
-import Techtony96.Discord.modules.audiostreamer.songs.Song;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -18,8 +16,8 @@ public class Playlist {
     private String title;
     private String ownerID;
     private String guildID;
-    private Set<String> contributors = new HashSet<>();
-    private ArrayList<Song> songs = new ArrayList<>();
+    private List<String> contributors = new ArrayList<>();
+    private List<Song> songs = new ArrayList<>();
 
     Playlist(String title, IUser owner, IGuild guild) {
         this.title = title;
@@ -39,42 +37,47 @@ public class Playlist {
         return AudioStreamer.getClient().getGuildByID(guildID);
     }
 
-    public Set<IUser> getContributors() {
-        return contributors.stream().map(c -> AudioStreamer.getClient().getUserByID(c)).collect(Collectors.toSet());
+    public ArrayList<IUser> getContributors() {
+        return contributors.stream().map(u -> AudioStreamer.getClient().getUserByID(u)).collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public ArrayList<Song> getSongs() {
+    public List<Song> getSongs() {
         return songs;
     }
 
     public void addContributor(IUser user) throws IllegalArgumentException {
         if (contributors.contains(user))
-            throw new IllegalArgumentException(user.getName() + " is already a contributor to " + title + ".");
+            throw new IllegalArgumentException(user.getName() + " is already a contributor to " + getTitle() + ".");
         contributors.add(user.getID());
         PlaylistManager.writePlaylistFile(this);
     }
 
     public void removeContributor(IUser user) throws IllegalArgumentException {
         if (contributors.remove(user) == false)
-            throw new IllegalArgumentException(user.getName() + " is not a contributor to " + title + ".");
+            throw new IllegalArgumentException(user.getName() + " is not a contributor to " + getTitle() + ".");
         PlaylistManager.writePlaylistFile(this);
     }
 
     public Song addSong(Song song) {
+        if (songs.contains(song))
+            throw new IllegalArgumentException("\"" + song.getTitle() + "\" is already in this playlist!");
         songs.add(song);
         PlaylistManager.writePlaylistFile(this);
         return song;
     }
 
     public Song removeSong(Song song) {
+        if (!songs.contains(song))
+            throw new IllegalArgumentException("\"" + song.getTitle() + "\" is not in this playlist!");
         songs.remove(song);
         PlaylistManager.writePlaylistFile(this);
         return song;
     }
 
-    public Song removeSong(int index) {
-        Song s = songs.remove(index);
+    public void removeSong(int index) {
+        if (index < 0 || index >= songs.size())
+            throw new IllegalArgumentException(index + 1 + " is not a valid index for this playlist!");
+        songs.remove(index);
         PlaylistManager.writePlaylistFile(this);
-        return s;
     }
 }

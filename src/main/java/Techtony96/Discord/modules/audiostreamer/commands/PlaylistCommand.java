@@ -5,14 +5,12 @@ import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
 import Techtony96.Discord.modules.audiostreamer.playlists.PlaylistManager;
-import Techtony96.Discord.modules.audiostreamer.songs.Song;
+import Techtony96.Discord.modules.audiostreamer.playlists.Song;
 import Techtony96.Discord.utils.ExceptionMessage;
-import sun.security.provider.SHA;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
 
 import java.util.HashMap;
-import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,29 +38,30 @@ public class PlaylistCommand {
     private static String getPLNameArgs(CommandContext cc) {
         return cc.combineArgs(2, cc.getArgCount() - 1);
     }
+
     /**
      * Has several different instructions concerning playlists
      * -view [PlayListName] | view
-     *      Replies with a lists of songs in the playlist
+     * Replies with a lists of songs in the playlist
      * -create [PlayListName]
-     *      creates a new (empty) playlist with the given name
-     *      The user that calls the method will be made the owner of the playlist
-     *      The new playlist will automatically become the selected playlist
+     * creates a new (empty) playlist with the given name
+     * The user that calls the method will be made the owner of the playlist
+     * The new playlist will automatically become the selected playlist
      * -delete [PlayListName]
-     *      deletes an entire playlist with the given name
+     * deletes an entire playlist with the given name
      * -select [PlayListName]
-     *      sets the given playlist as "selected" meaning all add, remove, share, unshare will now be in the reference frame of that one playlist
+     * sets the given playlist as "selected" meaning all add, remove, share, unshare will now be in the reference frame of that one playlist
      * -share [@user]
-     *      gives @user the ability to add songs to and remove songs from the playlist that is selected at the time of the command
+     * gives @user the ability to add songs to and remove songs from the playlist that is selected at the time of the command
      * -unshare [@user]
-     *      removes @user's ability to add songs to and remove songs from the playlist that is selected at the time of the command
+     * removes @user's ability to add songs to and remove songs from the playlist that is selected at the time of the command
      * -add [Youtube URL]
-     *      Uses URL link to add audio track to the selected playlist
-     *      gives song a unique ID number
+     * Uses URL link to add audio track to the selected playlist
+     * gives song a unique ID number
      * -remove [Song ID]
-     *      Uses unique ID to remove
+     * Uses unique ID to remove
      * -help | h
-     *      replies with usage of all the former instructions
+     * replies with usage of all the former instructions
      *
      * @param cc context concerning the issued command
      */
@@ -188,7 +187,7 @@ public class PlaylistCommand {
                 return;
             }
             cc.replyWith("Successfully removed " + mentions.get(0).getName() + " from being a contributor to playlist " + current.getTitle());
-        } else if (instruction.equalsIgnoreCase("add")) {
+        } /*else if (instruction.equalsIgnoreCase("add")) {
             if (cc.getArgCount() != 3) {
                 cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "usage: " + ADD_USAGE);
                 return;
@@ -214,7 +213,7 @@ public class PlaylistCommand {
                 return;
             }
             cc.replyWith("Successfully removed " + toRemove.getTitle() + " from " + current.getTitle() + ".");
-        } else if (instruction.equalsIgnoreCase("help") || instruction.equalsIgnoreCase("h")) {
+        } */ else if (instruction.equalsIgnoreCase("help") || instruction.equalsIgnoreCase("h")) {
             EmbedBuilder embed = new EmbedBuilder();
             embed.withColor(AudioStreamer.EMBED_COLOR);
             embed.withAuthorName("!Playlist");
@@ -228,30 +227,5 @@ public class PlaylistCommand {
             embed.appendField(ADD_USAGE, "Adds the given song to your selected playlist", false);
             embed.appendField(REMOVE_USAGE, "Removes the song at the given index from you selected playlist", false);
         }
-
-//        if (cc.getMessage().getMentions().size() < 1) {
-//            cc.sendUsage();
-//            return;
-//        }
-//        boolean createChannel = false;
-//        for (IUser u : cc.getMentions()) {
-//            if (u.getVoiceStateForGuild(cc.getGuild()).getChannel() != null) {
-//                createChannel = true;
-//                break;
-//            }
-//        }
-//        if (!createChannel) {
-//            cc.replyWith(cc.getUserDisplayName() + ", none of the users specified are connected to a voice channel.");
-//            return;
-//        }
-//
-//        IVoiceChannel temp = cc.getGuild().createVoiceChannel("Disconnect");
-//        for (IUser u : cc.getMentions()) {
-//            if (u.getVoiceStateForGuild(cc.getGuild()).getChannel() == null)
-//                continue;
-//            u.moveToVoiceChannel(temp);
-//        }
-//        temp.delete();
-//        cc.replyWith(cc.getUserDisplayName() + ", successfully removed users from voice channels.");
     }
 }
