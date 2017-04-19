@@ -22,7 +22,7 @@ import java.util.HashMap;
  */
 public class VoiceManager {
 
-    private HashMap<Long, GuildMusicManager> musicManagers = new HashMap<>();
+    private HashMap<Long, DJ> musicManagers = new HashMap<>();
     private final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
 
     public VoiceManager() {
@@ -36,11 +36,11 @@ public class VoiceManager {
         playerManager.getConfiguration();
     }
 
-    private synchronized GuildMusicManager getGuildAudioPlayer(IGuild guild) {
-        GuildMusicManager musicManager = musicManagers.get(guild.getLongID());
+    private synchronized DJ getGuildAudioPlayer(IGuild guild) {
+        DJ musicManager = musicManagers.get(guild.getLongID());
 
         if (musicManager == null) {
-            musicManager = new GuildMusicManager(playerManager);
+            musicManager = new DJ(playerManager);
             musicManagers.put(guild.getLongID(), musicManager);
         }
 
@@ -49,8 +49,21 @@ public class VoiceManager {
         return musicManager;
     }
 
+    public void join(final IVoiceChannel channel){
+        DJ musicManager = getGuildAudioPlayer(channel.getGuild());
+        musicManager.joinChannel(channel);
+    }
+
+    public void queue(final IGuild guild, final String trackURL){
+        DJ musicManager = getGuildAudioPlayer(guild);
+        musicManager.queue();
+    }
+
+
+
+
     public void loadAndPlay(final IChannel channel, final String trackUrl) {
-        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        DJ musicManager = getGuildAudioPlayer(channel.getGuild());
 
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
@@ -75,44 +88,13 @@ public class VoiceManager {
 
             @Override
             public void noMatches() {
-                ChannelUtil.sendMessage(channel, "Nothing found by " + trackUrl);
+                throw new IllegalArgumentException("Nothing found by " + trackUrl);
             }
 
             @Override
             public void loadFailed(FriendlyException exception) {
-                ChannelUtil.sendMessage(channel, "Could not play: " + exception.getMessage());
+                throw new IllegalArgumentException("Could not play: " + exception.getMessage());
             }
         });
     }
-
-    private void play(IGuild guild, GuildMusicManager musicManager, AudioTrack track) {
-        connectToFirstVoiceChannel(guild.getAudioManager());
-
-        musicManager.scheduler.queue(track);
-    }
-
-    private void skipTrack(IChannel channel) {
-        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
-        musicManager.scheduler.nextTrack();
-
-        ChannelUtil.sendMessage(channel, "Skipped to next track.");
-    }
-
-    private static void connectToFirstVoiceChannel(IAudioManager audioManager) {
-        for (IVoiceChannel voiceChannel : audioManager.getGuild().getVoiceChannels()) {
-            if (voiceChannel.isConnected()) {
-                return;
-            }
-        }
-
-        for (IVoiceChannel voiceChannel : audioManager.getGuild().getVoiceChannels()) {
-            try {
-                voiceChannel.join();
-            } catch (MissingPermissionsException e) {
-                Logger.warning("Cannot enter voice channel " + voiceChannel.getName());
-            }
-        }
-    }
-
-
 }

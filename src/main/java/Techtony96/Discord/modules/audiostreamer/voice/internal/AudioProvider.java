@@ -1,4 +1,4 @@
-package Techtony96.Discord.modules.audiostreamer.voice;
+package Techtony96.Discord.modules.audiostreamer.voice.internal;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
