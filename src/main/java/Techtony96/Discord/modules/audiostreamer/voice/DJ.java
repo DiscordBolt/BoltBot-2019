@@ -1,67 +1,105 @@
 package Techtony96.Discord.modules.audiostreamer.voice;
 
-import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.voice.internal.AudioProvider;
-import Techtony96.Discord.modules.audiostreamer.voice.internal.TrackScheduler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IVoiceChannel;
-import sx.blah.discord.util.MissingPermissionsException;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by Tony on 4/16/2017.
  */
-public class DJ {
+public class DJ extends AudioEventAdapter {
 
-    /**
-     * Audio player for the guild.
-     */
-    public final AudioPlayer player;
-    /**
-     * Track scheduler for the player.
-     */
-    public final TrackScheduler scheduler;
+    private AudioPlayer player;
+    private final BlockingQueue<AudioTrack> queue;
+    private IVoiceChannel connectedChannel;
 
-    /**
-     * Creates a player and a track scheduler.
-     *
-     * @param manager Audio player manager to use for creating the player.
-     */
-    public DJ(AudioPlayerManager manager) {
-        player = manager.createPlayer();
-        scheduler = new TrackScheduler(player);
-        player.addListener(scheduler);
+    public DJ(IGuild guild, AudioPlayer player) {
+        this.player = player;
+        this.queue = new LinkedBlockingQueue<>();
+        player.addListener(this);
+        guild.getAudioManager().setAudioProvider(new AudioProvider(player));
+    }
+
+    public void queue(AudioTrack track) {
+        // Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
+        // something is playing, it returns false and does nothing. In that case the player was already playing so this
+        // track goes to the queue instead.
+        if (!player.startTrack(track, true)) {
+            queue.offer(track);
+        }
     }
 
     /**
-     * @return Wrapper around AudioPlayer to use it as an AudioSendHandler.
+     * Start the next track, stopping the current one if it is playing.
      */
-    public AudioProvider getAudioProvider() {
-        return new AudioProvider(player);
+    public void nextTrack() {
+        // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
+        // giving null to startTrack, which is a valid argument and will simply stop the player.
+        player.startTrack(queue.poll(), false);
     }
 
-    public void queue(AudioTrack track){
-        scheduler.queue(track);
+    public void clearQueue() {
+        queue.clear();
+        player.stopTrack();
     }
 
-    public void joinChannel(IVoiceChannel channel){
-        try {
-            channel.join();
-        } catch (MissingPermissionsException e){
-            throw new IllegalArgumentException("I do not have permissions to join your voice channel!");
+    public boolean hasTrack() {
+        return !queue.isEmpty();
+    }
+
+    @Override
+    public void onPlayerPause(AudioPlayer player) {
+        // Player was paused
+    }
+
+    @Override
+    public void onPlayerResume(AudioPlayer player) {
+        // Player was resumed
+    }
+
+    @Override
+    public void onTrackStart(AudioPlayer player, AudioTrack track) {
+        // A track started playing
+    }
+
+    @Override
+    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+        // Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
+        if (endReason.mayStartNext) {
+            nextTrack();
         }
 
+        // endReason == FINISHED: A track finished or died by an exception (mayStartNext = true).
+        // endReason == LOAD_FAILED: Loading of a track failed (mayStartNext = true).
+        // endReason == STOPPED: The player was stopped.
+        // endReason == REPLACED: Another track started playing while this had not finished
+        // endReason == CLEANUP: Player hasn't been queried for a while, if you want you can put a clone of this back to your queue
     }
 
-    public void startPlaying(){
-        if (!scheduler.hasTrack())
-            throw new IllegalStateException("There are no songs in the queue!");
-
-        scheduler.
+    @Override
+    public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
+        // An already playing track threw an exception (track end event will still be received separately)
     }
 
-    public void skipTrack(){
-        scheduler.nextTrack();
+    @Override
+    public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
+        // Audio track has been unable to provide us any audio, might want to just start a new track
+        nextTrack();
+    }
+
+    public void setConnectVoiceChannel(IVoiceChannel channel) {
+        this.connectedChannel = channel;
+    }
+
+    public IVoiceChannel getConnectedVoiceChannel() {
+        return connectedChannel;
     }
 }

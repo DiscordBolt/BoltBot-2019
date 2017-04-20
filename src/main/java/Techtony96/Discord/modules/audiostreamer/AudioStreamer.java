@@ -3,6 +3,9 @@ package Techtony96.Discord.modules.audiostreamer;
 import Techtony96.Discord.api.CustomModule;
 import Techtony96.Discord.modules.audiostreamer.playlists.PlaylistManager;
 import Techtony96.Discord.modules.audiostreamer.voice.VoiceManager;
+import Techtony96.Discord.utils.UserUtil;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.modules.IModule;
 
 import java.awt.*;
@@ -19,7 +22,7 @@ public class AudioStreamer extends CustomModule implements IModule {
     private static VoiceManager voiceManager;
 
     public AudioStreamer() {
-        super("Audio Streamer", "0.1");
+        super("Audio Streamer Module", "0.1");
         playlistManager = new PlaylistManager();
         voiceManager = new VoiceManager();
     }
@@ -30,5 +33,9 @@ public class AudioStreamer extends CustomModule implements IModule {
 
     public static VoiceManager getVoiceManager() {
         return voiceManager;
+    }
+
+    public static boolean hasAdminPermissions(IUser user, IGuild guild) {
+        return UserUtil.hasRole(user, guild, ADMIN_ROLE);
     }
 }

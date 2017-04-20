@@ -1,5 +1,7 @@
 package Techtony96.Discord.modules.audiostreamer.playlists;
 
+import Techtony96.Discord.api.commands.exceptions.CommandArgumentException;
+import Techtony96.Discord.api.commands.exceptions.CommandStateException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
@@ -45,38 +47,38 @@ public class Playlist {
         return songs;
     }
 
-    public void addContributor(IUser user) throws IllegalArgumentException {
+    public void addContributor(IUser user) throws CommandStateException {
         if (contributors.contains(user))
-            throw new IllegalArgumentException(user.getName() + " is already a contributor to " + getTitle() + ".");
+            throw new CommandStateException(user.getName() + " is already a contributor to " + getTitle() + ".");
         contributors.add(user.getID());
         PlaylistManager.writePlaylistFile(this);
     }
 
-    public void removeContributor(IUser user) throws IllegalArgumentException {
+    public void removeContributor(IUser user) throws CommandStateException {
         if (contributors.remove(user) == false)
-            throw new IllegalArgumentException(user.getName() + " is not a contributor to " + getTitle() + ".");
+            throw new CommandStateException(user.getName() + " is not a contributor to " + getTitle() + ".");
         PlaylistManager.writePlaylistFile(this);
     }
 
-    public Song addSong(Song song) {
+    public Song addSong(Song song) throws CommandStateException {
         if (songs.contains(song))
-            throw new IllegalArgumentException("\"" + song.getTitle() + "\" is already in this playlist!");
+            throw new CommandStateException("\"" + song.getTitle() + "\" is already in this playlist!");
         songs.add(song);
         PlaylistManager.writePlaylistFile(this);
         return song;
     }
 
-    public Song removeSong(Song song) {
+    public Song removeSong(Song song) throws CommandStateException {
         if (!songs.contains(song))
-            throw new IllegalArgumentException("\"" + song.getTitle() + "\" is not in this playlist!");
+            throw new CommandStateException("\"" + song.getTitle() + "\" is not in this playlist!");
         songs.remove(song);
         PlaylistManager.writePlaylistFile(this);
         return song;
     }
 
-    public void removeSong(int index) {
+    public void removeSong(int index) throws CommandArgumentException {
         if (index < 0 || index >= songs.size())
-            throw new IllegalArgumentException(index + 1 + " is not a valid index for this playlist!");
+            throw new CommandArgumentException((index + 1) + " is not a valid index for this playlist!");
         songs.remove(index);
         PlaylistManager.writePlaylistFile(this);
     }

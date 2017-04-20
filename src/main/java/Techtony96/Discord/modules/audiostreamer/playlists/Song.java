@@ -1,31 +1,31 @@
 package Techtony96.Discord.modules.audiostreamer.playlists;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 /**
  * Created by Tony on 4/15/2017.
  */
 public class Song {
 
-    private String title, id, path;
+    private String id, title = "";
 
-    Song(String id, String title, Path path) {
+    /**
+     * Create a new song with a given ID
+     *
+     * @param id the unique identifier of a song. For example, a YouTube URL
+     */
+    Song(String id) {
         this.id = id;
-        this.title = title;
-        this.path = path.toString();
-    }
-
-    public String getTitle() {
-        return title;
     }
 
     public String getId() {
         return id;
     }
 
-    public Path getPath() {
-        return Paths.get(path);
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     @Override

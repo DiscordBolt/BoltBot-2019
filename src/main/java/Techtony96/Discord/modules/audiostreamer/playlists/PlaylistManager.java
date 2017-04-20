@@ -1,5 +1,8 @@
 package Techtony96.Discord.modules.audiostreamer.playlists;
 
+import Techtony96.Discord.api.commands.exceptions.CommandArgumentException;
+import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
+import Techtony96.Discord.api.commands.exceptions.CommandStateException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.utils.Logger;
 import Techtony96.Discord.utils.UserUtil;
@@ -42,9 +45,9 @@ public class PlaylistManager {
         }
     }
 
-    public Playlist createPlaylist(String title, IUser owner, IGuild guild) {
+    public Playlist createPlaylist(String title, IUser owner, IGuild guild) throws CommandStateException {
         if (playlists.stream().filter(p -> p.getTitle().equalsIgnoreCase(title)).findAny().isPresent())
-            throw new IllegalArgumentException("There already exists a playlist with that title!");
+            throw new CommandStateException("There already exists a playlist with that title!");
 
         Playlist pl = new Playlist(title, owner, guild);
 
@@ -55,13 +58,13 @@ public class PlaylistManager {
         return pl;
     }
 
-    public boolean deletePlaylist(String title, IUser requestor) {
+    public boolean deletePlaylist(String title, IUser requestor) throws CommandArgumentException, CommandPermissionException {
         Optional<Playlist> playlist = getPlaylist(title);
         if (!playlist.isPresent())
-            throw new IllegalArgumentException("Playlist \"" + title + "\" does not exist!");
+            throw new CommandArgumentException("Playlist \"" + title + "\" does not exist!");
 
         if (!UserUtil.hasRole(requestor, playlist.get().getGuild(), AudioStreamer.ADMIN_ROLE) || !playlist.get().getOwner().getID().equals(requestor.getID()))
-            throw new IllegalArgumentException(requestor.getName() + " is not the owner of this playlist!");
+            throw new CommandPermissionException(requestor.getName() + " is not the owner of this playlist!");
 
         getPlaylistPath(title).toFile().delete();
         return playlists.removeIf(p -> p.getTitle().equalsIgnoreCase(title));
