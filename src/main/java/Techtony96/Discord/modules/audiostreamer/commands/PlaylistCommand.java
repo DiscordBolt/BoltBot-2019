@@ -2,6 +2,8 @@ package Techtony96.Discord.modules.audiostreamer.commands;
 
 import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
+import Techtony96.Discord.api.commands.exceptions.CommandException;
+import Techtony96.Discord.api.commands.exceptions.CommandStateException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
 import Techtony96.Discord.modules.audiostreamer.playlists.PlaylistManager;
@@ -118,7 +120,13 @@ public class PlaylistCommand {
                 cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "usage: " + CREATE_USAGE);
                 return;
             }
-            Playlist toCreate = manager.createPlaylist(getPLNameArgs(cc), cc.getUser(), cc.getGuild());
+            Playlist toCreate = null;
+            try {
+                toCreate = manager.createPlaylist(getPLNameArgs(cc), cc.getUser(), cc.getGuild());
+            } catch (CommandStateException e) {
+                cc.replyWith(e.getMessage());
+                return;
+            }
             selectedPlaylist.put(cc.getUser().getID(), toCreate);
             cc.replyWith("Successfully created playlist: " + toCreate.getTitle());
         } else if (instruction.equalsIgnoreCase("delete")) {
@@ -128,7 +136,7 @@ public class PlaylistCommand {
             }
             try {
                 manager.deletePlaylist(getPLNameArgs(cc), cc.getUser());
-            } catch (IllegalArgumentException e) {
+            } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
             }
@@ -161,7 +169,7 @@ public class PlaylistCommand {
             }
             try {
                 current.addContributor(mentions.get(0));
-            } catch (IllegalArgumentException e) {
+            } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
             }
@@ -182,7 +190,7 @@ public class PlaylistCommand {
             }
             try {
                 current.removeContributor(mentions.get(0));
-            } catch (IllegalArgumentException e) {
+            } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
             }
@@ -195,7 +203,7 @@ public class PlaylistCommand {
             Song toAdd;
             try {
                 toAdd = current.addSong(AudioStreamer.getSongManager().createSong(cc.getArgument(2)));
-            } catch (IllegalArgumentException e) {
+            } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
             }
@@ -208,12 +216,12 @@ public class PlaylistCommand {
             Song toRemove;
             try {
                 toRemove = current.removeSong(Integer.valueOf(cc.getArgument(2)));
-            } catch (IllegalArgumentException e) {
+            } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
             }
             cc.replyWith("Successfully removed " + toRemove.getTitle() + " from " + current.getTitle() + ".");
-        } */ else if (instruction.equalsIgnoreCase("help") || instruction.equalsIgnoreCase("h")) {
+        }*/ else if (instruction.equalsIgnoreCase("help") || instruction.equalsIgnoreCase("h")) {
             EmbedBuilder embed = new EmbedBuilder();
             embed.withColor(AudioStreamer.EMBED_COLOR);
             embed.withAuthorName("!Playlist");
@@ -226,6 +234,8 @@ public class PlaylistCommand {
             embed.appendField(UNSHARE_USAGE, "No longer allows a given user to add or remove songs from you selected playlist", false);
             embed.appendField(ADD_USAGE, "Adds the given song to your selected playlist", false);
             embed.appendField(REMOVE_USAGE, "Removes the song at the given index from you selected playlist", false);
+        } else {
+            cc.replyWith("Your command was not recognized.\nType !playlist help for more options");
         }
     }
 }
