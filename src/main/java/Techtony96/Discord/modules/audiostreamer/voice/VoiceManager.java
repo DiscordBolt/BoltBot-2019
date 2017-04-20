@@ -22,7 +22,9 @@ import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.util.MissingPermissionsException;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Tony on 4/16/2017.
@@ -76,13 +78,13 @@ public class VoiceManager {
             @Override
             public void trackLoaded(AudioTrack track) {
                 song.setTitle(track.getInfo().title);
-                dj.queue(track);
+                dj.queue(requestor, track);
             }
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
                 for (AudioTrack track : playlist.getTracks()) {
-                    dj.queue(track);
+                    dj.queue(requestor, track);
                 }
             }
 
@@ -104,16 +106,46 @@ public class VoiceManager {
         playlist.getSongs().stream().forEach(s -> queue(guild, requestor, s));
     }
 
-    public void dequeue(IGuild guild, IUser requestor, Song song) {
-        //remove the requested song from queue, if admin or put into queue
+    public void dequeue(IGuild guild, IUser requestor, Song song) throws CommandPermissionException {
+        dequeue(guild, requestor, song.getId());
     }
 
-    public void dequeue(IGuild guild, IUser requestor, Playlist playlist) {
-        //remove the requested pl from queue, if admin or put into queue
+    public void dequeue(IGuild guild, IUser requestor, String songID) throws CommandPermissionException {
+        DJ dj = getDJ(guild);
+        if (!AudioStreamer.hasAdminPermissions(requestor, guild) || !dj.getTrackOwner(songID).equals(requestor))
+            throw new CommandPermissionException("You do not have permission to remove this song!");
+        dj.removeQueue(songID);
     }
 
-    public void skip(IGuild guild, IUser requestor, boolean force) {
-        //Start vote to skip, check perms if force is true
+    public void dequeue(IGuild guild, IUser requestor, Playlist playlist) throws CommandPermissionException {
+        DJ dj = getDJ(guild);
+        if (AudioStreamer.hasAdminPermissions(requestor, guild)){
+            playlist.getSongs().forEach(s -> dj.removeQueue(s.getId()));
+            return;
+        }
+        for (Song s : playlist.getSongs())
+            dequeue(guild, requestor, s);
+    }
+
+    private Set<IUser> votesToSkip = new HashSet<>();
+
+    public boolean skip(IGuild guild, IUser requestor, boolean force) throws CommandPermissionException, CommandStateException {
+        if (force){
+            if (!AudioStreamer.hasAdminPermissions(requestor, guild))
+                throw new CommandPermissionException("You do not have permission to force skip songs!");
+            getDJ(guild).nextTrack();
+            return true;
+        }
+        if (!votesToSkip.add(requestor))
+            throw new CommandStateException("You have already voted to skip the current song!");
+        // Filter out users who have voted but are no longer connected to the voice channel
+        votesToSkip.removeIf(u -> u.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getConnectedVoiceChannel());
+        if ((double) votesToSkip.size() / (double) (getDJ(guild).getConnectedVoiceChannel().getConnectedUsers().size()-1) >= AudioStreamer.VOTE_SKIP_PERCENT){
+            getDJ(guild).nextTrack();
+            votesToSkip.clear();
+            return true;
+        }
+        return false;
     }
 
     public void pause(IGuild guild, IUser requestor) {
@@ -124,12 +156,20 @@ public class VoiceManager {
         //TODO
     }
 
-    public List<Song> getQueue(IGuild guild) {
-        return null;
+    public List<AudioTrack> getQueue(IGuild guild) {
+        return getDJ(guild).getQueue();
     }
 
-    public void setVolume(IGuild guild, IUser requestor) {
-        //check admin
+    /**
+     *
+     * @param guild
+     * @param requestor
+     * @param volume int from 0 - 100
+     */
+    public void setVolume(IGuild guild, IUser requestor, int volume) throws CommandPermissionException {
+        if (!AudioStreamer.hasAdminPermissions(requestor, guild))
+            throw new CommandPermissionException("You do not have permission to change the volume!");
+        getDJ(guild).setVolume(volume);
     }
 
 

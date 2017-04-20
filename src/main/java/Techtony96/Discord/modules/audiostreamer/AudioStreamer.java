@@ -16,6 +16,7 @@ import java.awt.*;
 public class AudioStreamer extends CustomModule implements IModule {
 
     public static final String ADMIN_ROLE = "AudioStreamerAdmin";
+    public static final double VOTE_SKIP_PERCENT = 0.40;
     public static final Color EMBED_COLOR = new Color(255, 215, 0);
 
     private static PlaylistManager playlistManager;
