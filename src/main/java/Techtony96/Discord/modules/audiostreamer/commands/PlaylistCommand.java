@@ -33,7 +33,7 @@ public class PlaylistCommand {
     private static final String ADD_USAGE = "!playlist add *YoutubeURL*.";
     private static final String REMOVE_USAGE = "!playlist remove *index*.";
 
-    private static HashMap<String, Playlist> selectedPlaylist = new HashMap<>();
+    private static HashMap<String, Playlist> selectedPlaylist = new HashMap<>();//TODO move this to PlaylistManager and clear seected playlists when a playlist is deleted.
     private static PlaylistManager manager;
 
     private static String getPLNameArgs(CommandContext cc) {
@@ -71,6 +71,7 @@ public class PlaylistCommand {
         if (cc.getArgCount() < 2) {
             cc.replyWith(ExceptionMessage.INCORRECT_USAGE);
             cc.sendUsage();
+            return;
         }
 
         manager = AudioStreamer.getPlaylistManager();
@@ -108,11 +109,11 @@ public class PlaylistCommand {
             embed.withDesc(songs.toString());
 
             StringBuilder contributors = new StringBuilder();
-            contributors.append("Contributors:");
             for (IUser c : toPrint.getContributors()) {
-                contributors.append("\n  ").append(c.getName());
+                contributors.append("\n").append(c.getName());
             }
-            embed.withFooterText("Playlist by " + toPrint.getOwner().getName() + "\n" + contributors.toString());
+            embed.appendField("Contributors", contributors.toString(), false);
+            embed.withFooterText("Playlist by " + toPrint.getOwner().getName());
             cc.replyWith(embed.build());
         } else if (instruction.equalsIgnoreCase("create")) {
             if (cc.getArgCount() < 3) {
@@ -151,7 +152,7 @@ public class PlaylistCommand {
                 return;
             }
             selectedPlaylist.put(cc.getUser().getID(), toSelect.get());
-            cc.replyWith("Successfully selected " + toSelect.get() + " as your selected playlist.");
+            cc.replyWith("Successfully selected " + toSelect.get().getTitle() + " by " + toSelect.get().getOwner().getName() + " as your selected playlist.");
         } else if (instruction.equalsIgnoreCase("share")) {
             if (cc.getArgCount() != 3) {
                 cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "usage: " + SHARE_USAGE);
@@ -167,7 +168,7 @@ public class PlaylistCommand {
                 return;
             }
             try {
-                current.addContributor(mentions.get(0));
+                current.addContributor(cc.getUser(), mentions.get(0));
             } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
@@ -188,39 +189,47 @@ public class PlaylistCommand {
                 return;
             }
             try {
-                current.removeContributor(mentions.get(0));
+                current.removeContributor(cc.getUser(), mentions.get(0));
             } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
             }
             cc.replyWith("Successfully removed " + mentions.get(0).getName() + " from being a contributor to playlist " + current.getTitle());
-        } /*else if (instruction.equalsIgnoreCase("add")) {
+        } else if (instruction.equalsIgnoreCase("add")) {
             if (cc.getArgCount() != 3) {
                 cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "usage: " + ADD_USAGE);
                 return;
             }
-            Song toAdd;
+            if (current == null) {
+                cc.replyWith(NO_PL_SELECTED);
+                return;
+            }
+
             try {
-                toAdd = current.addSong(AudioStreamer.getSongManager().createSong(cc.getArgument(2)));
+                current.addSong(cc.getUser(), cc.getArgument(2));
             } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
             }
-            cc.replyWith("Successfully added " + toAdd.getTitle() + " to " + current.getTitle() + ".");
+            cc.replyWith("Successfully added " + current.getSongTitle(cc.getArgument(2)) + " to " + current.getTitle() + ".");
         } else if (instruction.equalsIgnoreCase("remove")) {
             if (cc.getArgCount() != 3) {
                 cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "usage: " + REMOVE_USAGE);
                 return;
             }
-            Song toRemove;
+            if (current == null) {
+                cc.replyWith(NO_PL_SELECTED);
+                return;
+            }
+
             try {
-                toRemove = current.removeSong(Integer.valueOf(cc.getArgument(2)));
+                current.removeSong(cc.getUser(), cc.getArgument(2));
             } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
             }
-            cc.replyWith("Successfully removed " + toRemove.getTitle() + " from " + current.getTitle() + ".");
-        }*/ else if (instruction.equalsIgnoreCase("help") || instruction.equalsIgnoreCase("h")) {
+            cc.replyWith("Successfully removed the song from " + current.getTitle() + ".");
+        } else if (instruction.equalsIgnoreCase("help") || instruction.equalsIgnoreCase("h")) {
             EmbedBuilder embed = new EmbedBuilder();
             embed.withColor(AudioStreamer.EMBED_COLOR);
             embed.withAuthorName("!Playlist");
@@ -233,6 +242,7 @@ public class PlaylistCommand {
             embed.appendField(UNSHARE_USAGE, "No longer allows a given user to add or remove songs from you selected playlist", false);
             embed.appendField(ADD_USAGE, "Adds the given song to your selected playlist", false);
             embed.appendField(REMOVE_USAGE, "Removes the song at the given index from you selected playlist", false);
+            cc.replyWith(embed.build());
         } else {
             cc.replyWith("Your command was not recognized.\nType !playlist help for more options");
         }

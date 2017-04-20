@@ -1,5 +1,6 @@
 package Techtony96.Discord.modules.audiostreamer.playlists;
 
+import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
 import Techtony96.Discord.api.commands.exceptions.CommandStateException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import sx.blah.discord.handle.obj.IGuild;
@@ -34,6 +35,10 @@ public class Playlist {
         return AudioStreamer.getClient().getUserByID(ownerID);
     }
 
+    public String getOwnerID(){
+        return ownerID;
+    }
+
     public IGuild getGuild() {
         return AudioStreamer.getClient().getGuildByID(guildID);
     }
@@ -55,20 +60,26 @@ public class Playlist {
         PlaylistManager.writePlaylistFile(this);
     }
 
-    public void addContributor(IUser user) throws CommandStateException {
-        if (contributors.contains(user))
-            throw new CommandStateException(user.getName() + " is already a contributor to " + this.getTitle() + ".");
-        contributors.add(user.getID());
+    public void addContributor(IUser requestor, IUser contributor) throws CommandStateException, CommandPermissionException {
+        if (!ownerID.equals(requestor.getStringID()))
+            throw new CommandPermissionException("You are not allowed to add contributors to " + this.getTitle() + ".");
+        if (contributors.contains(contributor))
+            throw new CommandStateException(contributor.getName() + " is already a contributor to " + this.getTitle() + ".");
+        contributors.add(contributor.getStringID());
         PlaylistManager.writePlaylistFile(this);
     }
 
-    public void removeContributor(IUser user) throws CommandStateException {
-        if (contributors.remove(user) == false)
-            throw new CommandStateException(user.getName() + " is not a contributor to " + this.getTitle() + ".");
+    public void removeContributor(IUser requestor, IUser contributor) throws CommandStateException, CommandPermissionException {
+        if (!ownerID.equals(requestor.getStringID()))
+            throw new CommandPermissionException("You are not allowed to remove contributors from " + this.getTitle() + ".");
+        if (contributors.remove(contributor) == false)
+            throw new CommandStateException(contributor.getName() + " is not a contributor to " + this.getTitle() + ".");
         PlaylistManager.writePlaylistFile(this);
     }
 
-    public void addSong(String songID) throws CommandStateException {
+    public void addSong(IUser requestor, String songID) throws CommandStateException, CommandPermissionException {
+        if (!(ownerID.equals(requestor.getStringID()) || contributors.contains(requestor.getStringID())))
+            throw new CommandPermissionException("You are not allowed to add songs to " + this.getTitle() + ".");
         if (songs.containsKey(songID))
             throw new CommandStateException("That song is already in this playlist!");
         songs.put(songID, songID);
@@ -76,9 +87,16 @@ public class Playlist {
         PlaylistManager.writePlaylistFile(this);
     }
 
-    public void removeSong(String songID) throws CommandStateException {
+    public void removeSong(IUser requestor, String songID) throws CommandStateException, CommandPermissionException {
+        if (!(ownerID.equals(requestor.getStringID()) || contributors.contains(requestor.getStringID())))
+            throw new CommandPermissionException("You are not allowed to remove songs from " + this.getTitle() + ".");
         if (!songs.containsKey(songID))
             throw new CommandStateException("That song is not in this playlist!");
+        songs.remove(songID);
+        PlaylistManager.writePlaylistFile(this);
+    }
+
+    public void forceRemoveSong(String songID){
         songs.remove(songID);
         PlaylistManager.writePlaylistFile(this);
     }

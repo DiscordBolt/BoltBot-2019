@@ -59,20 +59,17 @@ public class PlaylistManager {
         return pl;
     }
 
-    public boolean deletePlaylist(String title, IUser requestor) throws CommandArgumentException, CommandPermissionException {
+    public boolean deletePlaylist(String title, IUser requestor) throws CommandArgumentException, CommandPermissionException, CommandStateException {
         Optional<Playlist> playlist = getPlaylist(title);
         if (!playlist.isPresent())
             throw new CommandArgumentException("Playlist \"" + title + "\" does not exist!");
 
-        if (!UserUtil.hasRole(requestor, playlist.get().getGuild(), AudioStreamer.ADMIN_ROLE) || !playlist.get().getOwner().getID().equals(requestor.getID()))
+        if (!(UserUtil.hasRole(requestor, playlist.get().getGuild(), AudioStreamer.ADMIN_ROLE) || playlist.get().getOwnerID().equals(requestor.getStringID())))
             throw new CommandPermissionException(requestor.getName() + " is not the owner of this playlist!");
 
-        getPlaylistPath(title).toFile().delete();
+        if (!getPlaylistPath(title).toFile().delete())
+            throw new CommandStateException("Unable to delete playlist file.");
         return playlists.removeIf(p -> p.getTitle().equalsIgnoreCase(title));
-    }
-
-    public Set<Playlist> getPlaylists() {
-        return playlists;
     }
 
     public Optional<Playlist> getPlaylist(String title) {
@@ -81,6 +78,10 @@ public class PlaylistManager {
 
     public Set<Playlist> getPlaylists(IUser owner) {
         return playlists.stream().filter(p -> p.getOwner().getID().equals(owner.getID())).collect(Collectors.toSet());
+    }
+
+    public Set<Playlist> getPlaylists() {
+        return playlists;
     }
 
 

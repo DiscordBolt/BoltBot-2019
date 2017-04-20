@@ -168,21 +168,13 @@ public class VoiceManager {
 
             @Override
             public void noMatches() {
-                try {
-                    playlist.removeSong(songID);
-                } catch (CommandStateException e) {
-                    // We didn't want the song in the playlist anyways
-                }
+                playlist.forceRemoveSong(songID);
                 throw new CommandRuntimeException("Could not find any media for " + songID);
             }
 
             @Override
             public void loadFailed(FriendlyException exception) {
-                try {
-                    playlist.removeSong(songID);
-                } catch (CommandStateException e) {
-                    // We didn't want the song in the playlist anyways
-                }
+                playlist.forceRemoveSong(songID);
                 if (exception.severity == FriendlyException.Severity.COMMON)
                     throw new CommandRuntimeException(exception.getMessage());
                 throw new CommandRuntimeException("An error occured while loading your song.");
