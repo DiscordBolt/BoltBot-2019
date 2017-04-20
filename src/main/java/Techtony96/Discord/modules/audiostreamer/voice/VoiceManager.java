@@ -6,7 +6,6 @@ import Techtony96.Discord.api.commands.exceptions.CommandRuntimeException;
 import Techtony96.Discord.api.commands.exceptions.CommandStateException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
-import Techtony96.Discord.modules.audiostreamer.playlists.Song;
 import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
@@ -72,12 +71,11 @@ public class VoiceManager {
         dj.clearQueue();
     }
 
-    public void queue(IGuild guild, IUser requestor, Song song) {
+    public void queue(IGuild guild, IUser requestor, String songID) {
         DJ dj = getDJ(guild);
-        playerManager.loadItemOrdered(dj, song.getId(), new AudioLoadResultHandler() {
+        playerManager.loadItemOrdered(dj, songID, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                song.setTitle(track.getInfo().title);
                 dj.queue(requestor, track);
             }
 
@@ -103,11 +101,7 @@ public class VoiceManager {
     }
 
     public void queue(IGuild guild, IUser requestor, Playlist playlist) {
-        playlist.getSongs().stream().forEach(s -> queue(guild, requestor, s));
-    }
-
-    public void dequeue(IGuild guild, IUser requestor, Song song) throws CommandPermissionException {
-        dequeue(guild, requestor, song.getId());
+        playlist.getSongIDs().stream().forEach(s -> queue(guild, requestor, s));
     }
 
     public void dequeue(IGuild guild, IUser requestor, String songID) throws CommandPermissionException {
@@ -119,18 +113,18 @@ public class VoiceManager {
 
     public void dequeue(IGuild guild, IUser requestor, Playlist playlist) throws CommandPermissionException {
         DJ dj = getDJ(guild);
-        if (AudioStreamer.hasAdminPermissions(requestor, guild)){
-            playlist.getSongs().forEach(s -> dj.removeQueue(s.getId()));
+        if (AudioStreamer.hasAdminPermissions(requestor, guild)) {
+            playlist.getSongIDs().forEach(s -> dj.removeQueue(s));
             return;
         }
-        for (Song s : playlist.getSongs())
+        for (String s : playlist.getSongIDs())
             dequeue(guild, requestor, s);
     }
 
     private Set<IUser> votesToSkip = new HashSet<>();
 
     public boolean skip(IGuild guild, IUser requestor, boolean force) throws CommandPermissionException, CommandStateException {
-        if (force){
+        if (force) {
             if (!AudioStreamer.hasAdminPermissions(requestor, guild))
                 throw new CommandPermissionException("You do not have permission to force skip songs!");
             getDJ(guild).nextTrack();
@@ -140,7 +134,7 @@ public class VoiceManager {
             throw new CommandStateException("You have already voted to skip the current song!");
         // Filter out users who have voted but are no longer connected to the voice channel
         votesToSkip.removeIf(u -> u.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getConnectedVoiceChannel());
-        if ((double) votesToSkip.size() / (double) (getDJ(guild).getConnectedVoiceChannel().getConnectedUsers().size()-1) >= AudioStreamer.VOTE_SKIP_PERCENT){
+        if ((double) votesToSkip.size() / (double) (getDJ(guild).getConnectedVoiceChannel().getConnectedUsers().size() - 1) >= AudioStreamer.VOTE_SKIP_PERCENT) {
             getDJ(guild).nextTrack();
             votesToSkip.clear();
             return true;
@@ -160,17 +154,50 @@ public class VoiceManager {
         return getDJ(guild).getQueue();
     }
 
+    public void loadSong(Playlist playlist, String songID) {
+        playerManager.loadItem(songID, new AudioLoadResultHandler() {
+            @Override
+            public void trackLoaded(AudioTrack track) {
+                playlist.setSongTitle(songID, track.getInfo().title);
+            }
+
+            @Override
+            public void playlistLoaded(AudioPlaylist audioPlaylist) {
+                audioPlaylist.getTracks().forEach(t -> playlist.setSongTitle(songID, t.getInfo().title));
+            }
+
+            @Override
+            public void noMatches() {
+                try {
+                    playlist.removeSong(songID);
+                } catch (CommandStateException e) {
+                    // We didn't want the song in the playlist anyways
+                }
+                throw new CommandRuntimeException("Could not find any media for " + songID);
+            }
+
+            @Override
+            public void loadFailed(FriendlyException exception) {
+                try {
+                    playlist.removeSong(songID);
+                } catch (CommandStateException e) {
+                    // We didn't want the song in the playlist anyways
+                }
+                if (exception.severity == FriendlyException.Severity.COMMON)
+                    throw new CommandRuntimeException(exception.getMessage());
+                throw new CommandRuntimeException("An error occured while loading your song.");
+            }
+        });
+    }
+
     /**
-     *
      * @param guild
      * @param requestor
-     * @param volume int from 0 - 100
+     * @param volume    int from 0 - 100
      */
     public void setVolume(IGuild guild, IUser requestor, int volume) throws CommandPermissionException {
         if (!AudioStreamer.hasAdminPermissions(requestor, guild))
             throw new CommandPermissionException("You do not have permission to change the volume!");
         getDJ(guild).setVolume(volume);
     }
-
-
 }

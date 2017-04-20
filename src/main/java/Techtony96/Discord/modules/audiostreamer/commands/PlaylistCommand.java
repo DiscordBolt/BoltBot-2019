@@ -7,7 +7,6 @@ import Techtony96.Discord.api.commands.exceptions.CommandStateException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
 import Techtony96.Discord.modules.audiostreamer.playlists.PlaylistManager;
-import Techtony96.Discord.modules.audiostreamer.playlists.Song;
 import Techtony96.Discord.utils.ExceptionMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
@@ -102,8 +101,8 @@ public class PlaylistCommand {
             embed.withTitle("Songs");
             StringBuilder songs = new StringBuilder();
             int index = 1;
-            for (Song s : toPrint.getSongs()) {
-                songs.append(index).append(". ").append(s.getTitle()).append('\n');
+            for (String songID : toPrint.getSongIDs()) {
+                songs.append(index).append(". ").append(toPrint.getSongTitle(songID)).append('\n');
                 index++;
             }
             embed.withDesc(songs.toString());
