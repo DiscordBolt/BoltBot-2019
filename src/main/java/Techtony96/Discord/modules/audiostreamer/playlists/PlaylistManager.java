@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  */
 public class PlaylistManager {
 
-    private static final Path PLAYLIST_DIRECTORY = Paths.get(System.getProperty("user.dir"), "discord", "playlists");
+    private static final Path PLAYLIST_DIRECTORY = Paths.get(System.getProperty("user.dir"), "playlists");
     private static final Gson g = new Gson();
 
     private HashSet<Playlist> playlists = new HashSet<>();
@@ -33,7 +33,8 @@ public class PlaylistManager {
         try {
             Files.walk(PLAYLIST_DIRECTORY).forEach(p -> {
                 try {
-                    playlists.add(g.fromJson(new FileReader(p.toFile()), Playlist.class));
+                    if (!Files.isDirectory(p))
+                        playlists.add(g.fromJson(new FileReader(p.toFile()), Playlist.class));
                 } catch (FileNotFoundException e) {
                     Logger.error("Unable to load playlist \"" + p.getFileName().toString() + "\"");
                     Logger.debug(e);
