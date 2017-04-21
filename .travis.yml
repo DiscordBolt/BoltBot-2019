@@ -17,7 +17,7 @@ deploy:
   access_key_id: AKIAJKRH4SORRDP74JXQ
   secret_access_key:
     secure: YsyspTA+tiax7T2MOy1rE2xGtERIpj81zyWZUNKC16rbj9xtEKskiGiqDgsIV180lYC2wPTopHtV6GE69c5VNT1uV63swMIs/R1tIc7+tcbhKL5dvG4elaJohDx6XHW1FJAHZg6c6sqPfsiv0jhJB3PP03mqHUGnomjWRBeYnaZQ7gzCLPa/XaKXt4gG9WqXeSEKTxuSjC09iqbGC54Nct3C+nGLQUv9$
-    bucket: discord-java
+  bucket: discord-java
   acl: public_read
   on:
     branch: master
