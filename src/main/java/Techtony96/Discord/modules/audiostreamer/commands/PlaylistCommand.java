@@ -23,15 +23,15 @@ public class PlaylistCommand {
     private static final String NO_PL_SELECTED = "No playlist selected\nUse !playlist select *playlist name* to select a playlist.";
     private static final String NO_SUCH_PLAYLIST = "No playlist was found with that name.";
 
-    private static final String VIEW_USAGE = "!playlist view *playlist name*.";
-    private static final String VIEW_USAGES = "!playlist view.";
-    private static final String CREATE_USAGE = "!playlist create *playlist name*.";
-    private static final String DELETE_USAGE = "!playlist delete *playlist name*.";
-    private static final String SELECT_USAGE = "!playlist select *playlist name*.";
-    private static final String SHARE_USAGE = "!playlist share *@user*.";
-    private static final String UNSHARE_USAGE = "!playlist unshare *@user*.";
-    private static final String ADD_USAGE = "!playlist add *YoutubeURL*.";
-    private static final String REMOVE_USAGE = "!playlist remove *index*.";
+    private static final String VIEW_USAGE = "!playlist view *playlist name*";
+    private static final String VIEW_USAGES = "!playlist view";
+    private static final String CREATE_USAGE = "!playlist create *playlistName*";
+    private static final String DELETE_USAGE = "!playlist delete *playlistName*.";
+    private static final String SELECT_USAGE = "!playlist select *playlistName*.";
+    private static final String SHARE_USAGE = "!playlist share *@user*";
+    private static final String UNSHARE_USAGE = "!playlist unshare *@user*";
+    private static final String ADD_USAGE = "!playlist add *YoutubeURL*";
+    private static final String REMOVE_USAGE = "!playlist remove *index*";
 
     private static HashMap<String, Playlist> selectedPlaylist = new HashMap<>();//TODO move this to PlaylistManager and clear seected playlists when a playlist is deleted.
     private static PlaylistManager manager;
@@ -120,7 +120,7 @@ public class PlaylistCommand {
                 cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "usage: " + CREATE_USAGE);
                 return;
             }
-            Playlist toCreate = null;
+            Playlist toCreate;
             try {
                 toCreate = manager.createPlaylist(getPLNameArgs(cc), cc.getUser(), cc.getGuild());
             } catch (CommandStateException e) {
@@ -235,16 +235,16 @@ public class PlaylistCommand {
             embed.withAuthorName("!Playlist");
             embed.withTitle(VIEW_USAGES);
             embed.withDesc("Views all songs in your selected playlist");
-            embed.appendField(VIEW_USAGE, "Views all songs in a certain playlist", false);
-            embed.appendField(CREATE_USAGE, "Creates a playlist with the given name", false);
-            embed.appendField(SELECT_USAGE, "Changes your selected playlist to the one specified", false);
-            embed.appendField(SHARE_USAGE, "Allows the given user to add and remove songs from your selected playlist", false);
-            embed.appendField(UNSHARE_USAGE, "No longer allows a given user to add or remove songs from you selected playlist", false);
-            embed.appendField(ADD_USAGE, "Adds the given song to your selected playlist", false);
-            embed.appendField(REMOVE_USAGE, "Removes the song at the given index from you selected playlist", false);
+            embed.appendField(VIEW_USAGE, "Views all songs in a certain playlist.", false);
+            embed.appendField(CREATE_USAGE, "Creates a playlist with the given name.", false);
+            embed.appendField(SELECT_USAGE, "Changes your selected playlist to the one specified.", false);
+            embed.appendField(SHARE_USAGE, "Allows the given user to add and remove songs from your selected playlist.", false);
+            embed.appendField(UNSHARE_USAGE, "No longer allows a given user to add or remove songs from you selected playlist.", false);
+            embed.appendField(ADD_USAGE, "Adds the given song to your selected playlist.", false);
+            embed.appendField(REMOVE_USAGE, "Removes the song at the given index from you selected playlist.", false);
             cc.replyWith(embed.build());
         } else {
-            cc.replyWith("Your command was not recognized.\nType !playlist help for more options");
+            cc.replyWith("Your command was not recognized.\nType !playlist help for more options.");
         }
     }
 }
