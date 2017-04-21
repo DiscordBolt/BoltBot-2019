@@ -105,12 +105,13 @@ public class PlaylistCommand {
             }
             embed.withDesc(songs.toString());
 
-            StringBuilder contributors = new StringBuilder();
-            for (IUser c : toPrint.getContributors()) {
-                contributors.append("\n").append(c.getName());
+            if (toPrint.getContributors().size() > 0) {
+                StringBuilder contributors = new StringBuilder();
+                for (IUser c : toPrint.getContributors()) {
+                    contributors.append("\n").append(c.getName());
+                }
+                embed.appendField("Contributors", contributors.toString() + " ", false);
             }
-            contributors.append(" ");
-            embed.appendField("Contributors", contributors.toString(), false);
             embed.withFooterText("Playlist by " + toPrint.getOwner().getName());
             cc.replyWith(embed.build());
         } else if (instruction.equalsIgnoreCase("create")) {
