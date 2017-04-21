@@ -11,7 +11,6 @@ import Techtony96.Discord.utils.ExceptionMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,17 +22,15 @@ public class PlaylistCommand {
     private static final String NO_PL_SELECTED = "No playlist selected\nUse !playlist select *playlist name* to select a playlist.";
     private static final String NO_SUCH_PLAYLIST = "No playlist was found with that name.";
 
-    private static final String VIEW_USAGE = "!playlist view *playlist name*";
-    private static final String VIEW_USAGES = "!playlist view";
-    private static final String CREATE_USAGE = "!playlist create *playlistName*";
-    private static final String DELETE_USAGE = "!playlist delete *playlistName*.";
-    private static final String SELECT_USAGE = "!playlist select *playlistName*.";
-    private static final String SHARE_USAGE = "!playlist share *@user*";
-    private static final String UNSHARE_USAGE = "!playlist unshare *@user*";
-    private static final String ADD_USAGE = "!playlist add *YoutubeURL*";
-    private static final String REMOVE_USAGE = "!playlist remove *index*";
+    private static final String VIEW_USAGES = "!Playlist view <playlist>";
+    private static final String CREATE_USAGE = "Playlist create [playlist name]";
+    private static final String DELETE_USAGE = "!Playlist delete [playlist name]";
+    private static final String SELECT_USAGE = "!Playlist select [playlist name]";
+    private static final String SHARE_USAGE = "!Playlist share @User";
+    private static final String UNSHARE_USAGE = "!Playlist unshare @User";
+    private static final String ADD_USAGE = "!Playlist add [Song URL]";
+    private static final String REMOVE_USAGE = "!Playlist remove [index]";
 
-    private static HashMap<String, Playlist> selectedPlaylist = new HashMap<>();//TODO move this to PlaylistManager and clear seected playlists when a playlist is deleted.
     private static PlaylistManager manager;
 
     private static String getPLNameArgs(CommandContext cc) {
@@ -66,7 +63,7 @@ public class PlaylistCommand {
      *
      * @param cc context concerning the issued command
      */
-    @BotCommand(command = "playlist", module = "Audio Streamer Module", aliases = "pl", description = "Group of instructions for managing playlists.", usage = "View !playlist help for specifications")
+    @BotCommand(command = "playlist", module = "Audio Streamer Module", aliases = "pl", description = "Group of instructions for managing playlists.", usage = "View !playlist help")
     public static void PlaylistCommand(CommandContext cc) {
         if (cc.getArgCount() < 2) {
             cc.replyWith(ExceptionMessage.INCORRECT_USAGE);
@@ -75,7 +72,7 @@ public class PlaylistCommand {
         }
 
         manager = AudioStreamer.getPlaylistManager();
-        Playlist current = selectedPlaylist.get(cc.getUser().getID());
+        Playlist current = manager.getSelectedPlaylist(cc.getUser().getStringID());
         String instruction = cc.getArgument(1);
 
         if (instruction.equalsIgnoreCase("view")) {
@@ -112,12 +109,13 @@ public class PlaylistCommand {
             for (IUser c : toPrint.getContributors()) {
                 contributors.append("\n").append(c.getName());
             }
+            contributors.append(" ");
             embed.appendField("Contributors", contributors.toString(), false);
             embed.withFooterText("Playlist by " + toPrint.getOwner().getName());
             cc.replyWith(embed.build());
         } else if (instruction.equalsIgnoreCase("create")) {
             if (cc.getArgCount() < 3) {
-                cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "usage: " + CREATE_USAGE);
+                cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "Usage: " + CREATE_USAGE);
                 return;
             }
             Playlist toCreate;
@@ -127,11 +125,11 @@ public class PlaylistCommand {
                 cc.replyWith(e.getMessage());
                 return;
             }
-            selectedPlaylist.put(cc.getUser().getID(), toCreate);
+            manager.setSelectedPlaylist(cc.getUser().getStringID(), toCreate);
             cc.replyWith("Successfully created playlist: " + toCreate.getTitle());
         } else if (instruction.equalsIgnoreCase("delete")) {
             if (cc.getArgCount() < 3) {
-                cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "usage: " + DELETE_USAGE);
+                cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "Usage: " + DELETE_USAGE);
                 return;
             }
             try {
@@ -143,7 +141,7 @@ public class PlaylistCommand {
             cc.replyWith("Successfully deleted playlist: " + getPLNameArgs(cc));
         } else if (instruction.equalsIgnoreCase("select")) {
             if (cc.getArgCount() < 3) {
-                cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "usage: " + SELECT_USAGE);
+                cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "Usage: " + SELECT_USAGE);
                 return;
             }
             Optional<Playlist> toSelect = manager.getPlaylist(getPLNameArgs(cc));
@@ -151,11 +149,11 @@ public class PlaylistCommand {
                 cc.replyWith(NO_SUCH_PLAYLIST);
                 return;
             }
-            selectedPlaylist.put(cc.getUser().getID(), toSelect.get());
+            manager.setSelectedPlaylist(cc.getUser().getStringID(), toSelect.get());
             cc.replyWith("Successfully selected " + toSelect.get().getTitle() + " by " + toSelect.get().getOwner().getName() + " as your selected playlist.");
         } else if (instruction.equalsIgnoreCase("share")) {
             if (cc.getArgCount() != 3) {
-                cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "usage: " + SHARE_USAGE);
+                cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "Usage: " + SHARE_USAGE);
                 return;
             }
             if (current == null) {
@@ -176,7 +174,7 @@ public class PlaylistCommand {
             cc.replyWith("Successfully added " + mentions.get(0).getName() + " as a contributor to playlist " + current.getTitle());
         } else if (instruction.equalsIgnoreCase("unshare")) {
             if (cc.getArgCount() != 3) {
-                cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "usage: " + UNSHARE_USAGE);
+                cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "Usage: " + UNSHARE_USAGE);
                 return;
             }
             if (current == null) {
@@ -197,7 +195,7 @@ public class PlaylistCommand {
             cc.replyWith("Successfully removed " + mentions.get(0).getName() + " from being a contributor to playlist " + current.getTitle());
         } else if (instruction.equalsIgnoreCase("add")) {
             if (cc.getArgCount() != 3) {
-                cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "usage: " + ADD_USAGE);
+                cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "Usage: " + ADD_USAGE);
                 return;
             }
             if (current == null) {
@@ -214,7 +212,7 @@ public class PlaylistCommand {
             cc.replyWith("Successfully added " + current.getSongTitle(cc.getArgument(2)) + " to " + current.getTitle() + ".");
         } else if (instruction.equalsIgnoreCase("remove")) {
             if (cc.getArgCount() != 3) {
-                cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "usage: " + REMOVE_USAGE);
+                cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "Usage: " + REMOVE_USAGE);
                 return;
             }
             if (current == null) {
@@ -232,19 +230,18 @@ public class PlaylistCommand {
         } else if (instruction.equalsIgnoreCase("help") || instruction.equalsIgnoreCase("h")) {
             EmbedBuilder embed = new EmbedBuilder();
             embed.withColor(AudioStreamer.EMBED_COLOR);
-            embed.withAuthorName("!Playlist");
+            embed.withAuthorName("Playlist Commands");
             embed.withTitle(VIEW_USAGES);
-            embed.withDesc("Views all songs in your selected playlist");
-            embed.appendField(VIEW_USAGE, "Views all songs in a certain playlist.", false);
-            embed.appendField(CREATE_USAGE, "Creates a playlist with the given name.", false);
+            embed.withDesc("View details of a playlist.");
+            embed.appendField(CREATE_USAGE, "Create a new playlist.", false);
             embed.appendField(SELECT_USAGE, "Changes your selected playlist to the one specified.", false);
             embed.appendField(SHARE_USAGE, "Allows the given user to add and remove songs from your selected playlist.", false);
-            embed.appendField(UNSHARE_USAGE, "No longer allows a given user to add or remove songs from you selected playlist.", false);
+            embed.appendField(UNSHARE_USAGE, "Removes edit permissions of user from selected playlist.", false);
             embed.appendField(ADD_USAGE, "Adds the given song to your selected playlist.", false);
             embed.appendField(REMOVE_USAGE, "Removes the song at the given index from you selected playlist.", false);
             cc.replyWith(embed.build());
         } else {
-            cc.replyWith("Your command was not recognized.\nType !playlist help for more options.");
+            cc.replyWith("Your command was not recognized.\nType !Playlist help for more options.");
         }
     }
 }

@@ -118,6 +118,10 @@
           <artifactId>emoji-java</artifactId>
           <groupId>com.vdurmont</groupId>
         </exclusion>
+          <exclusion>
+              <artifactId>koloboke-impl-common-jdk8</artifactId>
+              <groupId>com.koloboke</groupId>
+          </exclusion>
       </exclusions>
     </dependency>
   </dependencies>

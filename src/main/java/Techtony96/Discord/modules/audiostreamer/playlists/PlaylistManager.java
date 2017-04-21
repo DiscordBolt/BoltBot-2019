@@ -14,6 +14,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -26,6 +27,7 @@ public class PlaylistManager {
 
     private static final Path PLAYLIST_DIRECTORY = Paths.get(System.getProperty("user.dir"), "playlists");
     private static final Gson g = new Gson();
+    private static HashMap<String, Playlist> selectedPlaylist = new HashMap<>();
 
     private HashSet<Playlist> playlists = new HashSet<>();
 
@@ -82,6 +84,14 @@ public class PlaylistManager {
 
     public Set<Playlist> getPlaylists() {
         return playlists;
+    }
+
+    public Playlist getSelectedPlaylist(String userID) {
+        return selectedPlaylist.get(userID);
+    }
+
+    public void setSelectedPlaylist(String userID, Playlist playlist) {
+        selectedPlaylist.put(userID, playlist);
     }
 
 

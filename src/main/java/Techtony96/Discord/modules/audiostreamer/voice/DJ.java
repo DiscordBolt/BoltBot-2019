@@ -22,11 +22,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class DJ extends AudioEventAdapter {
 
     private AudioPlayer player;
+    private IGuild guild;
     private final BlockingQueue<AudioTrack> queue;
     private HashMap<String, IUser> trackOwners;
     private IVoiceChannel connectedChannel;
 
     public DJ(IGuild guild, AudioPlayer player) {
+        this.guild = guild;
         this.player = player;
         this.queue = new LinkedBlockingQueue<>();
         this.trackOwners = new HashMap<>();
@@ -35,6 +37,11 @@ public class DJ extends AudioEventAdapter {
     }
 
     public void queue(IUser requestor, AudioTrack track) {
+        if (getConnectedVoiceChannel() == null) {
+            setConnectVoiceChannel(requestor.getVoiceStateForGuild(guild).getChannel());
+            if (getConnectedVoiceChannel() != null)
+                getConnectedVoiceChannel().join();
+        }
         // Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
         // something is playing, it returns false and does nothing. In that case the player was already playing so this
         // track goes to the queue instead.

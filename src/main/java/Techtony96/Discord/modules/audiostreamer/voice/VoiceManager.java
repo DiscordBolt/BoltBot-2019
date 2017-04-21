@@ -6,6 +6,7 @@ import Techtony96.Discord.api.commands.exceptions.CommandRuntimeException;
 import Techtony96.Discord.api.commands.exceptions.CommandStateException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
+import Techtony96.Discord.utils.Logger;
 import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Semaphore;
 
 /**
  * Created by Tony on 4/16/2017.
@@ -71,12 +73,16 @@ public class VoiceManager {
         dj.clearQueue();
     }
 
-    public void queue(IGuild guild, IUser requestor, String songID) {
+    public String queue(IGuild guild, IUser requestor, String songID) {
         DJ dj = getDJ(guild);
+        Semaphore wait = new Semaphore(0);
+        final String[] songTitle = {"Unable to get song title"};
         playerManager.loadItemOrdered(dj, songID, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
                 dj.queue(requestor, track);
+                songTitle[0] = track.getInfo().title;
+                wait.release();
             }
 
             @Override
@@ -98,9 +104,18 @@ public class VoiceManager {
                 throw new CommandRuntimeException("Sorry, an error occurred while loading your song. Please try again later.");
             }
         });
+        try {
+            wait.acquire();
+        } catch (InterruptedException e) {
+            Logger.error(e.getMessage());
+            Logger.debug(e);
+        }
+        return songTitle[0];
     }
 
-    public void queue(IGuild guild, IUser requestor, Playlist playlist) {
+    public void queue(IGuild guild, IUser requestor, Playlist playlist) throws CommandStateException {
+        if (playlist == null)
+            throw new CommandStateException("You do not have a selected playlist!");
         playlist.getSongIDs().stream().forEach(s -> queue(guild, requestor, s));
     }
 
