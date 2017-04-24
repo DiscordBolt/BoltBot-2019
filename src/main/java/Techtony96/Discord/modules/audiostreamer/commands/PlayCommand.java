@@ -2,13 +2,13 @@ package Techtony96.Discord.modules.audiostreamer.commands;
 
 import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
-import Techtony96.Discord.api.commands.exceptions.CommandRuntimeException;
-import Techtony96.Discord.api.commands.exceptions.CommandStateException;
+import Techtony96.Discord.api.commands.exceptions.CommandException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
 import Techtony96.Discord.modules.audiostreamer.playlists.PlaylistManager;
 import Techtony96.Discord.modules.audiostreamer.voice.VoiceManager;
 import Techtony96.Discord.utils.ExceptionMessage;
+import sx.blah.discord.util.EmbedBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ public class PlayCommand {
         Playlist current = playlistManager.getSelectedPlaylist(cc.getUser().getStringID());
         String instruction = cc.getArgument(1);
 
-        if (instruction.equalsIgnoreCase("playlist")) {
+        if (instruction.equalsIgnoreCase("playlist") || instruction.equalsIgnoreCase("-p")) {
             Playlist toPlay = null;
             if (cc.getArgCount() == 2) {
                 toPlay = current;
@@ -45,7 +45,7 @@ public class PlayCommand {
             }
             try {
                 voiceManager.queue(cc.getGuild(), cc.getUser(), toPlay);
-            } catch (CommandStateException e) {
+            } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
             }
@@ -54,15 +54,30 @@ public class PlayCommand {
             try {
                 String songTitle = voiceManager.queue(cc.getGuild(), cc.getUser(), songID);
                 cc.replyWith("Added \"" + songTitle + "\" to the queue.");
-            } catch (CommandRuntimeException e) {
+            } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
             }
             return;
+        } else if (instruction.equalsIgnoreCase("help")) {
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.withColor(AudioStreamer.EMBED_COLOR);
+            embed.withAuthorName("Play Commands");
+            embed.withTitle(PLAY_SONG);
+            embed.withDesc("Play the song from a given URL.");
+            embed.appendField(PLAY_PLAYLIST, "Play all songs on a given playlist.", false);
+            embed.appendField(PLAY_RANDOM, "Play a random song.", false);
+            cc.replyWith(embed.build());
+            return;
         } else {
+            if (cc.getArgument(1).toLowerCase().contains("twitch.tv")) {
+                if (!AudioStreamer.hasAdminPermissions(cc.getUser(), cc.getGuild())) {
+
+                }
+            }
             try {
                 String songTitle = voiceManager.queue(cc.getGuild(), cc.getUser(), cc.getArgument(1));
                 cc.replyWith("Added \"" + songTitle + "\" to the queue.");
-            } catch (CommandRuntimeException e) {
+            } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
             }
             return;

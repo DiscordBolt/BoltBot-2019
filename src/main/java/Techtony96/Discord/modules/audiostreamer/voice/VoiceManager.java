@@ -73,7 +73,17 @@ public class VoiceManager {
         dj.clearQueue();
     }
 
-    public String queue(IGuild guild, IUser requestor, String songID) {
+    public void forceLeaveChannel(IGuild guild) {
+        DJ dj = getDJ(guild);
+        dj.getConnectedVoiceChannel().leave();
+        dj.setConnectVoiceChannel(null);
+        dj.clearQueue();
+    }
+
+    public String queue(IGuild guild, IUser requestor, String songID) throws CommandPermissionException {
+        if (songID.toLowerCase().contains("twitch.tv") && !AudioStreamer.hasAdminPermissions(requestor, guild))
+            throw new CommandPermissionException("You must be a \"" + AudioStreamer.ADMIN_ROLE + "\" to add Twitch.tv live streams!");
+
         DJ dj = getDJ(guild);
         Semaphore wait = new Semaphore(0);
         final String[] songTitle = {"Unable to get song title"};
@@ -113,10 +123,11 @@ public class VoiceManager {
         return songTitle[0];
     }
 
-    public void queue(IGuild guild, IUser requestor, Playlist playlist) throws CommandStateException {
+    public void queue(IGuild guild, IUser requestor, Playlist playlist) throws CommandStateException, CommandPermissionException {
         if (playlist == null)
             throw new CommandStateException("You do not have a selected playlist!");
-        playlist.getSongIDs().stream().forEach(s -> queue(guild, requestor, s));
+        for (String s : playlist.getSongIDs())
+            queue(guild, requestor, s);
     }
 
     public void dequeue(IGuild guild, IUser requestor, String songID) throws CommandPermissionException {
@@ -173,12 +184,14 @@ public class VoiceManager {
         playerManager.loadItem(songID, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                playlist.setSongTitle(songID, track.getInfo().title);
+                playlist.addSong(track);
+                throw new CommandRuntimeException("Successfully added " + track.getInfo().title);
             }
 
             @Override
             public void playlistLoaded(AudioPlaylist audioPlaylist) {
-                audioPlaylist.getTracks().forEach(t -> playlist.setSongTitle(songID, t.getInfo().title));
+                audioPlaylist.getTracks().forEach(t -> playlist.addSong(t));
+                throw new CommandRuntimeException("Successfully added songs from " + audioPlaylist.getName());
             }
 
             @Override
@@ -197,10 +210,14 @@ public class VoiceManager {
         });
     }
 
+    public AudioTrack getNowPlaying(IGuild guild) {
+        return getDJ(guild).getPlaying();
+    }
+
     /**
      * @param guild
      * @param requestor
-     * @param volume    int from 0 - 100
+     * @param volume    int from 0 - 150
      */
     public void setVolume(IGuild guild, IUser requestor, int volume) throws CommandPermissionException {
         if (!AudioStreamer.hasAdminPermissions(requestor, guild))

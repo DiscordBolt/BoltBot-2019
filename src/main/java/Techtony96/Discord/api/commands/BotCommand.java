@@ -32,4 +32,6 @@ public @interface BotCommand {
     int maxArgs() default -1;
 
     boolean secret() default false;
+
+    boolean allowPM() default false;
 }

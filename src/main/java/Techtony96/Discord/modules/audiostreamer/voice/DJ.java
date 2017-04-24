@@ -1,11 +1,16 @@
 package Techtony96.Discord.modules.audiostreamer.voice;
 
+import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.voice.internal.AudioProvider;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.handle.impl.events.guild.GuildLeaveEvent;
+import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelLeaveEvent;
+import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelMoveEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
@@ -33,7 +38,9 @@ public class DJ extends AudioEventAdapter {
         this.queue = new LinkedBlockingQueue<>();
         this.trackOwners = new HashMap<>();
         player.addListener(this);
+        AudioStreamer.getClient().getDispatcher().registerListener(this);
         guild.getAudioManager().setAudioProvider(new AudioProvider(player));
+        setVolume(10);
     }
 
     public void queue(IUser requestor, AudioTrack track) {
@@ -132,11 +139,40 @@ public class DJ extends AudioEventAdapter {
         return new ArrayList<>(queue);
     }
 
+    public AudioTrack getPlaying() {
+        return player.getPlayingTrack();
+    }
+
     /**
      *
      * @param volume 0 - 150
      */
     public void setVolume(int volume){
         player.setVolume(volume);
+    }
+
+    private void checkChannel() {
+        if (getConnectedVoiceChannel().getConnectedUsers().size() <= 1) {
+            AudioStreamer.getVoiceManager().forceLeaveChannel(guild);
+        }
+    }
+
+    @EventSubscriber
+    public void watchChannel(GuildLeaveEvent e) {
+        checkChannel();
+    }
+
+    @EventSubscriber
+    public void watchChannel(UserVoiceChannelLeaveEvent e) {
+        if (e.getVoiceChannel().equals(getConnectedVoiceChannel())) {
+            checkChannel();
+        }
+    }
+
+    @EventSubscriber
+    public void watchChannel(UserVoiceChannelMoveEvent e) {
+        if (e.getOldChannel().equals(getConnectedVoiceChannel())) {
+            checkChannel();
+        }
     }
 }

@@ -14,10 +14,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -29,7 +26,7 @@ public class PlaylistManager {
     private static final Gson g = new Gson();
     private static HashMap<String, Playlist> selectedPlaylist = new HashMap<>();
 
-    private HashSet<Playlist> playlists = new HashSet<>();
+    private List<Playlist> playlists = new ArrayList<>();
 
     public PlaylistManager() {
         try {
@@ -58,6 +55,7 @@ public class PlaylistManager {
         writePlaylistFile(pl);
 
         playlists.add(pl);
+        Collections.sort(playlists);
         return pl;
     }
 
@@ -78,11 +76,17 @@ public class PlaylistManager {
         return playlists.stream().filter(p -> p.getTitle().equalsIgnoreCase(title)).findAny();
     }
 
+    public Playlist getPlaylist(int index) throws CommandArgumentException {
+        if (index < 0 || index > playlists.size() - 1)
+            throw new CommandArgumentException((index + 1) + " is not a valid index!");
+        return playlists.get(index);
+    }
+
     public Set<Playlist> getPlaylists(IUser owner) {
         return playlists.stream().filter(p -> p.getOwner().getID().equals(owner.getID())).collect(Collectors.toSet());
     }
 
-    public Set<Playlist> getPlaylists() {
+    public List<Playlist> getPlaylists() {
         return playlists;
     }
 

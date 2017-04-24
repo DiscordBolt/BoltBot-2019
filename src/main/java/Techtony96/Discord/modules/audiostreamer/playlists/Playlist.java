@@ -3,6 +3,7 @@ package Techtony96.Discord.modules.audiostreamer.playlists;
 import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
 import Techtony96.Discord.api.commands.exceptions.CommandStateException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Tony on 4/15/2017.
  */
-public class Playlist {
+public class Playlist implements Comparable<Playlist> {
 
     private String title, ownerID, guildID;
     private List<String> contributors = new ArrayList<>();
@@ -55,8 +56,8 @@ public class Playlist {
         return songs.get(songID);
     }
 
-    public void setSongTitle(String sondID, String songTitle) {
-        songs.put(sondID, songTitle);
+    public void addSong(AudioTrack audioTrack) {
+        songs.put(audioTrack.getIdentifier(), audioTrack.getInfo().title);
         PlaylistManager.writePlaylistFile(this);
     }
 
@@ -82,7 +83,7 @@ public class Playlist {
             throw new CommandPermissionException("You are not allowed to add songs to " + this.getTitle() + ".");
         if (songs.containsKey(songID))
             throw new CommandStateException("That song is already in this playlist!");
-        songs.put(songID, songID);
+        //songs.put(songID, songID);
         AudioStreamer.getVoiceManager().loadSong(this, songID);
         PlaylistManager.writePlaylistFile(this);
     }
@@ -99,5 +100,10 @@ public class Playlist {
     public void forceRemoveSong(String songID){
         songs.remove(songID);
         PlaylistManager.writePlaylistFile(this);
+    }
+
+    @Override
+    public int compareTo(Playlist that) {
+        return this.getOwnerID().compareTo(that.getOwnerID());
     }
 }

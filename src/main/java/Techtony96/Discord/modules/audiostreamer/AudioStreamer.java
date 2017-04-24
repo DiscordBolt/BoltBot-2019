@@ -16,8 +16,12 @@ import java.awt.*;
 public class AudioStreamer extends CustomModule implements IModule {
 
     public static final String ADMIN_ROLE = "AudioStreamerAdmin";
+    public static final String DJ_ROLE = "AudioStreamerDJ";
+    public static final String TEXT_CHANNEL = "music";
     public static final double VOTE_SKIP_PERCENT = 0.40;
     public static final Color EMBED_COLOR = new Color(255, 215, 0);
+
+    public static final String IMAGE_PLAY = "http://i.imgur.com/xHnBge9.png";
 
     private static PlaylistManager playlistManager;
     private static VoiceManager voiceManager;
