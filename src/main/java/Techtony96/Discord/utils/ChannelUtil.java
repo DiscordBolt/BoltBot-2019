@@ -9,6 +9,8 @@ import sx.blah.discord.util.RequestBuffer;
 public class ChannelUtil {
 
     public static void sendMessage(IChannel channel, String message) {
+        if (channel == null || message == null || message.length() == 0)
+            return;
         RequestBuffer.request(() -> {
             try {
                 channel.sendMessage(message);
@@ -23,6 +25,8 @@ public class ChannelUtil {
     }
 
     public static void sendMessage(IChannel channel, EmbedObject embedObject) {
+        if (channel == null)
+            return;
         RequestBuffer.request(() -> {
             try {
                 channel.sendMessage(null, embedObject);

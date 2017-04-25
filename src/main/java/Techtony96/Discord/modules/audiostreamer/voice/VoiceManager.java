@@ -55,7 +55,7 @@ public class VoiceManager {
 
         try {
             channel.join();
-            getDJ(guild).setConnectVoiceChannel(channel);
+            getDJ(guild).setVoiceChannel(channel);
         } catch (MissingPermissionsException e) {
             throw new CommandBotPermissionException();
         }
@@ -68,15 +68,15 @@ public class VoiceManager {
             throw new CommandStateException("I am not connected to a voice channel!");
 
         DJ dj = getDJ(guild);
-        dj.getConnectedVoiceChannel().leave();
-        dj.setConnectVoiceChannel(null);
+        dj.getVoiceChannel().leave();
+        dj.setVoiceChannel(null);
         dj.clearQueue();
     }
 
     public void forceLeaveChannel(IGuild guild) {
         DJ dj = getDJ(guild);
-        dj.getConnectedVoiceChannel().leave();
-        dj.setConnectVoiceChannel(null);
+        dj.getVoiceChannel().leave();
+        dj.setVoiceChannel(null);
         dj.clearQueue();
     }
 
@@ -132,15 +132,15 @@ public class VoiceManager {
 
     public void dequeue(IGuild guild, IUser requestor, String songID) throws CommandPermissionException {
         DJ dj = getDJ(guild);
-        if (!AudioStreamer.hasAdminPermissions(requestor, guild) || !dj.getTrackOwner(songID).equals(requestor))
+        if (!AudioStreamer.hasAdminPermissions(requestor, guild) || !dj.getTrackRequester(songID).equals(requestor))
             throw new CommandPermissionException("You do not have permission to remove this song!");
-        dj.removeQueue(songID);
+        dj.dequeue(songID);
     }
 
     public void dequeue(IGuild guild, IUser requestor, Playlist playlist) throws CommandPermissionException {
         DJ dj = getDJ(guild);
         if (AudioStreamer.hasAdminPermissions(requestor, guild)) {
-            playlist.getSongIDs().forEach(s -> dj.removeQueue(s));
+            playlist.getSongIDs().forEach(s -> dj.dequeue(s));
             return;
         }
         for (String s : playlist.getSongIDs())
@@ -159,8 +159,8 @@ public class VoiceManager {
         if (!votesToSkip.add(requestor))
             throw new CommandStateException("You have already voted to skip the current song!");
         // Filter out users who have voted but are no longer connected to the voice channel
-        votesToSkip.removeIf(u -> u.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getConnectedVoiceChannel());
-        if ((double) votesToSkip.size() / (double) (getDJ(guild).getConnectedVoiceChannel().getConnectedUsers().size() - 1) >= AudioStreamer.VOTE_SKIP_PERCENT) {
+        votesToSkip.removeIf(u -> u.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getVoiceChannel());
+        if ((double) votesToSkip.size() / (double) (getDJ(guild).getVoiceChannel().getConnectedUsers().size() - 1) >= AudioStreamer.VOTE_SKIP_PERCENT) {
             getDJ(guild).skipCurrentTrack();
             votesToSkip.clear();
             return true;
