@@ -73,7 +73,7 @@ public class PlaylistCommand {
         }
 
         manager = AudioStreamer.getPlaylistManager();
-        Playlist current = manager.getSelectedPlaylist(cc.getUser().getStringID());
+        Playlist current = manager.getSelectedPlaylist(cc.getUser().getLongID());
         String instruction = cc.getArgument(1);
 
         if (instruction.equalsIgnoreCase("view")) {
@@ -132,7 +132,7 @@ public class PlaylistCommand {
                 cc.replyWith(e.getMessage());
                 return;
             }
-            manager.setSelectedPlaylist(cc.getUser().getStringID(), toCreate);
+            manager.setSelectedPlaylist(cc.getUser().getLongID(), toCreate);
             cc.replyWith("Successfully created playlist: " + toCreate.getTitle());
         } else if (instruction.equalsIgnoreCase("delete")) {
             if (cc.getArgCount() < 3) {
@@ -155,7 +155,7 @@ public class PlaylistCommand {
                 int playlistIndex = Integer.valueOf(cc.getArgument(2)) - 1;
                 try {
                     Playlist toSelect = manager.getPlaylist(playlistIndex);
-                    manager.setSelectedPlaylist(cc.getUser().getStringID(), toSelect);
+                    manager.setSelectedPlaylist(cc.getUser().getLongID(), toSelect);
                     cc.replyWith("Successfully selected " + toSelect.getTitle() + " by " + toSelect.getOwner().getName() + " as your selected playlist.");
                 } catch (CommandArgumentException e) {
                     cc.replyWith(e.getMessage());
@@ -167,7 +167,7 @@ public class PlaylistCommand {
                     cc.replyWith(NO_SUCH_PLAYLIST);
                     return;
                 }
-                manager.setSelectedPlaylist(cc.getUser().getStringID(), toSelect.get());
+                manager.setSelectedPlaylist(cc.getUser().getLongID(), toSelect.get());
                 cc.replyWith("Successfully selected " + toSelect.get().getTitle() + " by " + toSelect.get().getOwner().getName() + " as your selected playlist.");
             }
 

@@ -153,7 +153,7 @@ public class VoiceManager {
         if (force) {
             if (!AudioStreamer.hasAdminPermissions(requestor, guild))
                 throw new CommandPermissionException("You do not have permission to force skip songs!");
-            getDJ(guild).nextTrack();
+            getDJ(guild).skipCurrentTrack();
             return true;
         }
         if (!votesToSkip.add(requestor))
@@ -161,7 +161,7 @@ public class VoiceManager {
         // Filter out users who have voted but are no longer connected to the voice channel
         votesToSkip.removeIf(u -> u.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getConnectedVoiceChannel());
         if ((double) votesToSkip.size() / (double) (getDJ(guild).getConnectedVoiceChannel().getConnectedUsers().size() - 1) >= AudioStreamer.VOTE_SKIP_PERCENT) {
-            getDJ(guild).nextTrack();
+            getDJ(guild).skipCurrentTrack();
             votesToSkip.clear();
             return true;
         }

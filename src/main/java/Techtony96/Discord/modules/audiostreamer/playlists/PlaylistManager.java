@@ -24,11 +24,15 @@ public class PlaylistManager {
 
     private static final Path PLAYLIST_DIRECTORY = Paths.get(System.getProperty("user.dir"), "playlists");
     private static final Gson g = new Gson();
-    private static HashMap<String, Playlist> selectedPlaylist = new HashMap<>();
+    private static HashMap<Long, Playlist> selectedPlaylist = new HashMap<>();
 
     private List<Playlist> playlists = new ArrayList<>();
 
     public PlaylistManager() {
+        loadPlaylists();
+    }
+
+    private void loadPlaylists() {
         try {
             Files.walk(PLAYLIST_DIRECTORY).forEach(p -> {
                 try {
@@ -72,8 +76,8 @@ public class PlaylistManager {
         return playlists.removeIf(p -> p.getTitle().equalsIgnoreCase(title));
     }
 
-    public Optional<Playlist> getPlaylist(String title) {
-        return playlists.stream().filter(p -> p.getTitle().equalsIgnoreCase(title)).findAny();
+    public List<Playlist> getPlaylists() {
+        return playlists;
     }
 
     public Playlist getPlaylist(int index) throws CommandArgumentException {
@@ -82,22 +86,21 @@ public class PlaylistManager {
         return playlists.get(index);
     }
 
-    public Set<Playlist> getPlaylists(IUser owner) {
-        return playlists.stream().filter(p -> p.getOwner().getID().equals(owner.getID())).collect(Collectors.toSet());
+    public Optional<Playlist> getPlaylist(String title) {
+        return playlists.stream().filter(p -> p.getTitle().equalsIgnoreCase(title)).findAny();
     }
 
-    public List<Playlist> getPlaylists() {
-        return playlists;
+    public List<Playlist> getPlaylists(IUser owner) {
+        return playlists.stream().filter(p -> p.getOwner().equals(owner)).collect(Collectors.toList());
     }
 
-    public Playlist getSelectedPlaylist(String userID) {
+    public Playlist getSelectedPlaylist(Long userID) {
         return selectedPlaylist.get(userID);
     }
 
-    public void setSelectedPlaylist(String userID, Playlist playlist) {
+    public void setSelectedPlaylist(Long userID, Playlist playlist) {
         selectedPlaylist.put(userID, playlist);
     }
-
 
     /* FILE IO */
 

@@ -33,7 +33,7 @@ public class PlayCommand {
 
         PlaylistManager playlistManager = AudioStreamer.getPlaylistManager();
         VoiceManager voiceManager = AudioStreamer.getVoiceManager();
-        Playlist current = playlistManager.getSelectedPlaylist(cc.getUser().getStringID());
+        Playlist current = playlistManager.getSelectedPlaylist(cc.getUser().getLongID());
         String instruction = cc.getArgument(1);
 
         if (instruction.equalsIgnoreCase("playlist") || instruction.equalsIgnoreCase("-p")) {
