@@ -4,8 +4,10 @@ import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
 import Techtony96.Discord.api.commands.exceptions.CommandStateException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.EmbedBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -105,5 +107,32 @@ public class Playlist implements Comparable<Playlist> {
     @Override
     public int compareTo(Playlist that) {
         return this.getOwnerID().compareTo(that.getOwnerID());
+    }
+
+    public EmbedObject toEmbed(){
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.withColor(AudioStreamer.EMBED_COLOR);
+        embed.withAuthorName(getTitle());
+        embed.withAuthorIcon(getOwner().getAvatarURL());
+
+        embed.withTitle("Songs");
+        StringBuilder songs = new StringBuilder();
+        int index = 1;
+        for (String songID : getSongIDs()) {
+            songs.append(index).append(". ").append(getSongTitle(songID).replace("*", " ").replace("_", "").replace("~", "")).append('\n');
+            index++;
+        }
+        songs.setLength(2048);
+        embed.withDesc(songs.toString());
+
+        if (getContributors().size() > 0) {
+            StringBuilder contributors = new StringBuilder();
+            for (IUser c : getContributors()) {
+                contributors.append("\n").append(c.getName());
+            }
+            embed.appendField("Contributors", contributors.toString() + " ", false);
+        }
+        embed.withFooterText("Playlist by " + getOwner().getName());
+        return embed.build();
     }
 }

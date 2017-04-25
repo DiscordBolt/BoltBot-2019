@@ -1,8 +1,10 @@
 package Techtony96.Discord.modules.audiostreamer.voice;
 
+import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.voice.internal.AudioProvider;
 import Techtony96.Discord.utils.ChannelUtil;
+import Techtony96.Discord.utils.ExceptionMessage;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -116,6 +118,14 @@ public class DJ extends AudioEventAdapter {
 
     public AudioTrack getPlaying() {
         return player.getPlayingTrack();
+    }
+
+    public void pause() {
+        player.setPaused(true);
+    }
+
+    public void unpause() {
+        player.setPaused(false);
     }
 
     /* Events */

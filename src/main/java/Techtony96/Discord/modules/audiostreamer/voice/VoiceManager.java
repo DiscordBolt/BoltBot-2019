@@ -6,6 +6,7 @@ import Techtony96.Discord.api.commands.exceptions.CommandRuntimeException;
 import Techtony96.Discord.api.commands.exceptions.CommandStateException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
+import Techtony96.Discord.utils.ExceptionMessage;
 import Techtony96.Discord.utils.Logger;
 import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
@@ -168,12 +169,16 @@ public class VoiceManager {
         return false;
     }
 
-    public void pause(IGuild guild, IUser requestor) {
-        //TODO
+    public void pause(IGuild guild, IUser requester) throws CommandPermissionException {
+        if (!AudioStreamer.hasAdminPermissions(requester, guild))
+            throw new CommandPermissionException(ExceptionMessage.PERMISSION_DENIED);
+        getDJ(guild).pause();
     }
 
-    public void resume(IGuild guild, IUser requestor) {
-        //TODO
+    public void unpause(IGuild guild, IUser requester) throws CommandPermissionException {
+        if (!AudioStreamer.hasAdminPermissions(requester, guild))
+            throw new CommandPermissionException(ExceptionMessage.PERMISSION_DENIED);
+        getDJ(guild).unpause();
     }
 
     public List<AudioTrack> getQueue(IGuild guild) {

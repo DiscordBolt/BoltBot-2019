@@ -77,45 +77,22 @@ public class PlaylistCommand {
         String instruction = cc.getArgument(1);
 
         if (instruction.equalsIgnoreCase("view")) {
-            Playlist toPrint;
             if (cc.getArgCount() == 2) {
                 if (current == null) {
                     cc.replyWith(NO_PL_SELECTED);
                     return;
                 }
-                toPrint = current;
+                cc.replyWith(current.toEmbed());
+                return;
             } else {
                 Optional<Playlist> temp = manager.getPlaylist(getPLNameArgs(cc));
                 if (!temp.isPresent()) {
                     cc.replyWith(NO_SUCH_PLAYLIST);
                     return;
                 }
-                toPrint = temp.get();
+                cc.replyWith(temp.get().toEmbed());
+                return;
             }
-            EmbedBuilder embed = new EmbedBuilder();
-            embed.withColor(AudioStreamer.EMBED_COLOR);
-            embed.withAuthorName(toPrint.getTitle());
-            embed.withAuthorIcon(toPrint.getOwner().getAvatarURL());
-
-            embed.withTitle("Songs");
-            StringBuilder songs = new StringBuilder();
-            int index = 1;
-            for (String songID : toPrint.getSongIDs()) {
-                songs.append(index).append(". ").append(toPrint.getSongTitle(songID)).append('\n');
-                index++;
-            }
-            songs.setLength(2048);
-            embed.withDesc(songs.toString());
-
-            if (toPrint.getContributors().size() > 0) {
-                StringBuilder contributors = new StringBuilder();
-                for (IUser c : toPrint.getContributors()) {
-                    contributors.append("\n").append(c.getName());
-                }
-                embed.appendField("Contributors", contributors.toString() + " ", false);
-            }
-            embed.withFooterText("Playlist by " + toPrint.getOwner().getName());
-            cc.replyWith(embed.build());
         } else if (instruction.equalsIgnoreCase("create")) {
             if (cc.getArgCount() < 3) {
                 cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "Usage: " + CREATE_USAGE);
