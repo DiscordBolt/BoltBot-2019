@@ -12,12 +12,11 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.GuildLeaveEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelLeaveEvent;
 import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelMoveEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.IVoiceChannel;
+import sx.blah.discord.handle.obj.*;
+import sx.blah.discord.util.EmbedBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +33,7 @@ public class DJ extends AudioEventAdapter {
     private AudioPlayer player;
     private IVoiceChannel connectedChannel;
     private IChannel announceChannel;
+    private IMessage nowPlayingMessage;
 
     private final BlockingQueue<AudioTrack> queue = new LinkedBlockingQueue<>();
     private HashMap<AudioTrack, IUser> trackOwners = new HashMap<>();
@@ -56,6 +56,10 @@ public class DJ extends AudioEventAdapter {
 
     public AudioPlayer getAudioPlayer(){
         return player;
+    }
+
+    public IMessage getNowPlayingMessage(){
+        return nowPlayingMessage;
     }
 
     public IVoiceChannel getVoiceChannel(){
@@ -132,16 +136,31 @@ public class DJ extends AudioEventAdapter {
 
     @Override
     public void onPlayerPause(AudioPlayer player) {
-        ChannelUtil.sendMessage(announceChannel, "Paused \"" + getPlaying().getInfo().title + "\".");
+        //ChannelUtil.sendMessage(announceChannel, "Paused \"" + getPlaying().getInfo().title + "\".");
     }
 
     @Override
     public void onPlayerResume(AudioPlayer player) {
-        ChannelUtil.sendMessage(announceChannel, "Resumed \"" + getPlaying().getInfo().title + "\".");
+        //ChannelUtil.sendMessage(announceChannel, "Resumed \"" + getPlaying().getInfo().title + "\".");
     }
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.withColor(AudioStreamer.EMBED_COLOR);
+        embed.withAuthorName(":musical_note: " + track.getInfo().title);
+        embed.withAuthorUrl(track.getInfo().uri);
+        embed.withDescription(trackOwners.get(track) != null ? "Requested by: " + trackOwners.get(track).getName() : "Unknown Requester");
+        if (track.getInfo().uri.toLowerCase().contains("youtu")){
+            embed.withThumbnail("https://img.youtube.com/vi/"+track.getIdentifier()+"/0.jpg");
+        }
+
+
+        nowPlayingMessage = ChannelUtil.sendMessageWait(announceChannel, embed.build());
+        nowPlayingMessage.addReaction(":track_next:");
+
+
+
         ChannelUtil.sendMessage(announceChannel, "Started playing \"" + track.getInfo().title + "\".");
     }
 

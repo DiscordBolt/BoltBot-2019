@@ -1,11 +1,9 @@
 package Techtony96.Discord.modules.audiostreamer.voice;
 
-import Techtony96.Discord.api.commands.exceptions.CommandBotPermissionException;
-import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
-import Techtony96.Discord.api.commands.exceptions.CommandRuntimeException;
-import Techtony96.Discord.api.commands.exceptions.CommandStateException;
+import Techtony96.Discord.api.commands.exceptions.*;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
+import Techtony96.Discord.utils.ChannelUtil;
 import Techtony96.Discord.utils.ExceptionMessage;
 import Techtony96.Discord.utils.Logger;
 import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats;
@@ -17,6 +15,9 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionRemoveEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
@@ -228,5 +229,32 @@ public class VoiceManager {
         if (!AudioStreamer.hasAdminPermissions(requestor, guild))
             throw new CommandPermissionException("You do not have permission to change the volume!");
         getDJ(guild).setVolume(volume);
+    }
+
+
+    /* Listeners */
+    @EventSubscriber
+    public void reactionEvent(ReactionAddEvent e){
+        if (!e.getMessage().equals(getDJ(e.getGuild()).getNowPlayingMessage()))
+            return;
+
+        if (!e.getReaction().getCustomEmoji().getName().equals(":track_next:"))
+            return;
+
+        try {
+            skip(e.getGuild(), e.getUser(), false);
+        } catch (CommandException ex) {
+            ChannelUtil.sendMessage(e.getChannel(), ex.getMessage());
+        }
+    }
+
+    @EventSubscriber
+    public void removeReactionEvent(ReactionRemoveEvent e){
+        if (!e.getMessage().equals(getDJ(e.getGuild()).getNowPlayingMessage()))
+            return;
+        if (!e.getReaction().getCustomEmoji().getName().equals(":track_next:"))
+            return;
+
+        votesToSkip.remove(e.getUser());
     }
 }
