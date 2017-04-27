@@ -64,7 +64,7 @@ public class VoiceManager {
     }
 
     public void leaveChannel(IGuild guild, IUser requestor) throws CommandPermissionException, CommandStateException {
-        if (!AudioStreamer.hasAdminPermissions(requestor, guild))
+        if (!AudioStreamer.hasDJPermissions(requestor, guild))
             throw new CommandPermissionException("You must be a \"" + AudioStreamer.ADMIN_ROLE + "\" to execute this command!");
         if (AudioStreamer.getClient().getOurUser().getVoiceStateForGuild(guild).getChannel() == null)
             throw new CommandStateException("I am not connected to a voice channel!");
@@ -151,14 +151,14 @@ public class VoiceManager {
 
     private Set<IUser> votesToSkip = new HashSet<>();
 
-    public boolean skip(IGuild guild, IUser requestor, boolean force) throws CommandPermissionException, CommandStateException {
+    public boolean skip(IGuild guild, IUser requester, boolean force) throws CommandPermissionException, CommandStateException {
         if (force) {
-            if (!AudioStreamer.hasAdminPermissions(requestor, guild))
+            if (!AudioStreamer.hasDJPermissions(requester, guild))
                 throw new CommandPermissionException("You do not have permission to force skip songs!");
             getDJ(guild).skipCurrentTrack();
             return true;
         }
-        if (!votesToSkip.add(requestor))
+        if (!votesToSkip.add(requester))
             throw new CommandStateException("You have already voted to skip the current song!");
         // Filter out users who have voted but are no longer connected to the voice channel
         votesToSkip.removeIf(u -> u.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getVoiceChannel());
@@ -171,19 +171,25 @@ public class VoiceManager {
     }
 
     public void pause(IGuild guild, IUser requester) throws CommandPermissionException {
-        if (!AudioStreamer.hasAdminPermissions(requester, guild))
+        if (!AudioStreamer.hasDJPermissions(requester, guild))
             throw new CommandPermissionException(ExceptionMessage.PERMISSION_DENIED);
         getDJ(guild).pause();
     }
 
     public void unpause(IGuild guild, IUser requester) throws CommandPermissionException {
-        if (!AudioStreamer.hasAdminPermissions(requester, guild))
+        if (!AudioStreamer.hasDJPermissions(requester, guild))
             throw new CommandPermissionException(ExceptionMessage.PERMISSION_DENIED);
         getDJ(guild).unpause();
     }
 
     public List<AudioTrack> getQueue(IGuild guild) {
         return getDJ(guild).getQueue();
+    }
+
+    public void shuffle(IGuild guild, IUser requester) throws CommandPermissionException {
+        if (!AudioStreamer.hasAdminPermissions(requester, guild))
+            throw new CommandPermissionException(ExceptionMessage.PERMISSION_DENIED);
+        getDJ(guild).shuffle();
     }
 
     public void loadSong(Playlist playlist, String songID) {
@@ -235,10 +241,11 @@ public class VoiceManager {
     /* Listeners */
     @EventSubscriber
     public void reactionEvent(ReactionAddEvent e){
+        if (e.getUser().equals(AudioStreamer.getClient().getOurUser()))
+            return;
         if (!e.getMessage().equals(getDJ(e.getGuild()).getNowPlayingMessage()))
             return;
-
-        if (!e.getReaction().getCustomEmoji().getName().equals(":track_next:"))
+        if (!e.getReaction().getUnicodeEmoji().getAliases().get(0).equals("black_right_pointing_double_triangle_with_vertical_bar"))
             return;
 
         try {
@@ -252,7 +259,7 @@ public class VoiceManager {
     public void removeReactionEvent(ReactionRemoveEvent e){
         if (!e.getMessage().equals(getDJ(e.getGuild()).getNowPlayingMessage()))
             return;
-        if (!e.getReaction().getCustomEmoji().getName().equals(":track_next:"))
+        if (!e.getReaction().getUnicodeEmoji().getAliases().get(0).equals("black_right_pointing_double_triangle_with_vertical_bar"))
             return;
 
         votesToSkip.remove(e.getUser());

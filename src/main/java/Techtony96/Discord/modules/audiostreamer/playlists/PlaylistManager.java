@@ -63,13 +63,13 @@ public class PlaylistManager {
         return pl;
     }
 
-    public boolean deletePlaylist(String title, IUser requestor) throws CommandArgumentException, CommandPermissionException, CommandStateException {
+    public boolean deletePlaylist(String title, IUser requester) throws CommandArgumentException, CommandPermissionException, CommandStateException {
         Optional<Playlist> playlist = getPlaylist(title);
         if (!playlist.isPresent())
             throw new CommandArgumentException("Playlist \"" + title + "\" does not exist!");
 
-        if (!(UserUtil.hasRole(requestor, playlist.get().getGuild(), AudioStreamer.ADMIN_ROLE) || playlist.get().getOwnerID().equals(requestor.getStringID())))
-            throw new CommandPermissionException(requestor.getName() + " is not the owner of this playlist!");
+        if (!(UserUtil.hasRole(requester, playlist.get().getGuild(), AudioStreamer.ADMIN_ROLE) || playlist.get().getOwnerID().equals(requester.getStringID())))
+            throw new CommandPermissionException(requester.getName() + " is not the owner of this playlist!");
 
         if (!getPlaylistPath(title).toFile().delete())
             throw new CommandStateException("Unable to delete playlist file.");

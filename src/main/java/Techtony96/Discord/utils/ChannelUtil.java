@@ -1,5 +1,6 @@
 package Techtony96.Discord.utils;
 
+import com.vdurmont.emoji.Emoji;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
@@ -7,87 +8,73 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RequestBuffer;
 
-import java.util.concurrent.Semaphore;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ChannelUtil {
 
-    public static void sendMessage(IChannel channel, String message) {
-        if (channel == null || message == null || message.length() == 0)
-            return;
-        RequestBuffer.request(() -> {
-            try {
-                channel.sendMessage(message);
-            } catch (DiscordException ex) {
-                Logger.error("Discord Exception: " + ex.getErrorMessage());
-                Logger.debug(ex);
-            } catch (MissingPermissionsException ex) {
-                Logger.error("Unable to send message in channel " + channel.getName() + ". Missing Permissions.");
-                Logger.debug(ex);
-            }
-        });
-    }
-
-    public static void sendMessage(IChannel channel, EmbedObject embedObject) {
-        if (channel == null || embedObject == null)
-            return;
-        RequestBuffer.request(() -> {
-            try {
-                channel.sendMessage(null, embedObject);
-            } catch (DiscordException ex) {
-                Logger.error("Discord Exception: " + ex.getErrorMessage());
-                Logger.debug(ex);
-            } catch (MissingPermissionsException ex) {
-                Logger.error("Unable to send message in channel " + channel.getName() + ". Missing Permissions.");
-                Logger.debug(ex);
-            }
-        });
-    }
-
-    public static IMessage sendMessageWait(IChannel channel, String message){
+    public static IMessage sendMessage(IChannel channel, String message) {
         if (channel == null || message == null || message.length() == 0)
             return null;
-        Semaphore sem = new Semaphore(0);
-        final IMessage[] sentMessage = new IMessage[1];
-        RequestBuffer.request(() -> {
+        return RequestBuffer.request(() -> {
             try {
-                sentMessage[0] = channel.sendMessage(message);
-                sem.release();
+                return channel.sendMessage(message);
             } catch (DiscordException ex) {
                 Logger.error("Discord Exception: " + ex.getErrorMessage());
                 Logger.debug(ex);
-            } catch (MissingPermissionsException ex) {
+            } catch (MissingPermissionsException e) {
                 Logger.error("Unable to send message in channel " + channel.getName() + ". Missing Permissions.");
-                Logger.debug(ex);
+                Logger.debug(e);
             }
-        });
-        try {
-            sem.acquire();
-        } catch (InterruptedException e) {
-        }
-        return sentMessage[0];
+            return null;
+        }).get();
     }
 
-    public static IMessage sendMessageWait(IChannel channel, EmbedObject embedObject){
+    public static IMessage sendMessage(IChannel channel, EmbedObject embedObject) {
         if (channel == null || embedObject == null)
             return null;
-        Semaphore sem = new Semaphore(0);
-        final IMessage[] sentMessage = new IMessage[1];
-        RequestBuffer.request(() -> {
+
+        return RequestBuffer.request(() -> {
             try {
-                sentMessage[0] = channel.sendMessage(null, embedObject);
-                sem.release();
+                return channel.sendMessage(embedObject);
             } catch (DiscordException ex) {
                 Logger.error("Discord Exception: " + ex.getErrorMessage());
                 Logger.debug(ex);
-            } catch (MissingPermissionsException ex) {
+            } catch (MissingPermissionsException e) {
                 Logger.error("Unable to send message in channel " + channel.getName() + ". Missing Permissions.");
-                Logger.debug(ex);
+                Logger.debug(e);
             }
-        });
-        try {
-            sem.acquire();
-        } catch (InterruptedException e) {
-        }
-        return sentMessage[0];
+            return null;
+        }).get();
     }
+
+    /**
+     * Adds a reaction to the message
+     *
+     * @param m   The message to add to
+     * @param es2 The reaction list to add
+     */
+    public static void addReaction(IMessage m, Emoji[] es2) {
+        List<Emoji> es1 = Arrays.asList(es2);
+        Collections.reverse(es1);
+        Emoji[] es = (Emoji[]) es1.toArray();
+        final AtomicInteger i = new AtomicInteger();
+        RequestBuffer.request(() -> {
+            for (; i.get() < es.length; i.incrementAndGet()) {
+                if (es[i.intValue()] != null) {
+                    m.addReaction(es[i.intValue()]);
+                }
+            }
+
+        });
+    }
+
+    public static void addReaction(IMessage message, String emoji) {
+        if (message == null || emoji == null || emoji.length() == 0)
+            return;
+        RequestBuffer.request(() -> message.addReaction(emoji));
+    }
+
 }

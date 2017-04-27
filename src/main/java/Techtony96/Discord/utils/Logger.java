@@ -1,13 +1,11 @@
 package Techtony96.Discord.utils;
 
-import java.sql.SQLException;
-
 public class Logger {
 
     private static boolean debug = true;
 
     public static void debug(Exception e) {
-        if (debug && !(e instanceof SQLException)) {
+        if (debug) {
             e.printStackTrace();
         }
     }

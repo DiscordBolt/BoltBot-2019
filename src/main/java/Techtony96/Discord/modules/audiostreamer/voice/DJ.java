@@ -1,10 +1,8 @@
 package Techtony96.Discord.modules.audiostreamer.voice;
 
-import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.voice.internal.AudioProvider;
 import Techtony96.Discord.utils.ChannelUtil;
-import Techtony96.Discord.utils.ExceptionMessage;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -12,13 +10,13 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.GuildLeaveEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelLeaveEvent;
 import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelMoveEvent;
 import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.EmbedBuilder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -98,7 +96,7 @@ public class DJ extends AudioEventAdapter {
         trackOwners.put(track, requester);
 
         // Start playing the track, if a song is already playing, queue it up
-        if (!player.startTrack(track, false))
+        if (!player.startTrack(track, true))
             queue.offer(track);
 
     }
@@ -132,6 +130,13 @@ public class DJ extends AudioEventAdapter {
         player.setPaused(false);
     }
 
+    public void shuffle() {
+        List<AudioTrack> trackList = getQueue();
+        Collections.shuffle(trackList);
+        queue.clear();
+        trackList.forEach(a -> queue.offer(a));
+    }
+
     /* Events */
 
     @Override
@@ -148,20 +153,15 @@ public class DJ extends AudioEventAdapter {
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         EmbedBuilder embed = new EmbedBuilder();
         embed.withColor(AudioStreamer.EMBED_COLOR);
-        embed.withAuthorName(":musical_note: " + track.getInfo().title);
-        embed.withAuthorUrl(track.getInfo().uri);
+        embed.withTitle(":musical_note: " + track.getInfo().title);
+        //embed.withAuthorUrl(track.getInfo().uri);
         embed.withDescription(trackOwners.get(track) != null ? "Requested by: " + trackOwners.get(track).getName() : "Unknown Requester");
         if (track.getInfo().uri.toLowerCase().contains("youtu")){
             embed.withThumbnail("https://img.youtube.com/vi/"+track.getIdentifier()+"/0.jpg");
         }
 
-
-        nowPlayingMessage = ChannelUtil.sendMessageWait(announceChannel, embed.build());
-        nowPlayingMessage.addReaction(":track_next:");
-
-
-
-        ChannelUtil.sendMessage(announceChannel, "Started playing \"" + track.getInfo().title + "\".");
+        nowPlayingMessage = ChannelUtil.sendMessage(announceChannel, embed.build());
+        ChannelUtil.addReaction(nowPlayingMessage, ":black_right_pointing_double_triangle_with_vertical_bar:");
     }
 
     @Override
