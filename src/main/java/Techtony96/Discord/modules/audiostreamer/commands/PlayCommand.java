@@ -69,11 +69,6 @@ public class PlayCommand {
             cc.replyWith(embed.build());
             return;
         } else {
-            if (cc.getArgument(1).toLowerCase().contains("twitch.tv")) {
-                if (!AudioStreamer.hasAdminPermissions(cc.getUser(), cc.getGuild())) {
-
-                }
-            }
             try {
                 String songTitle = voiceManager.queue(cc.getGuild(), cc.getUser(), cc.getArgument(1));
                 cc.replyWith("Added \"" + songTitle + "\" to the queue.");

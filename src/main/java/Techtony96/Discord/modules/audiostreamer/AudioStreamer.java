@@ -4,6 +4,8 @@ import Techtony96.Discord.api.CustomModule;
 import Techtony96.Discord.modules.audiostreamer.playlists.PlaylistManager;
 import Techtony96.Discord.modules.audiostreamer.voice.VoiceManager;
 import Techtony96.Discord.utils.UserUtil;
+import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.modules.IModule;
@@ -20,8 +22,6 @@ public class AudioStreamer extends CustomModule implements IModule {
     public static final String TEXT_CHANNEL = "music";
     public static final double VOTE_SKIP_PERCENT = 0.40;
     public static final Color EMBED_COLOR = new Color(255, 215, 0);
-
-    public static final String IMAGE_PLAY = "http://i.imgur.com/xHnBge9.png";
 
     private static PlaylistManager playlistManager;
     private static VoiceManager voiceManager;
@@ -40,7 +40,16 @@ public class AudioStreamer extends CustomModule implements IModule {
         return voiceManager;
     }
 
+    @EventSubscriber
+    public void onReady(ReadyEvent e) {
+        client.getDispatcher().registerListener(voiceManager);
+    }
+
     public static boolean hasAdminPermissions(IUser user, IGuild guild) {
         return UserUtil.hasRole(user, guild, ADMIN_ROLE);
+    }
+
+    public static boolean hasDJPermissions(IUser user, IGuild guild) {
+        return UserUtil.hasRole(user, guild, DJ_ROLE) || hasAdminPermissions(user, guild);
     }
 }

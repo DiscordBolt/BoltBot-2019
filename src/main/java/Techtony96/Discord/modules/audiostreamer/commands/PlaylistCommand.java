@@ -112,6 +112,10 @@ public class PlaylistCommand {
             manager.setSelectedPlaylist(cc.getUser().getLongID(), toCreate);
             cc.replyWith("Successfully created playlist: " + toCreate.getTitle());
         } else if (instruction.equalsIgnoreCase("delete")) {
+            if (cc.isPrivateMessage()) {
+                cc.replyWith(ExceptionMessage.EXECUTE_IN_GUILD);
+                return;
+            }
             if (cc.getArgCount() < 3) {
                 cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "Usage: " + DELETE_USAGE);
                 return;
@@ -147,8 +151,6 @@ public class PlaylistCommand {
                 manager.setSelectedPlaylist(cc.getUser().getLongID(), toSelect.get());
                 cc.replyWith("Successfully selected " + toSelect.get().getTitle() + " by " + toSelect.get().getOwner().getName() + " as your selected playlist.");
             }
-
-
         } else if (instruction.equalsIgnoreCase("share")) {
             if (cc.getArgCount() != 3) {
                 cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "Usage: " + SHARE_USAGE);
@@ -247,7 +249,8 @@ public class PlaylistCommand {
                     sb.append('\n');
                 sb.append(id++).append(". ").append(pl.getTitle());
             }
-            embed.appendField(currentUser.getName(), sb.toString(), false);
+            if (currentUser != null)
+                embed.appendField(currentUser.getName(), sb.toString(), false);
             cc.replyWith(embed.build());
             return;
         } else if (instruction.equalsIgnoreCase("help") || instruction.equalsIgnoreCase("h")) {

@@ -24,12 +24,11 @@ public class QueueCommand {
         }
 
         EmbedBuilder embed = new EmbedBuilder();
-        embed.withAuthorName("Now Playing");
-        embed.withAuthorIcon(AudioStreamer.IMAGE_PLAY);
+        embed.withTitle(":arrow_forward: Now Playing");
         embed.withColor(AudioStreamer.EMBED_COLOR);
-        embed.withTitle("1. " + nowPlaying.getInfo().title);
-        int i = 2;
         StringBuilder songs = new StringBuilder();
+        int i = 2;
+        songs.append("1. " + nowPlaying.getInfo().title).append('\n');
         for (AudioTrack audioTrack : queue) {
             if (songs.length() >= 1900)
                 break;
