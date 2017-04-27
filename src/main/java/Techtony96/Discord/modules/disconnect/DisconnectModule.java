@@ -3,6 +3,7 @@ package Techtony96.Discord.modules.disconnect;
 import Techtony96.Discord.api.CustomModule;
 import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.api.commands.BotCommand;
+import Techtony96.Discord.modules.log.LogModule;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.Permissions;
@@ -43,5 +44,8 @@ public class DisconnectModule extends CustomModule implements IModule {
         }
         temp.delete();
         cc.replyWith(cc.getUserDisplayName() + ", successfully removed users from voice channels.");
+        StringBuilder sb = new StringBuilder();
+        cc.getMentions().forEach(u -> sb.append(u.getName() + ", "));
+        LogModule.logMessage(cc.getUser() + " just disconnected: " + sb.toString());
     }
 }

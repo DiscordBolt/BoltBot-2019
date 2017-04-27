@@ -1,6 +1,5 @@
 package Techtony96.Discord.api.commands;
 
-import Techtony96.Discord.api.CustomModule;
 import Techtony96.Discord.utils.ChannelUtil;
 import Techtony96.Discord.utils.ExceptionMessage;
 import Techtony96.Discord.utils.Logger;
@@ -32,6 +31,7 @@ public class CustomCommand {
     private EnumSet<Permissions> permissionss = EnumSet.noneOf(Permissions.class);
     private int args = -1, minArgs = -1, maxArgs = -1;
     private boolean secret = false;
+    private boolean allowPM = false;
 
     public CustomCommand(Method method) {
         CommandModule.client.getDispatcher().registerListener(this);
@@ -49,6 +49,7 @@ public class CustomCommand {
         if (annotation.minArgs() != -1 && annotation.maxArgs() != -1)
             setArguments(annotation.minArgs(), annotation.maxArgs());
         setSecret(annotation.secret());
+        setAllowPM(annotation.allowPM());
     }
 
     public CustomCommand setCommand(String command) {
@@ -118,6 +119,11 @@ public class CustomCommand {
         return this;
     }
 
+    public CustomCommand setAllowPM(boolean allowPM) {
+        this.allowPM = allowPM;
+        return this;
+    }
+
     public String getName() {
         return name;
     }
@@ -146,6 +152,10 @@ public class CustomCommand {
         return secret;
     }
 
+    public boolean isAllowPM() {
+        return allowPM;
+    }
+
     public void sendUsage(CommandContext cc, boolean mentionUser) {
         ChannelUtil.sendMessage(cc.getChannel(), (mentionUser ? cc.mentionUser() : "") + " " + getUsage());
     }
@@ -156,7 +166,7 @@ public class CustomCommand {
         IUser user = e.getAuthor();
 
         // Do not respond to PMs right now
-        if (e.getChannel() instanceof PrivateChannel) {
+        if (!isAllowPM() && e.getChannel() instanceof PrivateChannel) {
             return;
         }
 
@@ -185,6 +195,10 @@ public class CustomCommand {
         }
 
         // Permission check
+        if (e.getChannel() instanceof PrivateChannel && getPermissionss().size() != 0) {
+            cc.replyWith("This command requires permissions which can not be checked in a PM. Please execute this command in a guild.");
+            return;
+        }
         for (Permissions p : getPermissionss()) {
             if (!user.getPermissionsForGuild(e.getGuild()).contains(p)) {
                 cc.replyWith(cc.mentionUser() + " " + ExceptionMessage.PERMISSION_DENIED);

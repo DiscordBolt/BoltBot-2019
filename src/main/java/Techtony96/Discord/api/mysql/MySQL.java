@@ -15,22 +15,32 @@ import java.util.Properties;
  */
 public class MySQL {
 
-    private static MysqlDataSource ds;
+    private static MysqlDataSource dataSource = null;
 
     public static Connection getConnection() throws SQLException {
-        if (ds == null) {
+        if (dataSource == null) {
             try {
                 Properties props = new Properties();
                 FileInputStream fis = new FileInputStream(System.getProperty("user.dir") + File.separator + "database.properties");
                 props.load(fis);
-                ds = new MysqlDataSource();
-                ds.setURL(props.getProperty("MYSQL_DB_URL"));
-                ds.setUser(props.getProperty("MYSQL_DB_USERNAME"));
-                ds.setPassword(props.getProperty("MYSQL_DB_PASSWORD"));
+
+                dataSource = new MysqlDataSource();
+                dataSource.setUser(props.getProperty("USERNAME"));
+                dataSource.setPassword(props.getProperty("PASSWORD"));
+                dataSource.setServerName(props.getProperty("HOST"));
+                dataSource.setDatabaseName(props.getProperty("DATABASE"));
             } catch (IOException e) {
                 Logger.debug(e);
             }
         }
-        return ds.getConnection();
+        return dataSource.getConnection();
+    }
+
+    private void init() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

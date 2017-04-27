@@ -17,7 +17,7 @@ import sx.blah.discord.modules.IModule;
  */
 public class LogModule extends CustomModule implements IModule {
 
-    private IChannel logChannel;
+    private static IChannel logChannel;
 
     public LogModule() {
         super("Log", "1.0");
@@ -56,5 +56,10 @@ public class LogModule extends CustomModule implements IModule {
 
     private String formatName(IUser user) {
         return user.getDisplayName(logChannel.getGuild());
+    }
+
+    public static void logMessage(String s){
+        if (logChannel != null)
+            ChannelUtil.sendMessage(logChannel, s);
     }
 }
