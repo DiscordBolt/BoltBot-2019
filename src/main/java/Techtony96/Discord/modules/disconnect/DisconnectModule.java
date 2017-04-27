@@ -46,6 +46,6 @@ public class DisconnectModule extends CustomModule implements IModule {
         cc.replyWith(cc.getUserDisplayName() + ", successfully removed users from voice channels.");
         StringBuilder sb = new StringBuilder();
         cc.getMentions().forEach(u -> sb.append(u.getName() + ", "));
-        LogModule.logMessage(cc.getUser() + " just disconnected: " + sb.toString());
+        LogModule.logMessage(cc.getGuild(), cc.getUser() + " just disconnected: " + sb.toString());
     }
 }

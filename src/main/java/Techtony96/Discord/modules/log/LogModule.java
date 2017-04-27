@@ -5,61 +5,45 @@ import Techtony96.Discord.utils.ChannelUtil;
 import Techtony96.Discord.utils.Logger;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEvent;
-import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
-import sx.blah.discord.handle.impl.events.guild.member.UserLeaveEvent;
+import sx.blah.discord.handle.impl.obj.VoiceChannel;
 import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.modules.IModule;
+
+import java.util.HashMap;
 
 /**
  * Created by Tony on 12/24/2016.
  */
 public class LogModule extends CustomModule implements IModule {
 
-    private static IChannel logChannel;
+    private static final String LOG_CHANNEL = "bot-log";
+    private static HashMap<IGuild, LogListener> listeners = new HashMap<>();
+
 
     public LogModule() {
         super("Log", "1.0");
     }
 
     @EventSubscriber
-    public boolean readyEvent(ReadyEvent e) {
-        for (IChannel channel : client.getChannels(false)) {
-            if (channel.getName().equalsIgnoreCase("bot-log")) {
-                logChannel = channel;
-                break;
+    public void readyEvent(ReadyEvent e) {
+        for (IGuild guild : client.getGuilds()){
+            for (IChannel channel : guild.getChannels()){
+                if (channel instanceof VoiceChannel)
+                    continue;
+                if (channel.getName().equalsIgnoreCase(LOG_CHANNEL)){
+                    listeners.put(guild, new LogListener(client, guild, channel));
+                    break;
+                }
             }
+            Logger.warning("No logging channel found for " + guild.getName());
         }
-        if (logChannel == null) {
-            Logger.error("A logging channel was not found!");
-            client.getDispatcher().unregisterListener(this);
+    }
+
+
+    public static void logMessage(IGuild guild, String s){
+        if (listeners.containsKey(guild)){
+            listeners.get(guild).log(s);
         }
-
-        return true;
-    }
-
-    @EventSubscriber
-    public void onMessageDelete(MessageDeleteEvent e) {
-        ChannelUtil.sendMessage(logChannel, formatName(e.getMessage().getAuthor()) + "'s message `" + e.getMessage().getContent() + "` was deleted in " + e.getMessage().getChannel().mention());
-    }
-
-    @EventSubscriber
-    public void onUserLeave(UserLeaveEvent e) {
-        ChannelUtil.sendMessage(logChannel, e.getUser().getName() + " left the server.");
-    }
-
-    @EventSubscriber
-    public void onUserLJoin(UserJoinEvent e) {
-        ChannelUtil.sendMessage(logChannel, e.getUser().getName() + " joined the server.");
-    }
-
-    private String formatName(IUser user) {
-        return user.getDisplayName(logChannel.getGuild());
-    }
-
-    public static void logMessage(String s){
-        if (logChannel != null)
-            ChannelUtil.sendMessage(logChannel, s);
     }
 }
