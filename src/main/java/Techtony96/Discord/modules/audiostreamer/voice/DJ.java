@@ -1,13 +1,19 @@
 package Techtony96.Discord.modules.audiostreamer.voice;
 
+import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
+import Techtony96.Discord.api.commands.exceptions.CommandStateException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
+import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
 import Techtony96.Discord.modules.audiostreamer.voice.internal.AudioProvider;
 import Techtony96.Discord.utils.ChannelUtil;
+import Techtony96.Discord.utils.Logger;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import com.vdurmont.emoji.Emoji;
+import com.vdurmont.emoji.EmojiManager;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.GuildLeaveEvent;
 import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelLeaveEvent;
@@ -15,10 +21,7 @@ import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelMoveE
 import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.EmbedBuilder;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -35,6 +38,8 @@ public class DJ extends AudioEventAdapter {
 
     private final BlockingQueue<AudioTrack> queue = new LinkedBlockingQueue<>();
     private HashMap<AudioTrack, IUser> trackOwners = new HashMap<>();
+    private HashMap<IMessage, AudioTrack> trackMessages = new HashMap<>();
+    private Set<IUser> votesToSkip = new HashSet<>();
 
     public DJ(IGuild guild, AudioPlayer player) {
         this.guild = guild;
@@ -160,8 +165,14 @@ public class DJ extends AudioEventAdapter {
             embed.withThumbnail("https://img.youtube.com/vi/"+track.getIdentifier()+"/0.jpg");
         }
 
+        if (trackMessages.size() > 1000){
+            trackMessages.clear();
+            Logger.warning("Had to clear TRACK PLAYING MESSAGE HISTORY!");
+        }
+
         nowPlayingMessage = ChannelUtil.sendMessage(announceChannel, embed.build());
-        ChannelUtil.addReaction(nowPlayingMessage, ":black_right_pointing_double_triangle_with_vertical_bar:");
+        ChannelUtil.addReaction(nowPlayingMessage, new Emoji[]{EmojiManager.getForAlias(":black_right_pointing_double_triangle_with_vertical_bar:"), EmojiManager.getForAlias(":star:")});
+        trackMessages.put(nowPlayingMessage, track);
     }
 
     @Override
@@ -184,6 +195,47 @@ public class DJ extends AudioEventAdapter {
         // Audio track has been unable to provide us any audio, might want to just start a new track
         trackOwners.remove(track);
         skipCurrentTrack();
+    }
+
+    public void starSong(IMessage message, IUser user) throws CommandStateException, CommandPermissionException {
+        if (message == null || user == null || !trackMessages.containsKey(message))
+            throw  new CommandStateException("That track can not be found.");
+
+        AudioTrack track = trackMessages.get(message);
+        Playlist playlist = AudioStreamer.getPlaylistManager().getSelectedPlaylist(user.getLongID());
+        if (playlist == null)
+            throw new CommandStateException("You must have a selected playlist to star a song!");
+
+        playlist.addSong(user, track.getInfo().uri);
+    }
+
+    public void removeStar(IMessage message, IUser user) throws CommandStateException, CommandPermissionException {
+        if (message == null || user == null || !trackMessages.containsKey(message))
+            throw  new CommandStateException("That track can not be found.");
+
+        AudioTrack track = trackMessages.get(message);
+        Playlist playlist = AudioStreamer.getPlaylistManager().getSelectedPlaylist(user.getLongID());
+        if (playlist == null)
+            throw new CommandStateException("You must have a selected playlist to star a song!");
+
+        playlist.removeSong(user, track);
+    }
+
+    public boolean skip(IUser requester) throws CommandStateException {
+        if (!votesToSkip.add(requester))
+            throw new CommandStateException("You have already voted to skip the current song!");
+        // Filter out users who have voted but are no longer connected to the voice channel
+        votesToSkip.removeIf(u -> u.getVoiceStateForGuild(guild).getChannel() != getVoiceChannel());
+        if ((double) votesToSkip.size() / (double) (getVoiceChannel().getConnectedUsers().size() - 1) >= AudioStreamer.VOTE_SKIP_PERCENT) {
+            skipCurrentTrack();
+            votesToSkip.clear();
+            return true;
+        }
+        return false;
+    }
+
+    public void unskip(IUser requester){
+        votesToSkip.remove(requester);
     }
 
     /* Channel Cleanup */

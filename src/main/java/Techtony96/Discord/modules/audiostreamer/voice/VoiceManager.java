@@ -24,9 +24,7 @@ import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.util.MissingPermissionsException;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -149,7 +147,7 @@ public class VoiceManager {
             dequeue(guild, requestor, s);
     }
 
-    private Set<IUser> votesToSkip = new HashSet<>();
+
 
     public boolean skip(IGuild guild, IUser requester, boolean force) throws CommandPermissionException, CommandStateException {
         if (force) {
@@ -158,16 +156,7 @@ public class VoiceManager {
             getDJ(guild).skipCurrentTrack();
             return true;
         }
-        if (!votesToSkip.add(requester))
-            throw new CommandStateException("You have already voted to skip the current song!");
-        // Filter out users who have voted but are no longer connected to the voice channel
-        votesToSkip.removeIf(u -> u.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getVoiceChannel());
-        if ((double) votesToSkip.size() / (double) (getDJ(guild).getVoiceChannel().getConnectedUsers().size() - 1) >= AudioStreamer.VOTE_SKIP_PERCENT) {
-            getDJ(guild).skipCurrentTrack();
-            votesToSkip.clear();
-            return true;
-        }
-        return false;
+        return getDJ(guild).skip(requester);
     }
 
     public void pause(IGuild guild, IUser requester) throws CommandPermissionException {
@@ -196,13 +185,13 @@ public class VoiceManager {
         playerManager.loadItem(songID, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                playlist.addSong(track);
+                playlist.forceAddSong(track);
                 throw new CommandRuntimeException("Successfully added " + track.getInfo().title);
             }
 
             @Override
             public void playlistLoaded(AudioPlaylist audioPlaylist) {
-                audioPlaylist.getTracks().forEach(t -> playlist.addSong(t));
+                audioPlaylist.getTracks().forEach(t -> playlist.forceAddSong(t));
                 throw new CommandRuntimeException("Successfully added songs from " + audioPlaylist.getName());
             }
 
@@ -245,23 +234,42 @@ public class VoiceManager {
             return;
         if (!e.getMessage().equals(getDJ(e.getGuild()).getNowPlayingMessage()))
             return;
-        if (!e.getReaction().getUnicodeEmoji().getAliases().get(0).equals("black_right_pointing_double_triangle_with_vertical_bar"))
-            return;
 
-        try {
-            skip(e.getGuild(), e.getUser(), false);
-        } catch (CommandException ex) {
-            ChannelUtil.sendMessage(e.getChannel(), ex.getMessage());
+        switch (e.getReaction().getUnicodeEmoji().getAliases().get(0)){
+            case "black_right_pointing_double_triangle_with_vertical_bar":
+                try {
+                    skip(e.getGuild(), e.getUser(), false);
+                } catch (CommandException ex) {
+                    ChannelUtil.sendMessage(e.getChannel(), ex.getMessage());
+                }
+                break;
+            case "star":
+                try {
+                    getDJ(e.getGuild()).starSong(e.getMessage(), e.getUser());
+                } catch (CommandException ex) {
+                    ChannelUtil.sendMessage(e.getChannel(), ex.getMessage());
+                }
         }
+
     }
 
     @EventSubscriber
     public void removeReactionEvent(ReactionRemoveEvent e){
+        if (e.getUser().equals(AudioStreamer.getClient().getOurUser()))
+            return;
         if (!e.getMessage().equals(getDJ(e.getGuild()).getNowPlayingMessage()))
             return;
-        if (!e.getReaction().getUnicodeEmoji().getAliases().get(0).equals("black_right_pointing_double_triangle_with_vertical_bar"))
-            return;
 
-        votesToSkip.remove(e.getUser());
+        switch (e.getReaction().getUnicodeEmoji().getAliases().get(0)){
+            case "black_right_pointing_double_triangle_with_vertical_bar":
+                getDJ(e.getGuild()).unskip(e.getUser());
+                break;
+            case "star":
+                try {
+                    getDJ(e.getGuild()).removeStar(e.getMessage(), e.getUser());
+                } catch (CommandException ex) {
+                    ChannelUtil.sendMessage(e.getChannel(), ex.getMessage());
+                }
+        }
     }
 }

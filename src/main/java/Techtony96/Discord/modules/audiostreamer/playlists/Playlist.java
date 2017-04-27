@@ -58,25 +58,8 @@ public class Playlist implements Comparable<Playlist> {
         return songs.get(songID);
     }
 
-    public void addSong(AudioTrack audioTrack) {
+    public void forceAddSong(AudioTrack audioTrack) {
         songs.put(audioTrack.getIdentifier(), audioTrack.getInfo().title);
-        PlaylistManager.writePlaylistFile(this);
-    }
-
-    public void addContributor(IUser requestor, IUser contributor) throws CommandStateException, CommandPermissionException {
-        if (!ownerID.equals(requestor.getStringID()))
-            throw new CommandPermissionException("You are not allowed to add contributors to " + this.getTitle() + ".");
-        if (contributors.contains(contributor))
-            throw new CommandStateException(contributor.getName() + " is already a contributor to " + this.getTitle() + ".");
-        contributors.add(contributor.getStringID());
-        PlaylistManager.writePlaylistFile(this);
-    }
-
-    public void removeContributor(IUser requestor, IUser contributor) throws CommandStateException, CommandPermissionException {
-        if (!ownerID.equals(requestor.getStringID()))
-            throw new CommandPermissionException("You are not allowed to remove contributors from " + this.getTitle() + ".");
-        if (contributors.remove(contributor) == false)
-            throw new CommandStateException(contributor.getName() + " is not a contributor to " + this.getTitle() + ".");
         PlaylistManager.writePlaylistFile(this);
     }
 
@@ -104,12 +87,38 @@ public class Playlist implements Comparable<Playlist> {
             throw new CommandPermissionException("You are not allowed to remove songs from " + this.getTitle() + ".");
         if (index < 0 || index >= songs.size())
             throw new CommandStateException(index + " is not a valid index!");
-        songs.remove(index);
+        songs.remove(getSongIDs().get(index));
+        PlaylistManager.writePlaylistFile(this);
+    }
+
+    public void removeSong(IUser requester, AudioTrack track) throws CommandStateException, CommandPermissionException {
+        if (!(ownerID.equals(requester.getStringID()) || contributors.contains(requester.getStringID())))
+            throw new CommandPermissionException("You are not allowed to remove songs from " + this.getTitle() + ".");
+        if (!songs.containsValue(track.getInfo().title))
+            throw new CommandStateException("That song is not in this playlist!");
+        songs.values().remove(track.getInfo().title);
         PlaylistManager.writePlaylistFile(this);
     }
 
     public void forceRemoveSong(String songID){
         songs.remove(songID);
+        PlaylistManager.writePlaylistFile(this);
+    }
+
+    public void addContributor(IUser requestor, IUser contributor) throws CommandStateException, CommandPermissionException {
+        if (!ownerID.equals(requestor.getStringID()))
+            throw new CommandPermissionException("You are not allowed to add contributors to " + this.getTitle() + ".");
+        if (contributors.contains(contributor))
+            throw new CommandStateException(contributor.getName() + " is already a contributor to " + this.getTitle() + ".");
+        contributors.add(contributor.getStringID());
+        PlaylistManager.writePlaylistFile(this);
+    }
+
+    public void removeContributor(IUser requestor, IUser contributor) throws CommandStateException, CommandPermissionException {
+        if (!ownerID.equals(requestor.getStringID()))
+            throw new CommandPermissionException("You are not allowed to remove contributors from " + this.getTitle() + ".");
+        if (contributors.remove(contributor) == false)
+            throw new CommandStateException(contributor.getName() + " is not a contributor to " + this.getTitle() + ".");
         PlaylistManager.writePlaylistFile(this);
     }
 

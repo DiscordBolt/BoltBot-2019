@@ -8,24 +8,24 @@
   <build>
     <plugins>
       <plugin>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>2.3.1</version>
-          <configuration>
-              <outputDirectory>artifacts</outputDirectory>
-          </configuration>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.1</version>
+        <configuration>
+          <outputDirectory>artifacts</outputDirectory>
+        </configuration>
       </plugin>
-        <plugin>
-            <artifactId>maven-shade-plugin</artifactId>
-            <version>3.0.0</version>
-            <executions>
-                <execution>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>shade</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
+      <plugin>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.eluder.coveralls</groupId>
         <artifactId>coveralls-maven-plugin</artifactId>

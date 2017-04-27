@@ -223,7 +223,7 @@ public class PlaylistCommand {
 
             String song = cc.getArgument(2);
             try {
-                int index = Integer.valueOf(song);
+                int index = Integer.valueOf(song) - 1;
                 current.removeSong(cc.getUser(), index);
             } catch (NumberFormatException e){
                 try {
