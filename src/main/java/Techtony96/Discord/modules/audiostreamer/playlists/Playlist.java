@@ -90,12 +90,21 @@ public class Playlist implements Comparable<Playlist> {
         PlaylistManager.writePlaylistFile(this);
     }
 
-    public void removeSong(IUser requestor, String songID) throws CommandStateException, CommandPermissionException {
-        if (!(ownerID.equals(requestor.getStringID()) || contributors.contains(requestor.getStringID())))
+    public void removeSong(IUser requester, String songID) throws CommandStateException, CommandPermissionException {
+        if (!(ownerID.equals(requester.getStringID()) || contributors.contains(requester.getStringID())))
             throw new CommandPermissionException("You are not allowed to remove songs from " + this.getTitle() + ".");
         if (!songs.containsKey(songID))
             throw new CommandStateException("That song is not in this playlist!");
         songs.remove(songID);
+        PlaylistManager.writePlaylistFile(this);
+    }
+
+    public void removeSong(IUser requester, int index) throws CommandPermissionException, CommandStateException {
+        if (!(ownerID.equals(requester.getStringID()) || contributors.contains(requester.getStringID())))
+            throw new CommandPermissionException("You are not allowed to remove songs from " + this.getTitle() + ".");
+        if (index < 0 || index >= songs.size())
+            throw new CommandStateException(index + " is not a valid index!");
+        songs.remove(index);
         PlaylistManager.writePlaylistFile(this);
     }
 

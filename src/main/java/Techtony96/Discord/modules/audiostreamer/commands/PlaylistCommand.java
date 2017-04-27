@@ -4,6 +4,7 @@ import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.api.commands.exceptions.CommandArgumentException;
 import Techtony96.Discord.api.commands.exceptions.CommandException;
+import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
 import Techtony96.Discord.api.commands.exceptions.CommandStateException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
@@ -220,8 +221,17 @@ public class PlaylistCommand {
                 return;
             }
 
+            String song = cc.getArgument(2);
             try {
-                current.removeSong(cc.getUser(), cc.getArgument(2));
+                int index = Integer.valueOf(song);
+                current.removeSong(cc.getUser(), index);
+            } catch (NumberFormatException e){
+                try {
+                    current.removeSong(cc.getUser(), song);
+                } catch (CommandException ex) {
+                    cc.replyWith(ex.getMessage());
+                    return;
+                }
             } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
