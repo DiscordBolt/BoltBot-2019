@@ -2,6 +2,7 @@ package Techtony96.Discord.modules.audiostreamer.commands;
 
 import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
+import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import sx.blah.discord.util.EmbedBuilder;
@@ -13,10 +14,20 @@ import java.util.List;
  */
 public class QueueCommand {
 
-    @BotCommand(command = "queue", module = "Audio Streamer Module", description = "Print out the list of currently queued songs.", usage = "!Queue", args = 1)
+    @BotCommand(command = "queue", module = "Audio Streamer Module", description = "Print out the list of currently queued songs.", usage = "!Queue")
     public static void queueCommand(CommandContext cc) {
         List<AudioTrack> queue = AudioStreamer.getVoiceManager().getQueue(cc.getGuild());
         AudioTrack nowPlaying = AudioStreamer.getVoiceManager().getNowPlaying(cc.getGuild());
+
+        if (cc.getArgCount() > 1 && cc.getArgument(1).equalsIgnoreCase("clear")) {
+            try {
+                AudioStreamer.getVoiceManager().clearQueue(cc.getGuild(), cc.getUser());
+            } catch (CommandPermissionException e) {
+                cc.replyWith(e.getMessage());
+                return;
+            }
+        }
+
 
         if (nowPlaying == null) {
             cc.replyWith("The queue is empty! Play something with !Play");

@@ -235,6 +235,13 @@ public class VoiceManager {
         return getDJ(guild).getTrackRequester(track);
     }
 
+    public void clearQueue(IGuild guild, IUser requester) throws CommandPermissionException {
+        if (!AudioStreamer.hasAdminPermissions(requester, guild))
+            throw new CommandPermissionException("You do not have permission to clear the queue!");
+
+        getDJ(guild).clearQueue();
+    }
+
 
     /* Listeners */
     @EventSubscriber
