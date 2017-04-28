@@ -93,8 +93,8 @@ public class CommandContext {
         ChannelUtil.sendMessage(getChannel(), message);
     }
 
-    public void replyWith(EmbedObject embedObject) {
-        ChannelUtil.sendMessage(getChannel(), embedObject);
+    public IMessage replyWith(EmbedObject embedObject) {
+        return ChannelUtil.sendMessage(getChannel(), embedObject);
     }
 
     public void sendUsage() {

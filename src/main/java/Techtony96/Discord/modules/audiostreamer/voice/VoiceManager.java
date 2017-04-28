@@ -19,6 +19,7 @@ import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionRemoveEvent;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.util.MissingPermissionsException;
@@ -215,6 +216,10 @@ public class VoiceManager {
         return getDJ(guild).getPlaying();
     }
 
+    public void putNowPlayingMessage(IMessage message, AudioTrack track) {
+        getDJ(message.getGuild()).addNewTrackMessage(message, track);
+    }
+
     /**
      * @param guild
      * @param requestor
@@ -224,6 +229,10 @@ public class VoiceManager {
         if (!AudioStreamer.hasAdminPermissions(requestor, guild))
             throw new CommandPermissionException("You do not have permission to change the volume!");
         getDJ(guild).setVolume(volume);
+    }
+
+    public IUser getTrackRequester(IGuild guild, AudioTrack track) {
+        return getDJ(guild).getTrackRequester(track);
     }
 
 

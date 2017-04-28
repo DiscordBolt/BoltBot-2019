@@ -19,7 +19,6 @@ import sx.blah.discord.handle.impl.events.guild.GuildLeaveEvent;
 import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelLeaveEvent;
 import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelMoveEvent;
 import sx.blah.discord.handle.obj.*;
-import sx.blah.discord.util.EmbedBuilder;
 
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
@@ -142,6 +141,10 @@ public class DJ extends AudioEventAdapter {
         trackList.forEach(a -> queue.offer(a));
     }
 
+    public void addNewTrackMessage(IMessage message, AudioTrack track) {
+        trackMessages.put(message, track);
+    }
+
     /* Events */
 
     @Override
@@ -156,21 +159,12 @@ public class DJ extends AudioEventAdapter {
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
-        EmbedBuilder embed = new EmbedBuilder();
-        embed.withColor(AudioStreamer.EMBED_COLOR);
-        embed.withTitle(":musical_note: " + track.getInfo().title);
-        //embed.withAuthorUrl(track.getInfo().uri);
-        embed.withDescription(trackOwners.get(track) != null ? "Requested by: " + trackOwners.get(track).getName() : "Unknown Requester");
-        if (track.getInfo().uri.toLowerCase().contains("youtu")){
-            embed.withThumbnail("https://img.youtube.com/vi/"+track.getIdentifier()+"/0.jpg");
-        }
-
         if (trackMessages.size() > 1000){
             trackMessages.clear();
             Logger.warning("Had to clear TRACK PLAYING MESSAGE HISTORY!");
         }
 
-        nowPlayingMessage = ChannelUtil.sendMessage(announceChannel, embed.build());
+        nowPlayingMessage = ChannelUtil.sendMessage(announceChannel, AudioStreamer.createPlayingEmbed(getGuild(), track));
         ChannelUtil.addReaction(nowPlayingMessage, new Emoji[]{EmojiManager.getForAlias(":black_right_pointing_double_triangle_with_vertical_bar:"), EmojiManager.getForAlias(":star:")});
         trackMessages.put(nowPlayingMessage, track);
     }
