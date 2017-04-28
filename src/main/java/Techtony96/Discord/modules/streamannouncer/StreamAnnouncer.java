@@ -56,7 +56,7 @@ public class StreamAnnouncer extends CustomModule implements IModule {
                 List<IChannel> channels = guild.getChannelsByName(channel);
                 if (channels.size() > 0) {
                     ChannelUtil.sendMessage(channels.get(0), e.getUser().mention() + " just started streaming " + e.getNewPresence().getPlayingText().get());
-                    ChannelUtil.sendMessage(channels.get(0), "Come join in on the fun! " + e.getNewPresence().getStreamingUrl().orElseGet(null));
+                    ChannelUtil.sendMessage(channels.get(0), "Come join in on the fun! <" + e.getNewPresence().getStreamingUrl().orElseGet(null) + ">");
                     return;
                 }
             }
