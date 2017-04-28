@@ -105,6 +105,11 @@ public class DJ extends AudioEventAdapter {
 
     }
 
+    public void skipCurrentTrack(int count) {
+        queue.drainTo(new ArrayList<>(), count - 1);
+        player.startTrack(queue.poll(), false);
+    }
+
     public void skipCurrentTrack() {
         player.startTrack(queue.poll(), false);
     }

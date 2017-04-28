@@ -10,10 +10,17 @@ import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
  */
 public class SkipCommand {
 
-    @BotCommand(command = "skip", module = "Audio Streamer Module", description = "Skip to the next song.", usage = "!Skip <Force>", minArgs = 1, maxArgs = 2)
+    @BotCommand(command = "skip", module = "Audio Streamer Module", description = "Skip to the next song.", usage = "!Skip <Force> <Count>", minArgs = 1, maxArgs = 3)
     public static void leaveCommand(CommandContext cc) {
         try {
-            AudioStreamer.getVoiceManager().skip(cc.getGuild(), cc.getUser(), cc.getArgCount() > 1);
+            int count = 1;
+            if (cc.getArgCount() >= 3) {
+                try {
+                    count = Integer.valueOf(cc.getArgument(2));
+                } catch (NumberFormatException e) {
+                }
+            }
+            AudioStreamer.getVoiceManager().skip(cc.getGuild(), cc.getUser(), cc.getArgCount() > 1, count);
         } catch (CommandException e) {
             cc.replyWith(e.getMessage());
             return;

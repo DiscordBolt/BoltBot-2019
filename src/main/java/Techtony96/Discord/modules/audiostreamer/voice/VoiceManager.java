@@ -148,13 +148,11 @@ public class VoiceManager {
             dequeue(guild, requestor, s);
     }
 
-
-
-    public boolean skip(IGuild guild, IUser requester, boolean force) throws CommandPermissionException, CommandStateException {
+    public boolean skip(IGuild guild, IUser requester, boolean force, int count) throws CommandPermissionException, CommandStateException {
         if (force) {
             if (!AudioStreamer.hasDJPermissions(requester, guild))
                 throw new CommandPermissionException("You do not have permission to force skip songs!");
-            getDJ(guild).skipCurrentTrack();
+            getDJ(guild).skipCurrentTrack(count);
             return true;
         }
         return getDJ(guild).skip(requester);
@@ -254,7 +252,7 @@ public class VoiceManager {
         switch (e.getReaction().getUnicodeEmoji().getAliases().get(0)){
             case "black_right_pointing_double_triangle_with_vertical_bar":
                 try {
-                    skip(e.getGuild(), e.getUser(), false);
+                    skip(e.getGuild(), e.getUser(), false, 1);
                 } catch (CommandException ex) {
                     ChannelUtil.sendMessage(e.getChannel(), ex.getMessage());
                 }
