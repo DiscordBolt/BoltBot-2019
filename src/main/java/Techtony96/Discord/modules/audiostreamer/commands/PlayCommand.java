@@ -3,6 +3,7 @@ package Techtony96.Discord.modules.audiostreamer.commands;
 import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.api.commands.exceptions.CommandException;
+import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
 import Techtony96.Discord.modules.audiostreamer.playlists.PlaylistManager;
@@ -25,6 +26,16 @@ public class PlayCommand {
 
     @BotCommand(command = "play", module = "Audio Streamer Module", description = "Instruct the bot to start playing something.", usage = "View !play help")
     public static void playCommand(CommandContext cc) {
+        if (cc.getArgCount() == 1 && AudioStreamer.getVoiceManager().isPaused(cc.getGuild())) {
+            try {
+                AudioStreamer.getVoiceManager().unpause(cc.getGuild(), cc.getUser());
+                return;
+            } catch (CommandPermissionException e) {
+                cc.replyWith(e.getMessage());
+                return;
+            }
+        }
+
         if (cc.getArgCount() < 2) {
             cc.replyWith(ExceptionMessage.INCORRECT_USAGE);
             cc.sendUsage();

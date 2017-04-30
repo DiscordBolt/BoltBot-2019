@@ -139,6 +139,10 @@ public class DJ extends AudioEventAdapter {
         player.setPaused(false);
     }
 
+    public boolean isPaused() {
+        return player.isPaused();
+    }
+
     public void shuffle() {
         List<AudioTrack> trackList = getQueue();
         Collections.shuffle(trackList);

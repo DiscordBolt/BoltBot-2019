@@ -170,6 +170,10 @@ public class VoiceManager {
         getDJ(guild).unpause();
     }
 
+    public boolean isPaused(IGuild guild) {
+        return getDJ(guild).isPaused();
+    }
+
     public List<AudioTrack> getQueue(IGuild guild) {
         return getDJ(guild).getQueue();
     }

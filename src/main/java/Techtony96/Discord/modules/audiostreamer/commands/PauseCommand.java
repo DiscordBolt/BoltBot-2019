@@ -20,7 +20,7 @@ public class PauseCommand {
         }
     }
 
-    @BotCommand(command = "unpause", description = "Unpause the currently playing song", usage = "!Unpause", module = "Audio Streamer Module")
+    @BotCommand(command = "unpause", aliases = "resume", description = "Unpause the currently playing song", usage = "!Unpause", module = "Audio Streamer Module")
     public static void unpauseCommand(CommandContext cc){
         try {
             AudioStreamer.getVoiceManager().unpause(cc.getGuild(), cc.getUser());
