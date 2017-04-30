@@ -30,7 +30,7 @@ public class StreamAnnouncer extends CustomModule implements IModule {
     public void onUserGameUpdate(PresenceUpdateEvent e) {
         if (e.getNewPresence().getStatus() == StatusType.STREAMING) {
             for (Streamer s : streamers) {
-                if (s.getStreamer().getID().equals(e.getUser().getID())) {
+                if (s.getStreamer().equals(e.getUser())) {
                     if (s.isTimePassed(2, TimeUnit.HOURS) || s.isTimeAfterElapsed(1, TimeUnit.HOURS)) {
                         sendAnnouncement(e);
                         streamers.remove(s);

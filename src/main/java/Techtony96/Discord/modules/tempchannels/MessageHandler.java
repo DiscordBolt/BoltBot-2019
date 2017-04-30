@@ -1,7 +1,7 @@
 package Techtony96.Discord.modules.tempchannels;
 
-import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.api.commands.BotCommand;
+import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.modules.tempchannels.exceptions.DuplicateChannelException;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IUser;
@@ -56,7 +56,7 @@ public class MessageHandler {
         }
 
         for (IUser mentioned : cc.getMentions()) {
-            if (!(mentioned.isBot() || mentioned.equals(ch.getOwner()) || ch.getChannel().getUserOverrides().containsKey(mentioned.getID())))
+            if (!(mentioned.isBot() || mentioned.equals(ch.getOwner()) || ch.getChannel().getUserOverridesLong().containsKey(mentioned.getLongID())))
                 ch.giveUserPermission(mentioned);
         }
     }

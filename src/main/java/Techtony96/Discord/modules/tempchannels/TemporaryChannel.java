@@ -57,7 +57,7 @@ public class TemporaryChannel {
         try {
             channel = guild.createVoiceChannel(name);
             channel.changeBitrate(96000);
-            client.getOrCreatePMChannel(owner).sendMessage("Use https://discord.gg/" + getInvite().getInviteCode() + " to join your voice channel or send it to your friends!");
+            client.getOrCreatePMChannel(owner).sendMessage("Use https://discord.gg/" + getInvite().getCode() + " to join your voice channel or send it to your friends!");
             if (privateChannel) {
                 lockChannel();
                 client.getOrCreatePMChannel(owner).sendMessage("Use !Add @User to give a user permission to join your voice channel!");
@@ -176,14 +176,14 @@ public class TemporaryChannel {
 
     @EventSubscriber
     public void watchChannel(UserVoiceChannelLeaveEvent e) {
-        if (e.getVoiceChannel().getID().equals(channel.getID())) {
+        if (e.getVoiceChannel().equals(channel)) {
             checkChannel();
         }
     }
 
     @EventSubscriber
     public void watchChannel(UserVoiceChannelMoveEvent e) {
-        if (e.getOldChannel().getID().equals(channel.getID())) {
+        if (e.getOldChannel().equals(channel)) {
             checkChannel();
         }
     }

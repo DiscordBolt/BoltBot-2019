@@ -1,8 +1,8 @@
 package Techtony96.Discord.modules.seen;
 
 import Techtony96.Discord.api.CustomModule;
-import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.api.commands.BotCommand;
+import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.api.mysql.MySQL;
 import Techtony96.Discord.utils.Logger;
 import Techtony96.Discord.utils.UserUtil;
@@ -60,7 +60,7 @@ public class SeenModule extends CustomModule implements IModule {
     private int updateUser(IUser user) {
         try {
             PreparedStatement ps = MySQL.getConnection().prepareStatement("REPLACE INTO `seen` (`user`, `lastUpdate`) VALUES (?,NOW());");
-            ps.setString(1, user.getID());
+            ps.setLong(1, user.getLongID());
             return ps.executeUpdate();
         } catch (SQLException e) {
             Logger.error("Unable to update " + user.getName() + "'s presense in the database.");
@@ -84,7 +84,7 @@ public class SeenModule extends CustomModule implements IModule {
     private static Timestamp getLastChange(IUser user) {
         try {
             PreparedStatement ps = MySQL.getConnection().prepareStatement("SELECT `lastUpdate` FROM `seen` WHERE `user` = ?;");
-            ps.setString(1, user.getID());
+            ps.setLong(1, user.getLongID());
             ResultSet rs = ps.executeQuery();
             if (rs.next())
                 return rs.getTimestamp(1);

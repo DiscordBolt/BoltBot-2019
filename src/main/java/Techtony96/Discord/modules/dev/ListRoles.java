@@ -1,13 +1,10 @@
 package Techtony96.Discord.modules.dev;
 
-import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.api.commands.BotCommand;
+import Techtony96.Discord.api.commands.CommandContext;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.EmbedBuilder;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 /**
  * Created by Tony on 2/25/2017.
@@ -19,7 +16,7 @@ public class ListRoles {
         StringBuilder sb = new StringBuilder("```");
 
         for (IRole r : cc.getGuild().getRoles()) {
-            sb.append(String.format("%-33s%-18s%n", r.getName(), r.getID()));
+            sb.append(String.format("%-33s%-18s%n", r.getName(), r.getStringID()));
         }
         EmbedBuilder embed = new EmbedBuilder();
         embed.withAuthorName(cc.getGuild().getName() + "'s Roles");

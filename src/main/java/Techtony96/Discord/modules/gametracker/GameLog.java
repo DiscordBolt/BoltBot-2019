@@ -42,7 +42,7 @@ public class GameLog {
 
         try {
             PreparedStatement ps = MySQL.getConnection().prepareStatement("INSERT INTO `game_log` (`user`, `game`, `startTime`, `endTime`) VALUES (?, (SELECT `id` FROM `games` WHERE `title` = ?), ?, ?);");
-            ps.setString(1, user.getID());
+            ps.setLong(1, user.getLongID());
             ps.setString(2, gameTitle);
             ps.setTimestamp(3, new Timestamp(startTime));
             ps.setTimestamp(4, new Timestamp(endTime));
@@ -64,7 +64,7 @@ public class GameLog {
     protected static int addUser(IUser user) {
         try {
             PreparedStatement ps = MySQL.getConnection().prepareStatement("REPLACE INTO `users` (`id`, `name`) VALUES (?,?);");
-            ps.setString(1, user.getID());
+            ps.setLong(1, user.getLongID());
             ps.setString(2, user.getName());
             return ps.executeUpdate();
         } catch (SQLException e) {

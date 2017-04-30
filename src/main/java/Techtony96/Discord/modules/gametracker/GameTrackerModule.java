@@ -16,7 +16,7 @@ import java.util.HashMap;
  */
 public class GameTrackerModule extends CustomModule implements IModule {
 
-    private HashMap<String, UserInfo> currentUsers = new HashMap<>();
+    private HashMap<Long, UserInfo> currentUsers = new HashMap<>();
 
     public GameTrackerModule() {
         super("GameTracker", "1.1");
@@ -30,19 +30,19 @@ public class GameTrackerModule extends CustomModule implements IModule {
 
     @EventSubscriber
     public void onGameChange(PresenceUpdateEvent e) {
-        if (currentUsers.containsKey(e.getUser().getID())) { // User was already in a game
-            UserInfo ui = currentUsers.get(e.getUser().getID());
+        if (currentUsers.containsKey(e.getUser().getLongID())) { // User was already in a game
+            UserInfo ui = currentUsers.get(e.getUser().getLongID());
 
             if (e.getNewPresence().getPlayingText().isPresent() && ui.getGame().equals(e.getNewPresence().getPlayingText().get())) { // Event was fired for same game they are already playing
                 return;
             }
             // User is finished playing their game
-            GameLog.addGameLog(e.getUser(), currentUsers.get(e.getUser().getID()).getGame(), ui.getStartTime(), System.currentTimeMillis());
-            currentUsers.remove(e.getUser().getID());
+            GameLog.addGameLog(e.getUser(), currentUsers.get(e.getUser().getLongID()).getGame(), ui.getStartTime(), System.currentTimeMillis());
+            currentUsers.remove(e.getUser().getLongID());
         }
 
         if (e.getNewPresence().getPlayingText().isPresent() && !e.getNewPresence().getStatus().equals(StatusType.STREAMING)) {
-            currentUsers.put(e.getUser().getID(), new UserInfo(e.getUser(), e.getNewPresence().getPlayingText().get(), System.currentTimeMillis()));
+            currentUsers.put(e.getUser().getLongID(), new UserInfo(e.getUser(), e.getNewPresence().getPlayingText().get(), System.currentTimeMillis()));
         }
     }
 
@@ -60,7 +60,7 @@ public class GameTrackerModule extends CustomModule implements IModule {
 
                 }
                 if (user.getPresence().getPlayingText().isPresent() && !user.getPresence().getStatus().equals(StatusType.STREAMING))
-                    currentUsers.put(user.getID(), new UserInfo(user, user.getPresence().getPlayingText().get(), System.currentTimeMillis()));
+                    currentUsers.put(user.getLongID(), new UserInfo(user, user.getPresence().getPlayingText().get(), System.currentTimeMillis()));
             }
         }
     }

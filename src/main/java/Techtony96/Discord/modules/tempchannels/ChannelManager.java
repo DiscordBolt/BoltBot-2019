@@ -49,9 +49,9 @@ public class ChannelManager {
      * @param ID of voice channel to remove
      * @return boolean removed channel
      */
-    public static boolean removeChannel(String ID) {
+    public static boolean removeChannel(long ID) {
         for (TemporaryChannel tc : list) {
-            if (tc.getChannel().getID().equals(ID))
+            if (tc.getChannel().getLongID() == ID)
                 return removeChannel(tc);
         }
         return false;
