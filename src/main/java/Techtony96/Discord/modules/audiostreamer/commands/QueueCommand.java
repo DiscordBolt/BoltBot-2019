@@ -22,6 +22,7 @@ public class QueueCommand {
         if (cc.getArgCount() > 1 && cc.getArgument(1).equalsIgnoreCase("clear")) {
             try {
                 AudioStreamer.getVoiceManager().clearQueue(cc.getGuild(), cc.getUser());
+                return;
             } catch (CommandPermissionException e) {
                 cc.replyWith(e.getMessage());
                 return;
