@@ -69,7 +69,7 @@ public class CommandContext {
     }
 
     public String getArgument(int index) {
-        return getContent().split(" ")[index];
+        return index == 0 ? command : getContent().split(" ")[index];
     }
 
     public int getArgCount() {
@@ -83,7 +83,10 @@ public class CommandContext {
     public String combineArgs(int lowIndex, int highIndex) {
         StringBuilder sb = new StringBuilder();
         for (int i = lowIndex; i <= highIndex; i++) {
-            sb.append(getArgument(i)).append(' ');
+            if (i == 0)
+                sb.append(command).append(' ');
+            else
+                sb.append(getArgument(i)).append(' ');
         }
         sb.deleteCharAt(sb.length() - 1);
         return sb.toString();
