@@ -179,7 +179,7 @@ public class VoiceManager {
     }
 
     public void shuffle(IGuild guild, IUser requester) throws CommandPermissionException {
-        if (!AudioStreamer.hasAdminPermissions(requester, guild))
+        if (!AudioStreamer.hasDJPermissions(requester, guild))
             throw new CommandPermissionException(ExceptionMessage.PERMISSION_DENIED);
         getDJ(guild).shuffle();
     }
