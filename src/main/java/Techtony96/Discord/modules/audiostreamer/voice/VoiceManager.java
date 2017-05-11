@@ -124,11 +124,11 @@ public class VoiceManager {
         return songTitle[0];
     }
 
-    public void queue(IGuild guild, IUser requestor, Playlist playlist) throws CommandStateException, CommandPermissionException {
+    public void queue(IGuild guild, IUser requester, Playlist playlist) throws CommandStateException, CommandPermissionException {
         if (playlist == null)
             throw new CommandStateException("You do not have a selected playlist!");
         for (String s : playlist.getSongIDs())
-            queue(guild, requestor, s);
+            queue(guild, requester, s);
     }
 
     public void dequeue(IGuild guild, IUser requestor, String songID) throws CommandPermissionException {
