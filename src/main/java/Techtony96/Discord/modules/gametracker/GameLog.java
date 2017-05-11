@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Tony on 2/12/2017.
@@ -71,6 +72,22 @@ public class GameLog {
             Logger.error("Unable to add " + user.getName() + " to the database.");
             Logger.debug(e);
             return -1;
+        }
+    }
+
+    protected static int[] addUsers(List<IUser> users) {
+        try {
+            PreparedStatement ps = MySQL.getConnection().prepareStatement("REPLACE INTO `users` (`id`, `name`) VALUES (?,?);");
+            for (IUser user : users) {
+                ps.setLong(1, user.getLongID());
+                ps.setString(2, user.getName());
+                ps.addBatch();
+            }
+            return ps.executeBatch();
+        } catch (SQLException e) {
+            Logger.error("Unable to add users to the database.");
+            Logger.debug(e);
+            return new int[]{-1};
         }
     }
 

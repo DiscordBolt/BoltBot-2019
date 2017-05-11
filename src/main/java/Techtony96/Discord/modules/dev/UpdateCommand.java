@@ -14,7 +14,7 @@ import java.io.IOException;
  */
 public class UpdateCommand {
 
-    @BotCommand(command = "update", description = "Update the bot and restart.", usage = "!Update", module = "dev", permissions = Permissions.ADMINISTRATOR)
+    @BotCommand(command = "update", description = "Update the bot and restart.", usage = "!Update", module = "dev", permissions = Permissions.ADMINISTRATOR, secret = true)
     public static void updateCommand(CommandContext cc) {
         if (!UserUtil.isBotOwner(cc.getUser())) {
             cc.replyWith(ExceptionMessage.PERMISSION_DENIED);

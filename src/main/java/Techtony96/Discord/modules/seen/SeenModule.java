@@ -9,6 +9,8 @@ import Techtony96.Discord.utils.UserUtil;
 import org.ocpsoft.prettytime.PrettyTime;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
+import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
+import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 import sx.blah.discord.handle.impl.events.user.PresenceUpdateEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
@@ -19,9 +21,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Tony on 4/3/2017.
@@ -55,7 +55,7 @@ public class SeenModule extends CustomModule implements IModule {
 
     @EventSubscriber
     public void onReady(ReadyEvent e) {
-        updateAllUsers();
+        updateAllUsers(client.getGuilds());
     }
 
     @EventSubscriber
@@ -64,6 +64,16 @@ public class SeenModule extends CustomModule implements IModule {
             // Update database
             updateUser(e.getUser());
         }
+    }
+
+    @EventSubscriber
+    public void onJoinGuild(GuildCreateEvent e) {
+        updateAllUsers(Arrays.asList(e.getGuild()));
+    }
+
+    @EventSubscriber
+    public void onUserJoin(UserJoinEvent e) {
+        updateUser(e.getUser());
     }
 
     private int updateUser(IUser user) {
@@ -78,9 +88,9 @@ public class SeenModule extends CustomModule implements IModule {
         }
     }
 
-    private int[] updateAllUsers() {
+    private int[] updateAllUsers(List<IGuild> guilds) {
         Set<IUser> users = new HashSet<>();
-        client.getGuilds().forEach(g -> users.addAll(g.getUsers()));
+        guilds.forEach(g -> users.addAll(g.getUsers()));
         Iterator<IUser> it = users.iterator();
         try {
             PreparedStatement ps = MySQL.getConnection().prepareStatement("REPLACE INTO `seen` (`user`, `lastUpdate`) VALUES (?,NOW());");
