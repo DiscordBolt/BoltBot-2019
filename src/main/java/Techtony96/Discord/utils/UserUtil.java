@@ -12,6 +12,8 @@ import java.util.EnumSet;
  */
 public class UserUtil {
 
+    private static IUser botOwner = null;
+
     public static IUser findUser(IMessage msg, int startIndex) {
         if (msg.getMentions().size() != 0) {
             return msg.getMentions().get(0);
@@ -39,5 +41,11 @@ public class UserUtil {
 
     public static boolean hasRole(IUser user, IGuild guild, String role) {
         return user.getRolesForGuild(guild).stream().filter(r -> r.getName().equalsIgnoreCase(role)).findAny().isPresent();
+    }
+
+    public static boolean isBotOwner(IUser user) {
+        if (botOwner == null)
+            botOwner = user.getClient().getApplicationOwner();
+        return botOwner.equals(user);
     }
 }
