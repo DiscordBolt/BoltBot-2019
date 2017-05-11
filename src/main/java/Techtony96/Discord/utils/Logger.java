@@ -3,6 +3,12 @@ package Techtony96.Discord.utils;
 public class Logger {
 
     private static boolean debug = true;
+    private static final String COLOR_RESET = "\u001B[0m";
+    private static final String COLOR_INFO = "\u001B[36m";
+    private static final String COLOR_WARNING = "\u001B[33m";
+    private static final String COLOR_ERROR = "\u001B[31m";
+    private static final String COLOR_SEVERE = "\u001B[31m";
+
 
     public static void debug(Exception e) {
         if (debug) {
@@ -17,19 +23,19 @@ public class Logger {
     }
 
     public static void info(String s) {
-        System.out.println("[Info] " + s);
+        System.out.println(COLOR_INFO + "[Info] " + s + COLOR_RESET);
     }
 
     public static void warning(String s) {
-        System.out.println("[Warning] " + s);
+        System.out.println(COLOR_WARNING + "[Warning] " + s + COLOR_RESET);
     }
 
     public static void error(String s) {
-        System.out.println("[ERROR] " + s);
+        System.out.println(COLOR_ERROR + "[ERROR] " + s + COLOR_RESET);
     }
 
     public static void severe(String s) {
-        System.out.println("[SEVERE] " + s);
+        System.out.println(COLOR_SEVERE + "[SEVERE] " + s + COLOR_RESET);
     }
 }
 
