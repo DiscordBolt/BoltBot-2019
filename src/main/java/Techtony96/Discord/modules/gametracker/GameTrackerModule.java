@@ -3,6 +3,8 @@ package Techtony96.Discord.modules.gametracker;
 import Techtony96.Discord.api.CustomModule;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
+import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
+import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 import sx.blah.discord.handle.impl.events.user.PresenceUpdateEvent;
 import sx.blah.discord.handle.impl.events.user.UserUpdateEvent;
 import sx.blah.discord.handle.obj.IGuild;
@@ -70,5 +72,15 @@ public class GameTrackerModule extends CustomModule implements IModule {
     public void updateUsername(UserUpdateEvent e) {
         if (!e.getOldUser().getName().equals(e.getNewUser().getName()))
             GameLog.addUser(e.getNewUser());
+    }
+
+    @EventSubscriber
+    public void joinGuild(GuildCreateEvent e) {
+        GameLog.addUsers(e.getGuild().getUsers());
+    }
+
+    @EventSubscriber
+    public void userJoin(UserJoinEvent e) {
+        GameLog.addUser(e.getUser());
     }
 }
