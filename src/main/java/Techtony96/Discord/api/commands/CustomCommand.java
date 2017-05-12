@@ -27,7 +27,7 @@ public class CustomCommand {
     private String description = "";
     private String usage = "";
     private Set<String> aliases = new HashSet<>();
-    private EnumSet<Permissions> permissionss = EnumSet.noneOf(Permissions.class);
+    private EnumSet<Permissions> permissions = EnumSet.noneOf(Permissions.class);
     private int args = -1, minArgs = -1, maxArgs = -1;
     private boolean secret = false;
     private boolean allowPM = false;
@@ -89,12 +89,12 @@ public class CustomCommand {
     }
 
     public CustomCommand setPermissions(EnumSet<Permissions> permissions) {
-        this.permissionss = permissions;
+        this.permissions = permissions;
         return this;
     }
 
     public CustomCommand setPermissions(Permissions... permissions) {
-        Collections.addAll(this.permissionss, permissions);
+        Collections.addAll(this.permissions, permissions);
         return this;
     }
 
@@ -150,8 +150,8 @@ public class CustomCommand {
         return aliases;
     }
 
-    public EnumSet<Permissions> getPermissionss() {
-        return permissionss;
+    public EnumSet<Permissions> getPermissions() {
+        return permissions;
     }
 
     public boolean isSecret() {
@@ -180,13 +180,17 @@ public class CustomCommand {
             return;
         }
 
+        if (message.length() <= 1) // Message is just a single prefix.
+            return;
+
         // Check if message typed was a command
         if (!message.startsWith(CommandManager.getCommandPrefix(e.getGuild())))
             return;
 
         // Check if command was this command
         CommandContext cc = new CommandContext(this, e.getMessage());
-        if (!cc.getCommand().equalsIgnoreCase(getName()) && !aliases.stream().filter(a -> a.equalsIgnoreCase(cc.getCommand())).findAny().isPresent())
+
+        if (!(cc.getCommand().equalsIgnoreCase(getName()) || (getAliases().size() > 0 && getAliases().stream().filter(a -> a.equalsIgnoreCase(cc.getCommand())).findAny().isPresent())))
             return;
 
         // Argument count check
@@ -205,11 +209,11 @@ public class CustomCommand {
         }
 
         // Permission check
-        if (e.getChannel() instanceof PrivateChannel && getPermissionss().size() != 0) {
+        if (e.getChannel() instanceof PrivateChannel && getPermissions().size() != 0) {
             cc.replyWith("This command requires permissions which can not be checked in a PM. Please execute this command in a guild.");
             return;
         }
-        for (Permissions p : getPermissionss()) {
+        for (Permissions p : getPermissions()) {
             if (!user.getPermissionsForGuild(e.getGuild()).contains(p)) {
                 cc.replyWith(cc.mentionUser() + " " + ExceptionMessage.PERMISSION_DENIED);
                 return;

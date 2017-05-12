@@ -21,7 +21,7 @@ public @interface BotCommand {
 
     String module();
 
-    String[] aliases() default "";
+    String[] aliases() default {};
 
     Permissions[] permissions() default {};
 

@@ -38,7 +38,7 @@ public class HelpModule extends CustomModule implements IModule {
 
         for (CustomCommand command : CommandManager.getCommands()) {
             // Check if the user has permission for the command.
-            if (!(all || cc.getUser().getPermissionsForGuild(cc.getGuild()).containsAll(command.getPermissionss())))
+            if (!(all || cc.getUser().getPermissionsForGuild(cc.getGuild()).containsAll(command.getPermissions())))
                 continue;
 
             if (!currentModule.equalsIgnoreCase(command.getModule())) {
