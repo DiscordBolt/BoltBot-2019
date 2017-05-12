@@ -1,8 +1,8 @@
 package Techtony96.Discord.modules.dice;
 
 import Techtony96.Discord.api.CustomModule;
-import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.api.commands.BotCommand;
+import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.utils.ChannelUtil;
 import Techtony96.Discord.utils.ExceptionMessage;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -33,7 +33,7 @@ public class DiceModule extends CustomModule implements IModule {
         super("Dice Module", "1.0");
     }
 
-    @BotCommand(command = "roll", module = "Dice Module", description = "Roll a die!", usage = "!Roll d##")
+    @BotCommand(command = "roll", module = "Dice Module", description = "Roll a die!", usage = "Roll d##")
     public static void rollCommand(CommandContext cc) {
         for (String arg : cc.getArguments()) {
             if (DIE_PATTERN.matcher(arg).find()) {

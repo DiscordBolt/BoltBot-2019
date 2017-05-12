@@ -6,6 +6,7 @@ import Techtony96.Discord.utils.Logger;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.obj.PrivateChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 
@@ -20,8 +21,6 @@ import java.util.Set;
  */
 public class CustomCommand {
 
-    private static final String COMMAND_PREFIX = "!";
-
     private String name;
     private Method execute;
     private String module;
@@ -34,7 +33,7 @@ public class CustomCommand {
     private boolean allowPM = false;
 
     public CustomCommand(Method method) {
-        CommandModule.client.getDispatcher().registerListener(this);
+        CommandModule.getClient().getDispatcher().registerListener(this);
 
         BotCommand annotation = method.getAnnotation(BotCommand.class);
         setCommand(annotation.command());
@@ -136,8 +135,8 @@ public class CustomCommand {
         return description;
     }
 
-    public String getUsage() {
-        return usage;
+    public String getUsage(IGuild guild) {
+        return CommandManager.getCommandPrefix(guild) + usage;
     }
 
     public Set<String> getAliases() {
@@ -157,7 +156,7 @@ public class CustomCommand {
     }
 
     public void sendUsage(CommandContext cc, boolean mentionUser) {
-        ChannelUtil.sendMessage(cc.getChannel(), (mentionUser ? cc.mentionUser() : "") + " " + getUsage());
+        ChannelUtil.sendMessage(cc.getChannel(), (mentionUser ? cc.mentionUser() : "") + " " + getUsage(cc.getGuild()));
     }
 
     @EventSubscriber
@@ -171,7 +170,7 @@ public class CustomCommand {
         }
 
         // Check if message typed was a command
-        if (!message.startsWith(COMMAND_PREFIX))
+        if (!message.startsWith(CommandManager.getCommandPrefix(e.getGuild())))
             return;
 
         // Check if command was this command
@@ -182,14 +181,14 @@ public class CustomCommand {
         // Argument count check
         if (args != -1) {
             if (cc.getArgCount() != args) {
-                cc.replyWith("Incorrect Argument Count." + (getUsage().length() > 0 ? " Usage: " + getUsage() : ""));
+                cc.replyWith("Incorrect Argument Count." + (getUsage(e.getGuild()).length() > 0 ? " Usage: " + getUsage(e.getGuild()) : ""));
                 return;
             }
         }
 
         if (minArgs != -1 && maxArgs != -1) {
             if (cc.getArgCount() < minArgs || cc.getArgCount() > maxArgs) {
-                cc.replyWith("Incorrect Argument Count." + (getUsage().length() > 0 ? " Usage: " + getUsage() : ""));
+                cc.replyWith("Incorrect Argument Count." + (getUsage(e.getGuild()).length() > 1 ? " Usage: " + getUsage(e.getGuild()) : ""));
                 return;
             }
         }

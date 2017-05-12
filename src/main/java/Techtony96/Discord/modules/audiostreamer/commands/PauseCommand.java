@@ -10,7 +10,7 @@ import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
  */
 public class PauseCommand {
 
-    @BotCommand(command = "pause", description = "Pause the currently playing song", usage = "!Pause", module = "Audio Streamer Module")
+    @BotCommand(command = "pause", description = "Pause the currently playing song", usage = "Pause", module = "Audio Streamer Module")
     public static void pauseCommand(CommandContext cc){
         try {
             AudioStreamer.getVoiceManager().pause(cc.getGuild(), cc.getUser());
@@ -20,7 +20,7 @@ public class PauseCommand {
         }
     }
 
-    @BotCommand(command = "unpause", aliases = "resume", description = "Unpause the currently playing song", usage = "!Unpause", module = "Audio Streamer Module")
+    @BotCommand(command = "unpause", aliases = "resume", description = "Unpause the currently playing song", usage = "Unpause", module = "Audio Streamer Module")
     public static void unpauseCommand(CommandContext cc){
         try {
             AudioStreamer.getVoiceManager().unpause(cc.getGuild(), cc.getUser());

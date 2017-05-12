@@ -10,7 +10,7 @@ import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
  */
 public class VolumeCommand {
 
-    @BotCommand(command = "volume", module = "Audio Streamer Module", description = "Change the music volume", usage = "!Volume [0-150]", args = 2)
+    @BotCommand(command = "volume", module = "Audio Streamer Module", description = "Change the music volume", usage = "Volume [0-150]", args = 2)
     public static void joinCommand(CommandContext cc) {
         try {
             AudioStreamer.getVoiceManager().setVolume(cc.getGuild(), cc.getUser(), Integer.valueOf(cc.getArgument(1)));

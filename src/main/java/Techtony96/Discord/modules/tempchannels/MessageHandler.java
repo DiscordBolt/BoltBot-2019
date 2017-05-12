@@ -14,7 +14,7 @@ public class MessageHandler {
         this.client = client;
     }
 
-    @BotCommand(command = "create", module = "Temporary Channels Module", description = "Create a voice channel", usage = "!Create -Private [Channel Name]", minArgs = 2, maxArgs = 100)
+    @BotCommand(command = "create", module = "Temporary Channels Module", description = "Create a voice channel", usage = "Create -Private [Channel Name]", minArgs = 2, maxArgs = 100)
     public static void createCommand(CommandContext cc) {
         if (cc.getMentions().size() > 0 || cc.getMessage().getChannelMentions().size() > 0) {
             cc.replyWith(cc.getUserDisplayName() + ", you should not mention any users in this command.");
@@ -36,7 +36,7 @@ public class MessageHandler {
         }
     }
 
-    @BotCommand(command = "add", module = "Temporary Channels Module", description = "Give users permission to join your temporary channel.", usage = "!Add @User1 @User2", minArgs = 2, maxArgs = 100)
+    @BotCommand(command = "add", module = "Temporary Channels Module", description = "Give users permission to join your temporary channel.", usage = "Add @User1 @User2", minArgs = 2, maxArgs = 100)
     public static void addCommand(CommandContext cc) {
         TemporaryChannel ch = ChannelManager.getChannel(cc.getUser());
 
@@ -61,7 +61,7 @@ public class MessageHandler {
         }
     }
 
-    @BotCommand(command = "delete", module = "Temporary Channels Module", description = "Delete your temporary voice channel.", usage = "!Delete", args = 1)
+    @BotCommand(command = "delete", module = "Temporary Channels Module", description = "Delete your temporary voice channel.", usage = "Delete", args = 1)
     public static void deleteCommand(CommandContext cc) {
         if (ChannelManager.getChannel(cc.getUser()) == null) {
             cc.replyWith(cc.getUserDisplayName() + ", you do not have a temporary voice channel.");

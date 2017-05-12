@@ -5,6 +5,9 @@ import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.api.commands.CommandManager;
 import Techtony96.Discord.api.commands.CustomCommand;
+import Techtony96.Discord.utils.ChannelUtil;
+import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MentionEvent;
 import sx.blah.discord.modules.IModule;
 import sx.blah.discord.util.EmbedBuilder;
 
@@ -17,7 +20,7 @@ public class HelpModule extends CustomModule implements IModule {
         super("Help Module", "1.1");
     }
 
-    @BotCommand(command = "help", aliases = "h", module = "Help Module", description = "View all available commands.", usage = "!Help [All]")
+    @BotCommand(command = "help", aliases = "h", module = "Help Module", description = "View all available commands.", usage = "Help [All]")
     public static void helpCommand(CommandContext cc) {
         String currentModule = "";
         boolean first = true;
@@ -52,14 +55,21 @@ public class HelpModule extends CustomModule implements IModule {
 
             if (command.isSecret())
                 continue;
-            if (command.getUsage().length() > 0 && command.getDescription().length() > 0) {
-                sb.append(command.getUsage()).append(" | ").append(command.getDescription()).append('\n');
+            if (command.getUsage(cc.getGuild()).length() > 1 && command.getDescription().length() > 0) {
+                sb.append(command.getUsage(cc.getGuild())).append(" | ").append(command.getDescription()).append('\n');
             } else
-                sb.append(command.getUsage().length() > 0 ? command.getUsage() : "!" + command.getName() + " " + command.getDescription()).append('\n');
+                sb.append(command.getUsage(cc.getGuild()).length() > 1 ? command.getUsage(cc.getGuild()) : "!" + command.getName() + " " + command.getDescription()).append('\n');
         }
 
         embed.appendField(currentModule, sb.toString(), false);
 
         cc.replyWith(embed.build());
+    }
+
+    @EventSubscriber
+    public void helpMention(MentionEvent e) {
+        if (e.getMessage().getContent().toLowerCase().contains("prefix")) {
+            ChannelUtil.sendMessage(e.getChannel(), "Prefix your commands with `" + CommandManager.getCommandPrefix(e.getGuild()) + "`");
+        }
     }
 }

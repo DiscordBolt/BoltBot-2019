@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class QueueCommand {
 
-    @BotCommand(command = "queue", module = "Audio Streamer Module", description = "Print out the list of currently queued songs.", usage = "!Queue")
+    @BotCommand(command = "queue", module = "Audio Streamer Module", description = "Print out the list of currently queued songs.", usage = "Queue")
     public static void queueCommand(CommandContext cc) {
         List<AudioTrack> queue = AudioStreamer.getVoiceManager().getQueue(cc.getGuild());
         AudioTrack nowPlaying = AudioStreamer.getVoiceManager().getNowPlaying(cc.getGuild());

@@ -10,7 +10,7 @@ import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
  */
 public class ShuffleCommand {
 
-    @BotCommand(command = "shuffle", description = "Shuffle the current queue", usage = "!Shuffle", module = "Audio Streamer Module")
+    @BotCommand(command = "shuffle", description = "Shuffle the current queue", usage = "Shuffle", module = "Audio Streamer Module")
     public static void shuffleCommand(CommandContext cc) {
         try {
             AudioStreamer.getVoiceManager().shuffle(cc.getGuild(), cc.getUser());

@@ -32,7 +32,7 @@ public class SeenModule extends CustomModule implements IModule {
         super("Seen Module", "1.0");
     }
 
-    @BotCommand(command = "seen", module = "Seen Module", description = "See when the user was last online.", usage = "!Seen @User", minArgs = 2, maxArgs = 100)
+    @BotCommand(command = "seen", module = "Seen Module", description = "See when the user was last online.", usage = "Seen @User", minArgs = 2, maxArgs = 100)
     public static void seenCommand(CommandContext cc) {
 
         IUser searchUser = UserUtil.findUser(cc.getMessage(), cc.getContent().indexOf(' ') + 1);

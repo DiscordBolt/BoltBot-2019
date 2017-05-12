@@ -4,7 +4,6 @@ import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.api.commands.exceptions.CommandArgumentException;
 import Techtony96.Discord.api.commands.exceptions.CommandException;
-import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
 import Techtony96.Discord.api.commands.exceptions.CommandStateException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
@@ -65,7 +64,7 @@ public class PlaylistCommand {
      *
      * @param cc context concerning the issued command
      */
-    @BotCommand(command = "playlist", module = "Audio Streamer Module", aliases = "pl", allowPM = true, description = "Group of instructions for managing playlists.", usage = "View !playlist help")
+    @BotCommand(command = "playlist", module = "Audio Streamer Module", aliases = "pl", allowPM = true, description = "Group of instructions for managing playlists.", usage = "Playlist help")
     public static void PlaylistCommand(CommandContext cc) {
         if (cc.getArgCount() < 2) {
             cc.replyWith(ExceptionMessage.INCORRECT_USAGE);

@@ -10,7 +10,7 @@ import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
  */
 public class SkipCommand {
 
-    @BotCommand(command = "skip", module = "Audio Streamer Module", description = "Skip to the next song.", usage = "!Skip <Force> <Count>", minArgs = 1, maxArgs = 3)
+    @BotCommand(command = "skip", module = "Audio Streamer Module", description = "Skip to the next song.", usage = "Skip <Force> <Count>", minArgs = 1, maxArgs = 3)
     public static void leaveCommand(CommandContext cc) {
         try {
             int count = 1;
