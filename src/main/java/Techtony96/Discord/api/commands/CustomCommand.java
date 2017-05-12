@@ -31,6 +31,7 @@ public class CustomCommand {
     private int args = -1, minArgs = -1, maxArgs = -1;
     private boolean secret = false;
     private boolean allowPM = false;
+    private boolean delete = false;
 
     public CustomCommand(Method method) {
         CommandModule.getClient().getDispatcher().registerListener(this);
@@ -49,6 +50,7 @@ public class CustomCommand {
             setArguments(annotation.minArgs(), annotation.maxArgs());
         setSecret(annotation.secret());
         setAllowPM(annotation.allowPM());
+        setDelete(annotation.deleteMessages());
     }
 
     public CustomCommand setCommand(String command) {
@@ -123,6 +125,11 @@ public class CustomCommand {
         return this;
     }
 
+    public CustomCommand setDelete(boolean deleteMessages) {
+        this.delete = deleteMessages;
+        return this;
+    }
+
     public String getName() {
         return name;
     }
@@ -153,6 +160,10 @@ public class CustomCommand {
 
     public boolean isAllowPM() {
         return allowPM;
+    }
+
+    public boolean shouldDeleteMessages() {
+        return delete;
     }
 
     public void sendUsage(CommandContext cc, boolean mentionUser) {
@@ -212,6 +223,10 @@ public class CustomCommand {
             Logger.debug(ex);
             cc.replyWith(ExceptionMessage.COMMAND_PROCESS_EXCEPTION);
             return;
+        }
+
+        if (shouldDeleteMessages()) {
+            e.getMessage().delete();
         }
     }
 }

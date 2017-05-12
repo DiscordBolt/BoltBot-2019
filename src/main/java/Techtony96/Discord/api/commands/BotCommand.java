@@ -34,4 +34,6 @@ public @interface BotCommand {
     boolean secret() default false;
 
     boolean allowPM() default false;
+
+    boolean deleteMessages() default false;
 }
