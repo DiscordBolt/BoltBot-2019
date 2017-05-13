@@ -282,20 +282,36 @@ public class VoiceManager {
     public void reactionEvent(ReactionAddEvent e){
         if (e.getUser().equals(AudioStreamer.getClient().getOurUser()))
             return;
-        if (!e.getMessage().equals(getDJ(e.getGuild()).getNowPlayingMessage()))
+
+        DJ dj = getDJ(e.getGuild());
+        IMessage message = e.getMessage();
+        AudioTrack track = null;
+
+        if (message.equals(dj.getNowPlayingMessage()))
+            track = dj.getPlaying();
+        else if (dj.getTrackMessages().containsKey(message))
+            track = dj.getTrackMessages().get(message);
+
+        if (track == null)
             return;
+
 
         switch (e.getReaction().getUnicodeEmoji().getAliases().get(0)){
             case "black_right_pointing_double_triangle_with_vertical_bar":
-                try {
-                    skip(e.getGuild(), e.getUser(), false, 1);
-                } catch (CommandException ex) {
-                    ChannelUtil.sendMessage(e.getChannel(), ex.getMessage());
+                if (track.getIdentifier().equals(dj.getPlaying().getIdentifier())) {
+                    try {
+                        skip(e.getGuild(), e.getUser(), false, 1);
+                    } catch (CommandException ex) {
+                        ChannelUtil.sendMessage(e.getChannel(), ex.getMessage());
+                    }
+                } else {
+                    ChannelUtil.sendMessage(e.getChannel(), e.getUser().getName() + ", You can only skip currently playing songs");
+                    return;
                 }
                 break;
             case "star":
                 try {
-                    getDJ(e.getGuild()).starSong(e.getMessage(), e.getUser());
+                    getDJ(e.getGuild()).starSong(track, e.getUser());
                 } catch (CommandException ex) {
                     ChannelUtil.sendMessage(e.getChannel(), ex.getMessage());
                 }
@@ -306,8 +322,6 @@ public class VoiceManager {
     @EventSubscriber
     public void removeReactionEvent(ReactionRemoveEvent e){
         if (e.getUser().equals(AudioStreamer.getClient().getOurUser()))
-            return;
-        if (!e.getMessage().equals(getDJ(e.getGuild()).getNowPlayingMessage()))
             return;
 
         switch (e.getReaction().getUnicodeEmoji().getAliases().get(0)){

@@ -67,6 +67,10 @@ public class DJ extends AudioEventAdapter {
         return nowPlayingMessage;
     }
 
+    public HashMap<IMessage, AudioTrack> getTrackMessages() {
+        return trackMessages;
+    }
+
     public IVoiceChannel getVoiceChannel(){
         return connectedChannel;
     }
@@ -203,11 +207,10 @@ public class DJ extends AudioEventAdapter {
         skipCurrentTrack();
     }
 
-    public void starSong(IMessage message, IUser user) throws CommandStateException, CommandPermissionException {
-        if (message == null || user == null || !trackMessages.containsKey(message))
+    public void starSong(AudioTrack track, IUser user) throws CommandStateException, CommandPermissionException {
+        if (track == null || user == null)
             throw  new CommandStateException("That track can not be found.");
 
-        AudioTrack track = trackMessages.get(message);
         Playlist playlist = AudioStreamer.getPlaylistManager().getSelectedPlaylist(user.getLongID());
         if (playlist == null)
             throw new CommandStateException("You must have a selected playlist to star a song!");
