@@ -2,7 +2,7 @@ package Techtony96.Discord.modules.audiostreamer.commands;
 
 import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
-import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
+import Techtony96.Discord.api.commands.exceptions.CommandException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import sx.blah.discord.util.EmbedBuilder;
@@ -23,7 +23,7 @@ public class QueueCommand {
             try {
                 AudioStreamer.getVoiceManager().clearQueue(cc.getGuild(), cc.getUser());
                 return;
-            } catch (CommandPermissionException e) {
+            } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
             }
