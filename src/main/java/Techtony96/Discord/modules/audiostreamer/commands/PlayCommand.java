@@ -13,15 +13,11 @@ import sx.blah.discord.util.EmbedBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Created by Evan on 4/16/2017.
  */
 public class PlayCommand {
-
-    private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     private static final String PLAY_SONG = "!Play [URL]";
     private static final String PLAY_PLAYLIST = "!Play playlist <playlist name>";
