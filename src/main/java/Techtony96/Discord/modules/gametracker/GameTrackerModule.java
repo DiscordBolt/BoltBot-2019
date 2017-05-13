@@ -2,17 +2,14 @@ package Techtony96.Discord.modules.gametracker;
 
 import Techtony96.Discord.api.CustomModule;
 import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 import sx.blah.discord.handle.impl.events.user.PresenceUpdateEvent;
 import sx.blah.discord.handle.impl.events.user.UserUpdateEvent;
-import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.StatusType;
 import sx.blah.discord.modules.IModule;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -26,11 +23,12 @@ public class GameTrackerModule extends CustomModule implements IModule {
         super("GameTracker", "1.1");
     }
 
-    @EventSubscriber
-    public void onReady(ReadyEvent e) {
-        //Updates all user's usernames
-        updateAllUsers();
-    }
+    // This is being handled by GuildCreateEvent now
+    //@EventSubscriber
+    //public void onReady(ReadyEvent e) {
+    //    //Updates all user's usernames
+    //    updateAllUsers();
+    //}
 
     @EventSubscriber
     public void onGameChange(PresenceUpdateEvent e) {
@@ -50,24 +48,6 @@ public class GameTrackerModule extends CustomModule implements IModule {
         }
     }
 
-    /**
-     * Update information on all users
-     */
-    private void updateAllUsers() {
-        ArrayList<IUser> users = new ArrayList<>();
-        for (IGuild guild : client.getGuilds()) {
-            for (IUser user : guild.getUsers()) {
-                if (user.isBot())
-                    continue;
-                users.add(user);
-                if (user.getPresence().getPlayingText().isPresent() && !user.getPresence().getStatus().equals(StatusType.STREAMING))
-                    currentUsers.put(user.getLongID(), new UserInfo(user, user.getPresence().getPlayingText().get(), System.currentTimeMillis()));
-            }
-        }
-
-        GameLog.addUsers(users);
-    }
-
     @EventSubscriber
     public void updateUsername(UserUpdateEvent e) {
         if (!e.getOldUser().getName().equals(e.getNewUser().getName()))
@@ -77,10 +57,23 @@ public class GameTrackerModule extends CustomModule implements IModule {
     @EventSubscriber
     public void joinGuild(GuildCreateEvent e) {
         GameLog.addUsers(e.getGuild().getUsers());
+
+        for (IUser user : e.getGuild().getUsers()) {
+            if (user.isBot())
+                continue;
+            if (user.getPresence().getPlayingText().isPresent() && !user.getPresence().getStatus().equals(StatusType.STREAMING))
+                currentUsers.put(user.getLongID(), new UserInfo(user, user.getPresence().getPlayingText().get(), System.currentTimeMillis()));
+        }
+
     }
 
     @EventSubscriber
     public void userJoin(UserJoinEvent e) {
+        if (e.getUser().isBot())
+            return;
         GameLog.addUser(e.getUser());
+
+        if (e.getUser().getPresence().getPlayingText().isPresent() && !e.getUser().getPresence().getStatus().equals(StatusType.STREAMING))
+            currentUsers.put(e.getUser().getLongID(), new UserInfo(e.getUser(), e.getUser().getPresence().getPlayingText().get(), System.currentTimeMillis()));
     }
 }

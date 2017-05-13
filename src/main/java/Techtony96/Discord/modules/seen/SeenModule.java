@@ -8,7 +8,6 @@ import Techtony96.Discord.utils.Logger;
 import Techtony96.Discord.utils.UserUtil;
 import org.ocpsoft.prettytime.PrettyTime;
 import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 import sx.blah.discord.handle.impl.events.user.PresenceUpdateEvent;
@@ -53,10 +52,11 @@ public class SeenModule extends CustomModule implements IModule {
         cc.replyWith(searchUser.getName() + " has been " + status.name().toLowerCase().replace("dnd", "do not disturb") + " since " + format(lastUpate) + '.');
     }
 
-    @EventSubscriber
-    public void onReady(ReadyEvent e) {
-        updateAllUsers(client.getGuilds());
-    }
+    // This has been taken to GuildCreateEvent
+    //@EventSubscriber
+    //public void onReady(ReadyEvent e) {
+    //updateAllUsers(client.getGuilds());
+    //}
 
     @EventSubscriber
     public void onStatusChange(PresenceUpdateEvent e) {
