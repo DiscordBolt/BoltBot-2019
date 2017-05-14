@@ -10,6 +10,3 @@
 ## [Server Downloads](https://austinv11.github.io/Discord4J/downloads.html)
 * [2.8.0](https://jitpack.io/com/github/austinv11/Discord4j/2.8.0/Discord4j-2.8.0-shaded.jar)
 * [SNAPSHOT](https://jitpack.io/com/github/austinv11/Discord4j/dev-SNAPSHOT/Discord4j-dev-SNAPSHOT-shaded.jar)
-
-
-
