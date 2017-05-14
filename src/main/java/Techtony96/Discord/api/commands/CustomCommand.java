@@ -1,5 +1,6 @@
 package Techtony96.Discord.api.commands;
 
+import Techtony96.Discord.api.commands.exceptions.CommandException;
 import Techtony96.Discord.utils.ChannelUtil;
 import Techtony96.Discord.utils.ExceptionMessage;
 import Techtony96.Discord.utils.Logger;
@@ -10,6 +11,7 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -222,6 +224,11 @@ public class CustomCommand {
 
         try {
             execute.invoke(null, cc);
+        } catch (InvocationTargetException ex) {
+            if (ex.getCause() instanceof CommandException) {
+                cc.replyWith(ex.getMessage());
+            }
+            return;
         } catch (Exception ex) {
             Logger.error(ex.getMessage());
             Logger.debug(ex);
