@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class QueueCommand {
 
-    @BotCommand(command = "queue", module = "Audio Streamer Module", description = "Print out the list of currently queued songs.", usage = "Queue")
+    @BotCommand(command = "queue", module = "Audio Streamer Module", description = "Print out the list of currently queued songs.", usage = "Queue", allowedChannels = "music")
     public static void queueCommand(CommandContext cc) {
 
         if (cc.getArgCount() > 1 && cc.getArgument(1).equalsIgnoreCase("clear")) {
