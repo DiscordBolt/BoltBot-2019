@@ -37,12 +37,20 @@ public class DiceModule extends CustomModule implements IModule {
     public static void rollCommand(CommandContext cc) {
         for (String arg : cc.getArguments()) {
             if (DIE_PATTERN.matcher(arg).find()) {
-                int die = -1;
-                try {
-                    die = Integer.valueOf(arg.replaceAll("([dD])", ""));
-                } catch (NumberFormatException e) {
-                    cc.replyWith(ExceptionMessage.COMMAND_PROCESS_EXCEPTION);
-                    return;
+                int count = -1;
+                int die;
+                final String[] split = arg.split("([dD])");
+
+                if (split.length == 2) {
+                    count = Integer.valueOf(split[0]) != null ? Integer.valueOf(split[0]) : 1;
+                    die = Integer.valueOf(split[1]);
+                } else {
+                    try {
+                        die = Integer.valueOf(arg.replaceAll("([dD])", ""));
+                    } catch (NumberFormatException e) {
+                        cc.replyWith(ExceptionMessage.COMMAND_PROCESS_EXCEPTION);
+                        return;
+                    }
                 }
 
                 if (die < 2) {
@@ -50,7 +58,11 @@ public class DiceModule extends CustomModule implements IModule {
                 } else if (die == 2) {
                     cc.replyWith(getCoinEmbed());
                 } else {
-                    cc.replyWith(getDieEmbed(die));
+                    if (count > 0) {
+                        cc.replyWith(getMultiDieEmbed(count, die));
+                    } else {
+                        cc.replyWith(getDieEmbed(die));
+                    }
                 }
                 return;
             }
@@ -105,6 +117,21 @@ public class DiceModule extends CustomModule implements IModule {
                 embed.withThumbnail(DIE_URL_6);
                 break;
         }
+        return embed.build();
+    }
+
+    private static EmbedObject getMultiDieEmbed(int count, int max) {
+
+        int total = 0;
+        for (int i = 0; i < count; i++) {
+            total += random(1, max);
+        }
+
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.withColor(255, 235, 59); // Hex #FFEB3B (Yellow)
+
+        embed.withTitle(count + "d" + max + "== " + total);
+        embed.withThumbnail(DIE_URL_6);
         return embed.build();
     }
 }
