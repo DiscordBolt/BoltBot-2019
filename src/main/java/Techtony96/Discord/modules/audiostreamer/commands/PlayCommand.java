@@ -3,7 +3,6 @@ package Techtony96.Discord.modules.audiostreamer.commands;
 import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.api.commands.exceptions.CommandException;
-import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
 import Techtony96.Discord.modules.audiostreamer.playlists.PlaylistManager;
@@ -30,7 +29,7 @@ public class PlayCommand {
             try {
                 AudioStreamer.getVoiceManager().unpause(cc.getGuild(), cc.getUser());
                 return;
-            } catch (CommandPermissionException e) {
+            } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
             }
@@ -56,6 +55,13 @@ public class PlayCommand {
             }
             try {
                 voiceManager.queue(cc.getGuild(), cc.getUser(), toPlay);
+                if (toPlay.getSongIDs().size() > 5) {
+                    cc.replyWith("Your playlist is now being queued and may take ~30 seconds to fully appear in the queue.");
+                    return;
+                } else {
+                    cc.replyWith("Your playlist is now being queued.");
+                    return;
+                }
             } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
@@ -63,12 +69,13 @@ public class PlayCommand {
         } else if (instruction.equalsIgnoreCase("random")) {
             String songID = getRandomSong();
             try {
-                String songTitle = voiceManager.queue(cc.getGuild(), cc.getUser(), songID);
-                cc.replyWith("Added \"" + songTitle + "\" to the queue.");
+                voiceManager.queue(cc.getGuild(), cc.getUser(), songID);
+                cc.replyWith("A random song has been queued up for your listening pleasure!");
+                return;
             } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
+                return;
             }
-            return;
         } else if (instruction.equalsIgnoreCase("help")) {
             EmbedBuilder embed = new EmbedBuilder();
             embed.withColor(AudioStreamer.EMBED_COLOR);
@@ -81,8 +88,8 @@ public class PlayCommand {
             return;
         } else {
             try {
-                String songTitle = voiceManager.queue(cc.getGuild(), cc.getUser(), cc.getArgument(1));
-                cc.replyWith("Added \"" + songTitle + "\" to the queue.");
+                voiceManager.queue(cc.getGuild(), cc.getUser(), cc.getArgument(1));
+                cc.replyWith("Your song is now being queued up");
             } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
             }

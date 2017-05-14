@@ -20,7 +20,10 @@ import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelLeave
 import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelMoveEvent;
 import sx.blah.discord.handle.obj.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -35,10 +38,10 @@ public class DJ extends AudioEventAdapter {
     private IChannel announceChannel;
     private IMessage nowPlayingMessage;
 
-    private final BlockingQueue<AudioTrack> queue = new LinkedBlockingQueue<>();
+    private BlockingQueue<AudioTrack> queue = new LinkedBlockingQueue<>();
     private HashMap<AudioTrack, IUser> trackOwners = new HashMap<>();
     private HashMap<IMessage, AudioTrack> trackMessages = new HashMap<>();
-    private Set<IUser> votesToSkip = new HashSet<>();
+    private ArrayList<IUser> votesToSkip = new ArrayList<>();
 
     public DJ(IGuild guild, AudioPlayer player) {
         this.guild = guild;
@@ -64,6 +67,10 @@ public class DJ extends AudioEventAdapter {
         return nowPlayingMessage;
     }
 
+    public HashMap<IMessage, AudioTrack> getTrackMessages() {
+        return trackMessages;
+    }
+
     public IVoiceChannel getVoiceChannel(){
         return connectedChannel;
     }
@@ -73,7 +80,7 @@ public class DJ extends AudioEventAdapter {
     }
 
     public List<AudioTrack> getQueue(){
-        return new ArrayList<>(queue);
+        return new ArrayList(queue);
     }
 
     public IUser getTrackRequester(AudioTrack track){
@@ -200,11 +207,10 @@ public class DJ extends AudioEventAdapter {
         skipCurrentTrack();
     }
 
-    public void starSong(IMessage message, IUser user) throws CommandStateException, CommandPermissionException {
-        if (message == null || user == null || !trackMessages.containsKey(message))
+    public void starSong(AudioTrack track, IUser user) throws CommandStateException, CommandPermissionException {
+        if (track == null || user == null)
             throw  new CommandStateException("That track can not be found.");
 
-        AudioTrack track = trackMessages.get(message);
         Playlist playlist = AudioStreamer.getPlaylistManager().getSelectedPlaylist(user.getLongID());
         if (playlist == null)
             throw new CommandStateException("You must have a selected playlist to star a song!");

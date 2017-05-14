@@ -2,7 +2,7 @@ package Techtony96.Discord.modules.audiostreamer.commands;
 
 import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
-import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
+import Techtony96.Discord.api.commands.exceptions.CommandException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 
 /**
@@ -14,7 +14,7 @@ public class PauseCommand {
     public static void pauseCommand(CommandContext cc){
         try {
             AudioStreamer.getVoiceManager().pause(cc.getGuild(), cc.getUser());
-        } catch (CommandPermissionException e) {
+        } catch (CommandException e) {
             cc.replyWith(e.getMessage());
             return;
         }
@@ -24,7 +24,7 @@ public class PauseCommand {
     public static void unpauseCommand(CommandContext cc){
         try {
             AudioStreamer.getVoiceManager().unpause(cc.getGuild(), cc.getUser());
-        } catch (CommandPermissionException e) {
+        } catch (CommandException e) {
             cc.replyWith(e.getMessage());
             return;
         }

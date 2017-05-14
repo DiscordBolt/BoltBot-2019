@@ -59,19 +59,16 @@ public class Playlist implements Comparable<Playlist> {
         return songs.get(songID);
     }
 
-    public void forceAddSong(AudioTrack audioTrack) {
-        songs.put(audioTrack.getIdentifier(), audioTrack.getInfo().title);
-        PlaylistManager.writePlaylistFile(this);
-    }
-
-    public void addSong(IUser requestor, String songID) throws CommandStateException, CommandPermissionException {
-        if (!(ownerID.equals(requestor.getLongID()) || contributors.contains(requestor.getLongID())))
+    public String addSong(IUser requester, String songID) throws CommandStateException, CommandPermissionException {
+        if (!(ownerID.equals(requester.getLongID()) || contributors.contains(requester.getLongID())))
             throw new CommandPermissionException("You are not allowed to add songs to " + this.getTitle() + ".");
         if (songs.containsKey(songID))
             throw new CommandStateException("That song is already in this playlist!");
-        //songs.put(songID, songID);
-        AudioStreamer.getVoiceManager().loadSong(this, songID);
+
+        String songTitle = AudioStreamer.getVoiceManager().getSongTitle(songID);
+        songs.put(songID, songTitle);
         PlaylistManager.writePlaylistFile(this);
+        return songTitle;
     }
 
     public void removeSong(IUser requester, String songID) throws CommandStateException, CommandPermissionException {
@@ -98,11 +95,6 @@ public class Playlist implements Comparable<Playlist> {
         if (!songs.containsValue(track.getInfo().title))
             throw new CommandStateException("That song is not in this playlist!");
         songs.values().remove(track.getInfo().title);
-        PlaylistManager.writePlaylistFile(this);
-    }
-
-    public void forceRemoveSong(String songID){
-        songs.remove(songID);
         PlaylistManager.writePlaylistFile(this);
     }
 
