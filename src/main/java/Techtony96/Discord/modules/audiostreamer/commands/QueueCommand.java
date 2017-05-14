@@ -4,11 +4,9 @@ import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
-import Techtony96.Discord.modules.audiostreamer.voice.VoiceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import sx.blah.discord.util.EmbedBuilder;
 
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -32,17 +30,12 @@ public class QueueCommand {
             }
         }
 
-
             if (nowPlaying == null) {
                 cc.replyWith("The queue is empty! Play something with !Play");
                 return;
             }
 
-            final AudioTrack currentTrack = AudioStreamer.getVoiceManager().getNowPlaying(cc.getGuild());
-            final long totalTime = AudioStreamer.getVoiceManager().getQueue(cc.getGuild()).stream()
-                    .map(AudioTrack::getDuration)
-                    .reduce(0L, (x, y) -> x + y)
-                    + (currentTrack != null ? currentTrack.getDuration() : 0);
+        final long totalTime = AudioStreamer.getVoiceManager().getQueue(cc.getGuild()).stream().map(AudioTrack::getDuration).reduce(0L, (x, y) -> x + y) + AudioStreamer.getVoiceManager().getNowPlaying(cc.getGuild()).getDuration();
 
             EmbedBuilder embed = new EmbedBuilder();
 
@@ -82,7 +75,6 @@ public class QueueCommand {
         StringBuilder stringBuilder = new StringBuilder();
 
         for(int i = 0; i < data.length; i++) {
-
             long time = data[i];
 
             if (time > 0) {
