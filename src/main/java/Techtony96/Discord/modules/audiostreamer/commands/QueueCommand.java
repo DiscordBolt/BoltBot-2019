@@ -17,8 +17,6 @@ public class QueueCommand {
 
     @BotCommand(command = "queue", module = "Audio Streamer Module", description = "Print out the list of currently queued songs.", usage = "Queue")
     public static void queueCommand(CommandContext cc) {
-        List<AudioTrack> queue = AudioStreamer.getVoiceManager().getQueue(cc.getGuild());
-        AudioTrack nowPlaying = AudioStreamer.getVoiceManager().getNowPlaying(cc.getGuild());
 
         if (cc.getArgCount() > 1 && cc.getArgument(1).equalsIgnoreCase("clear")) {
             try {
@@ -30,10 +28,13 @@ public class QueueCommand {
             }
         }
 
-            if (nowPlaying == null) {
-                cc.replyWith("The queue is empty! Play something with !Play");
-                return;
-            }
+        List<AudioTrack> queue = AudioStreamer.getVoiceManager().getQueue(cc.getGuild());
+        AudioTrack nowPlaying = AudioStreamer.getVoiceManager().getNowPlaying(cc.getGuild());
+
+        if (nowPlaying == null) {
+            cc.replyWith("The queue is empty! Play something with !Play");
+            return;
+        }
 
         final long totalTime = AudioStreamer.getVoiceManager().getQueue(cc.getGuild()).stream().map(AudioTrack::getDuration).reduce(0L, (x, y) -> x + y) + AudioStreamer.getVoiceManager().getNowPlaying(cc.getGuild()).getDuration();
 
