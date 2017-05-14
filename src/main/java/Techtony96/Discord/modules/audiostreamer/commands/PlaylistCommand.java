@@ -204,12 +204,13 @@ public class PlaylistCommand {
             }
 
             try {
-                current.addSong(cc.getUser(), cc.getArgument(2));
+                String title = current.addSong(cc.getUser(), cc.getArgument(2));
+                cc.replyWith("Added \"" + title + "\" to " + current.getTitle());
+                return;
             } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
             }
-            //cc.replyWith("Successfully added " + current.getSongTitle(cc.getArgument(2)) + " to " + current.getTitle() + ".");
         } else if (instruction.equalsIgnoreCase("remove")) {
             if (cc.getArgCount() != 3) {
                 cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "Usage: " + REMOVE_USAGE);

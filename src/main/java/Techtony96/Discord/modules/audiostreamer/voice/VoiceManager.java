@@ -5,7 +5,6 @@ import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
 import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
 import Techtony96.Discord.utils.ChannelUtil;
 import Techtony96.Discord.utils.ExceptionMessage;
-import Techtony96.Discord.utils.Logger;
 import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
@@ -48,8 +47,8 @@ public class VoiceManager {
         return djMap.computeIfAbsent(guild.getLongID(), k -> new DJ(guild, playerManager.createPlayer()));
     }
 
-    public void joinChannel(IGuild guild, IUser requestor, IVoiceChannel channel) throws CommandStateException, CommandBotPermissionException {
-        if (requestor.getVoiceStateForGuild(guild).getChannel() == null)
+    public void joinChannel(IGuild guild, IUser requester, IVoiceChannel channel) throws CommandStateException, CommandBotPermissionException {
+        if (requester.getVoiceStateForGuild(guild).getChannel() == null)
             throw new CommandStateException("You must be in a voice channel for me to join!");
         if (AudioStreamer.getClient().getOurUser().getVoiceStateForGuild(guild).getChannel() != null)
             throw new CommandStateException("I am already connect to a voice channel!");
@@ -62,12 +61,15 @@ public class VoiceManager {
         }
     }
 
-    public void leaveChannel(IGuild guild, IUser requestor) throws CommandPermissionException, CommandStateException {
-        if (!AudioStreamer.hasDJPermissions(requestor, guild))
+    public void leaveChannel(IGuild guild, IUser requester) throws CommandPermissionException, CommandStateException {
+        if (!AudioStreamer.hasDJPermissions(requester, guild))
             throw new CommandPermissionException("You must be a \"" + AudioStreamer.ADMIN_ROLE + "\" to execute this command!");
         if (AudioStreamer.getClient().getOurUser().getVoiceStateForGuild(guild).getChannel() == null)
             throw new CommandStateException("I am not connected to a voice channel!");
-
+        if (requester.getVoiceStateForGuild(guild).getChannel() == null)
+            throw new CommandStateException("You must be connected to a voice channel to execute this command!");
+        if (getDJ(guild).getVoiceChannel() != null && getDJ(guild).getVoiceChannel() != null && requester.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getVoiceChannel())
+            throw new CommandStateException("You must be in my voice channel to control the music!");
         DJ dj = getDJ(guild);
         dj.getVoiceChannel().leave();
         dj.setVoiceChannel(null);
@@ -81,31 +83,30 @@ public class VoiceManager {
         dj.clearQueue();
     }
 
-    public String queue(IGuild guild, IUser requestor, String songID) throws CommandPermissionException {
-        if (songID.toLowerCase().contains("twitch.tv") && !AudioStreamer.hasAdminPermissions(requestor, guild))
+    public void queue(IGuild guild, IUser requester, String songID) throws CommandPermissionException, CommandRuntimeException, CommandStateException {
+        if (songID.toLowerCase().contains("twitch.tv") && !AudioStreamer.hasAdminPermissions(requester, guild))
             throw new CommandPermissionException("You must be a \"" + AudioStreamer.ADMIN_ROLE + "\" to add Twitch.tv live streams!");
-
+        if (requester.getVoiceStateForGuild(guild).getChannel() == null)
+            throw new CommandStateException("You must be connected to a voice channel to execute this command!");
+        if (getDJ(guild).getVoiceChannel() != null && requester.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getVoiceChannel())
+            throw new CommandStateException("You must be in my voice channel to control the music!");
         DJ dj = getDJ(guild);
-        Semaphore wait = new Semaphore(0);
-        final String[] songTitle = {"Unable to get song title"};
         playerManager.loadItemOrdered(dj, songID, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                dj.queue(requestor, track);
-                songTitle[0] = track.getInfo().title;
-                wait.release();
+                dj.queue(requester, track);
             }
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
                 for (AudioTrack track : playlist.getTracks()) {
-                    dj.queue(requestor, track);
+                    dj.queue(requester, track);
                 }
             }
 
             @Override
             public void noMatches() {
-                throw new CommandRuntimeException("Sorry, I was unable to play the song you specified.");
+                throw new CommandRuntimeException("Sorry, I was unable to find the song you specified.");
             }
 
             @Override
@@ -115,40 +116,50 @@ public class VoiceManager {
                 throw new CommandRuntimeException("Sorry, an error occurred while loading your song. Please try again later.");
             }
         });
-        try {
-            wait.acquire();
-        } catch (InterruptedException e) {
-            Logger.error(e.getMessage());
-            Logger.debug(e);
-        }
-        return songTitle[0];
     }
 
     public void queue(IGuild guild, IUser requester, Playlist playlist) throws CommandStateException, CommandPermissionException {
         if (playlist == null)
             throw new CommandStateException("You do not have a selected playlist!");
-        for (String s : playlist.getSongIDs())
-            queue(guild, requester, s);
+        if (requester.getVoiceStateForGuild(guild).getChannel() == null)
+            throw new CommandStateException("You must be connected to a voice channel to execute this command!");
+        if (getDJ(guild).getVoiceChannel() != null && requester.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getVoiceChannel())
+            throw new CommandStateException("You must be in my voice channel to control the music!");
+        for (String songURL : playlist.getSongIDs()) {
+            queue(guild, requester, songURL);
+        }
     }
 
-    public void dequeue(IGuild guild, IUser requestor, String songID) throws CommandPermissionException {
+    public void dequeue(IGuild guild, IUser requester, String songID) throws CommandPermissionException, CommandStateException {
+        if (requester.getVoiceStateForGuild(guild).getChannel() == null)
+            throw new CommandStateException("You must be connected to a voice channel to execute this command!");
+        if (getDJ(guild).getVoiceChannel() != null && requester.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getVoiceChannel())
+            throw new CommandStateException("You must be in my voice channel to control the music!");
         DJ dj = getDJ(guild);
-        if (!AudioStreamer.hasAdminPermissions(requestor, guild) || !dj.getTrackRequester(songID).equals(requestor))
+        if (!AudioStreamer.hasAdminPermissions(requester, guild) || !dj.getTrackRequester(songID).equals(requester))
             throw new CommandPermissionException("You do not have permission to remove this song!");
         dj.dequeue(songID);
     }
 
-    public void dequeue(IGuild guild, IUser requestor, Playlist playlist) throws CommandPermissionException {
+    public void dequeue(IGuild guild, IUser requester, Playlist playlist) throws CommandPermissionException, CommandStateException {
+        if (requester.getVoiceStateForGuild(guild).getChannel() == null)
+            throw new CommandStateException("You must be connected to a voice channel to execute this command!");
+        if (getDJ(guild).getVoiceChannel() != null && requester.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getVoiceChannel())
+            throw new CommandStateException("You must be in my voice channel to control the music!");
         DJ dj = getDJ(guild);
-        if (AudioStreamer.hasAdminPermissions(requestor, guild)) {
+        if (AudioStreamer.hasAdminPermissions(requester, guild)) {
             playlist.getSongIDs().forEach(s -> dj.dequeue(s));
             return;
         }
         for (String s : playlist.getSongIDs())
-            dequeue(guild, requestor, s);
+            dequeue(guild, requester, s);
     }
 
     public boolean skip(IGuild guild, IUser requester, boolean force, int count) throws CommandPermissionException, CommandStateException {
+        if (requester.getVoiceStateForGuild(guild).getChannel() == null)
+            throw new CommandStateException("You must be connected to a voice channel to execute this command!");
+        if (getDJ(guild).getVoiceChannel() != null && requester.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getVoiceChannel())
+            throw new CommandStateException("You must be in my voice channel to control the music!");
         if (force) {
             if (!AudioStreamer.hasDJPermissions(requester, guild))
                 throw new CommandPermissionException("You do not have permission to force skip songs!");
@@ -158,15 +169,23 @@ public class VoiceManager {
         return getDJ(guild).skip(requester);
     }
 
-    public void pause(IGuild guild, IUser requester) throws CommandPermissionException {
+    public void pause(IGuild guild, IUser requester) throws CommandPermissionException, CommandStateException {
         if (!AudioStreamer.hasDJPermissions(requester, guild))
             throw new CommandPermissionException(ExceptionMessage.PERMISSION_DENIED);
+        if (requester.getVoiceStateForGuild(guild).getChannel() == null)
+            throw new CommandStateException("You must be connected to a voice channel to execute this command!");
+        if (getDJ(guild).getVoiceChannel() != null && requester.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getVoiceChannel())
+            throw new CommandStateException("You must be in my voice channel to control the music!");
         getDJ(guild).pause();
     }
 
-    public void unpause(IGuild guild, IUser requester) throws CommandPermissionException {
+    public void unpause(IGuild guild, IUser requester) throws CommandPermissionException, CommandStateException {
         if (!AudioStreamer.hasDJPermissions(requester, guild))
             throw new CommandPermissionException(ExceptionMessage.PERMISSION_DENIED);
+        if (requester.getVoiceStateForGuild(guild).getChannel() == null)
+            throw new CommandStateException("You must be connected to a voice channel to execute this command!");
+        if (getDJ(guild).getVoiceChannel() != null && requester.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getVoiceChannel())
+            throw new CommandStateException("You must be in my voice channel to control the music!");
         getDJ(guild).unpause();
     }
 
@@ -184,36 +203,6 @@ public class VoiceManager {
         getDJ(guild).shuffle();
     }
 
-    public void loadSong(Playlist playlist, String songID) {
-        playerManager.loadItem(songID, new AudioLoadResultHandler() {
-            @Override
-            public void trackLoaded(AudioTrack track) {
-                playlist.forceAddSong(track);
-                throw new CommandRuntimeException("Successfully added " + track.getInfo().title);
-            }
-
-            @Override
-            public void playlistLoaded(AudioPlaylist audioPlaylist) {
-                audioPlaylist.getTracks().forEach(t -> playlist.forceAddSong(t));
-                throw new CommandRuntimeException("Successfully added songs from " + audioPlaylist.getName());
-            }
-
-            @Override
-            public void noMatches() {
-                playlist.forceRemoveSong(songID);
-                throw new CommandRuntimeException("Could not find any media for " + songID);
-            }
-
-            @Override
-            public void loadFailed(FriendlyException exception) {
-                playlist.forceRemoveSong(songID);
-                if (exception.severity == FriendlyException.Severity.COMMON)
-                    throw new CommandRuntimeException(exception.getMessage());
-                throw new CommandRuntimeException("An error occured while loading your song.");
-            }
-        });
-    }
-
     public AudioTrack getNowPlaying(IGuild guild) {
         return getDJ(guild).getPlaying();
     }
@@ -224,12 +213,16 @@ public class VoiceManager {
 
     /**
      * @param guild
-     * @param requestor
+     * @param requester
      * @param volume    int from 0 - 150
      */
-    public void setVolume(IGuild guild, IUser requestor, int volume) throws CommandPermissionException {
-        if (!AudioStreamer.hasAdminPermissions(requestor, guild))
+    public void setVolume(IGuild guild, IUser requester, int volume) throws CommandPermissionException, CommandStateException {
+        if (!AudioStreamer.hasAdminPermissions(requester, guild))
             throw new CommandPermissionException("You do not have permission to change the volume!");
+        if (requester.getVoiceStateForGuild(guild).getChannel() == null)
+            throw new CommandStateException("You must be connected to a voice channel to execute this command!");
+        if (getDJ(guild).getVoiceChannel() != null && requester.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getVoiceChannel())
+            throw new CommandStateException("You must be in my voice channel to control the music!");
         getDJ(guild).setVolume(volume);
     }
 
@@ -237,11 +230,50 @@ public class VoiceManager {
         return getDJ(guild).getTrackRequester(track);
     }
 
-    public void clearQueue(IGuild guild, IUser requester) throws CommandPermissionException {
+    public void clearQueue(IGuild guild, IUser requester) throws CommandPermissionException, CommandStateException {
         if (!AudioStreamer.hasAdminPermissions(requester, guild))
             throw new CommandPermissionException("You do not have permission to clear the queue!");
+        if (requester.getVoiceStateForGuild(guild).getChannel() == null)
+            throw new CommandStateException("You must be connected to a voice channel to execute this command!");
+        if (getDJ(guild).getVoiceChannel() != null && requester.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getVoiceChannel())
+            throw new CommandStateException("You must be in my voice channel to control the music!");
 
         getDJ(guild).clearQueue();
+    }
+
+    public String getSongTitle(String songURL) {
+        Semaphore s = new Semaphore(0);
+
+        Info title = new Info();
+
+        playerManager.loadItem(songURL, new AudioLoadResultHandler() {
+            @Override
+            public void trackLoaded(AudioTrack track) {
+                title.title = track.getInfo().title;
+                s.release();
+            }
+
+            @Override
+            public void playlistLoaded(AudioPlaylist playlist) {
+
+            }
+
+            @Override
+            public void noMatches() {
+
+            }
+
+            @Override
+            public void loadFailed(FriendlyException exception) {
+
+            }
+        });
+        s.acquireUninterruptibly();
+        return title.title;
+    }
+
+    private class Info {
+        public String title;
     }
 
 
@@ -250,20 +282,36 @@ public class VoiceManager {
     public void reactionEvent(ReactionAddEvent e){
         if (e.getUser().equals(AudioStreamer.getClient().getOurUser()))
             return;
-        if (!e.getMessage().equals(getDJ(e.getGuild()).getNowPlayingMessage()))
+
+        DJ dj = getDJ(e.getGuild());
+        IMessage message = e.getMessage();
+        AudioTrack track = null;
+
+        if (message.equals(dj.getNowPlayingMessage()))
+            track = dj.getPlaying();
+        else if (dj.getTrackMessages().containsKey(message))
+            track = dj.getTrackMessages().get(message);
+
+        if (track == null)
             return;
+
 
         switch (e.getReaction().getUnicodeEmoji().getAliases().get(0)){
             case "black_right_pointing_double_triangle_with_vertical_bar":
-                try {
-                    skip(e.getGuild(), e.getUser(), false, 1);
-                } catch (CommandException ex) {
-                    ChannelUtil.sendMessage(e.getChannel(), ex.getMessage());
+                if (track.getIdentifier().equals(dj.getPlaying().getIdentifier())) {
+                    try {
+                        skip(e.getGuild(), e.getUser(), false, 1);
+                    } catch (CommandException ex) {
+                        ChannelUtil.sendMessage(e.getChannel(), ex.getMessage());
+                    }
+                } else {
+                    ChannelUtil.sendMessage(e.getChannel(), e.getUser().getName() + ", You can only skip currently playing songs");
+                    return;
                 }
                 break;
             case "star":
                 try {
-                    getDJ(e.getGuild()).starSong(e.getMessage(), e.getUser());
+                    getDJ(e.getGuild()).starSong(track, e.getUser());
                 } catch (CommandException ex) {
                     ChannelUtil.sendMessage(e.getChannel(), ex.getMessage());
                 }
@@ -274,8 +322,6 @@ public class VoiceManager {
     @EventSubscriber
     public void removeReactionEvent(ReactionRemoveEvent e){
         if (e.getUser().equals(AudioStreamer.getClient().getOurUser()))
-            return;
-        if (!e.getMessage().equals(getDJ(e.getGuild()).getNowPlayingMessage()))
             return;
 
         switch (e.getReaction().getUnicodeEmoji().getAliases().get(0)){
