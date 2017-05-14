@@ -3,15 +3,17 @@ package Techtony96.Discord.modules.dice;
 import Techtony96.Discord.api.CustomModule;
 import Techtony96.Discord.api.commands.BotCommand;
 import Techtony96.Discord.api.commands.CommandContext;
+import Techtony96.Discord.api.commands.exceptions.CommandArgumentException;
 import Techtony96.Discord.utils.ChannelUtil;
-import Techtony96.Discord.utils.ExceptionMessage;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.modules.IModule;
 import sx.blah.discord.util.EmbedBuilder;
 
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -19,7 +21,7 @@ import java.util.regex.Pattern;
  */
 public class DiceModule extends CustomModule implements IModule {
 
-    private static final Pattern DIE_PATTERN = Pattern.compile("([dD]*[0-9]+)");
+    private static final Pattern DIE_PATTERN = Pattern.compile("(?:([0-9]+)?[dD])?([0-9]+)");
     private static final String HEADS_URL = "http://i.imgur.com/i68ZFNG.png";
     private static final String TAILS_URL = "http://i.imgur.com/nml8Sfx.png";
     private static final String DIE_URL_1 = "http://i.imgur.com/DVVjp7w.png";
@@ -30,43 +32,28 @@ public class DiceModule extends CustomModule implements IModule {
     private static final String DIE_URL_6 = "http://i.imgur.com/Exx1Pmz.png";
 
     public DiceModule() {
-        super("Dice Module", "1.0");
+        super("Dice Module", "1.1");
     }
 
-    @BotCommand(command = "roll", module = "Dice Module", description = "Roll a die!", usage = "Roll d##")
-    public static void rollCommand(CommandContext cc) {
-        for (String arg : cc.getArguments()) {
-            if (DIE_PATTERN.matcher(arg).find()) {
-                int count = -1;
-                int die;
-                final String[] split = arg.split("([dD])");
+    @BotCommand(command = "roll", module = "Dice Module", description = "Roll a die!", usage = "Roll #d##", args = 2)
+    public static void rollCommand(CommandContext cc) throws CommandArgumentException {
+        Matcher m = DIE_PATTERN.matcher(cc.getArgument(1));
 
-                if (split.length == 2) {
-                    count = Integer.valueOf(split[0]) != null ? Integer.valueOf(split[0]) : 1;
-                    die = Integer.valueOf(split[1]);
-                } else {
-                    try {
-                        die = Integer.valueOf(arg.replaceAll("([dD])", ""));
-                    } catch (NumberFormatException e) {
-                        cc.replyWith(ExceptionMessage.COMMAND_PROCESS_EXCEPTION);
-                        return;
-                    }
-                }
-
-                if (die < 2) {
-                    cc.replyWith(die + " is not a valid number.");
-                } else if (die == 2) {
-                    cc.replyWith(getCoinEmbed());
-                } else {
-                    if (count > 0) {
-                        cc.replyWith(getMultiDieEmbed(count, die));
-                    } else {
-                        cc.replyWith(getDieEmbed(die));
-                    }
-                }
-                return;
-            }
+        if (!m.matches()) {
+            cc.replyWith("Your die was not formatted correctly. !Roll #d##");
+            return;
         }
+
+        int numDice = Integer.valueOf(Optional.ofNullable(m.group(1)).orElse("1"));
+        int numSides = Integer.valueOf(Optional.ofNullable(m.group(2)).orElseThrow(() -> new CommandArgumentException("Your die was not formatted correctly. !Roll #d##")));
+
+        if (numDice < 1 || numSides <= 1 || numDice > 100 || numSides > 100) {
+            cc.replyWith("Your die has an invalid number of sides.");
+            return;
+        }
+
+        cc.replyWith(getDieEmbed(numDice, numSides));
+
     }
 
     @EventSubscriber
@@ -90,13 +77,18 @@ public class DiceModule extends CustomModule implements IModule {
         return embed.build();
     }
 
-    private static EmbedObject getDieEmbed(int max) {
-        int result = random(1, max);
+    private static EmbedObject getDieEmbed(int numDice, int numSides) {
+        int result = 0;
+
+        for (int i = 0; i < numDice; i++)
+            result += random(1, numSides);
+
 
         EmbedBuilder embed = new EmbedBuilder();
         embed.withColor(255, 235, 59); // Hex #FFEB3B (Yellow)
 
         embed.withTitle(Integer.toString(result));
+        embed.withDescription(numDice + "d" + numSides);
         switch (result) {
             case 1:
                 embed.withThumbnail(DIE_URL_1);
@@ -117,21 +109,6 @@ public class DiceModule extends CustomModule implements IModule {
                 embed.withThumbnail(DIE_URL_6);
                 break;
         }
-        return embed.build();
-    }
-
-    private static EmbedObject getMultiDieEmbed(int count, int max) {
-
-        int total = 0;
-        for (int i = 0; i < count; i++) {
-            total += random(1, max);
-        }
-
-        EmbedBuilder embed = new EmbedBuilder();
-        embed.withColor(255, 235, 59); // Hex #FFEB3B (Yellow)
-
-        embed.withTitle(count + "d" + max + "== " + total);
-        embed.withThumbnail(DIE_URL_6);
         return embed.build();
     }
 }
