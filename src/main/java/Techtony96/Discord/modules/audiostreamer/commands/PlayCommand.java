@@ -23,7 +23,7 @@ public class PlayCommand {
     private static final String PLAY_PLAYLIST = "!Play playlist <playlist name>";
     private static final String PLAY_RANDOM = "!Play random";
 
-    @BotCommand(command = "play", module = "Audio Streamer Module", description = "Instruct the bot to start playing something.", usage = "Play help")
+    @BotCommand(command = "play", module = "Audio Streamer Module", description = "Instruct the bot to start playing something.", usage = "Play help", allowedChannels = "music")
     public static void playCommand(CommandContext cc) {
         if (cc.getArgCount() == 1 && AudioStreamer.getVoiceManager().isPaused(cc.getGuild())) {
             try {

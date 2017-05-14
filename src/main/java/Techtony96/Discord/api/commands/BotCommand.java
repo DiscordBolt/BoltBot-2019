@@ -23,6 +23,8 @@ public @interface BotCommand {
 
     String[] aliases() default {};
 
+    String[] allowedChannels() default {};
+
     Permissions[] permissions() default {};
 
     int args() default -1;

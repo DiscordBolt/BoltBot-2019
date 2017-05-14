@@ -29,6 +29,7 @@ public class CustomCommand {
     private String description = "";
     private String usage = "";
     private Set<String> aliases = new HashSet<>();
+    private Set<String> allowedChannels = new HashSet<>();
     private EnumSet<Permissions> permissions = EnumSet.noneOf(Permissions.class);
     private int args = -1, minArgs = -1, maxArgs = -1;
     private boolean secret = false;
@@ -45,6 +46,7 @@ public class CustomCommand {
         setDescription(annotation.description());
         setUsage(annotation.usage());
         setAliases(annotation.aliases());
+        setAllowedChannels(annotation.allowedChannels());
         setPermissions(annotation.permissions());
         if (annotation.args() != -1)
             setArguments(annotation.args());
@@ -87,6 +89,11 @@ public class CustomCommand {
 
     public CustomCommand setAliases(String... aliases) {
         Collections.addAll(this.aliases, aliases);
+        return this;
+    }
+
+    public CustomCommand setAllowedChannels(String... allowedChannels) {
+        Collections.addAll(this.allowedChannels, allowedChannels);
         return this;
     }
 
@@ -152,6 +159,10 @@ public class CustomCommand {
         return aliases;
     }
 
+    public Set<String> getAllowedChannels() {
+        return allowedChannels;
+    }
+
     public EnumSet<Permissions> getPermissions() {
         return permissions;
     }
@@ -194,6 +205,11 @@ public class CustomCommand {
 
         if (!(cc.getCommand().equalsIgnoreCase(getName()) || (getAliases().size() > 0 && getAliases().stream().filter(a -> a.equalsIgnoreCase(cc.getCommand())).findAny().isPresent())))
             return;
+
+        if (getAllowedChannels().size() > 0 && !getAllowedChannels().contains(cc.getChannel().getName())) {
+            cc.replyWith(cc.getCommand() + " can not be executed in " + cc.getChannel().mention());
+            return;
+        }
 
         // Argument count check
         if (args != -1) {
