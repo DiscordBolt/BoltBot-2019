@@ -37,29 +37,28 @@ public class QueueCommand {
 
         final long totalTime = AudioStreamer.getVoiceManager().getQueue(cc.getGuild()).stream().map(AudioTrack::getDuration).reduce(0L, (x, y) -> x + y) + AudioStreamer.getVoiceManager().getNowPlaying(cc.getGuild()).getDuration();
 
-            EmbedBuilder embed = new EmbedBuilder();
+        EmbedBuilder embed = new EmbedBuilder();
 
-            embed.withTitle(":clock1030: Queue Length");
-            embed.withDescription(getFormattedTime(totalTime));
+        embed.withTitle(":clock1030: Queue Length");
+        embed.withDescription(getFormattedTime(totalTime));
+        embed.withColor(AudioStreamer.EMBED_COLOR);
 
-            embed.withColor(AudioStreamer.EMBED_COLOR);
-            StringBuilder songs = new StringBuilder();
+        StringBuilder songs = new StringBuilder();
 
-            int i = 2;
-            songs.append("***1. " + nowPlaying.getInfo().title + "***").append('\n');
+        int i = 2;
+        songs.append("***1. " + nowPlaying.getInfo().title + "***").append('\n');
 
-            for (AudioTrack audioTrack : queue) {
-                if ((songs.length() + audioTrack.getInfo().title.length()) >= 975 && (i - 1) < queue.size()) {
-                    songs.append("\n");
-                    songs.append("    ***... and " + (queue.size() - (i - 1)) + " more***");
-                    break;
-                }
-                songs.append(i++).append(". ").append(audioTrack.getInfo().title).append('\n');
+        for (AudioTrack audioTrack : queue) {
+            if ((songs.length() + audioTrack.getInfo().title.length()) >= 975 && (i - 1) < queue.size()) {
+                songs.append("\n");
+                songs.append("    ***... and " + (queue.size() - (i - 1)) + " more***");
+                break;
             }
+            songs.append(i++).append(". ").append(audioTrack.getInfo().title).append('\n');
+        }
 
-            embed.appendField(":arrow_forward: Now Playing", songs.length() > 1 ? songs.toString() : "\n", true);
-            cc.replyWith(embed.build());
-
+        embed.appendField(":arrow_forward: Now Playing", songs.length() > 1 ? songs.toString() : "\n", true);
+        cc.replyWith(embed.build());
     }
 
     public static String getFormattedTime(long timestamp){
