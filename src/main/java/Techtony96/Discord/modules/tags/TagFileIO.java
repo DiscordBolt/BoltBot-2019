@@ -43,7 +43,7 @@ public class TagFileIO {
         try {
             Files.delete(getTagPath(tag));
         } catch (IOException e) {
-            Logger.error("Unable to delete tag \"" + tag.getTag() + "\" to file.");
+            Logger.error("Unable to delete tag \"" + tag.getTag() + "." + FILE_EXT + "\"  file.");
             Logger.debug(e);
             throw new CommandException("Unable to delete your tag.");
         }
