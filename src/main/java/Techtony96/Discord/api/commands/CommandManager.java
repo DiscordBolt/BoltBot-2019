@@ -38,7 +38,7 @@ public class CommandManager {
             prefixes = g.fromJson(new FileReader(prefixFile), new TypeToken<Map<Long, String>>() {
             }.getType());
         } catch (FileNotFoundException e) {
-            Logger.error("Prefix file does not exist!");
+            Logger.error("Command Prefix file does not exist!");
             Logger.debug(e);
         }
 
