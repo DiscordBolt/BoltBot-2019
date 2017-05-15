@@ -89,7 +89,7 @@ public class CommandManager {
             fw.write(g.toJson(prefixes));
             fw.close();
         } catch (IOException e) {
-            Logger.error("Unable to save prefix file.");
+            Logger.error("Unable to save command prefix file.");
             Logger.debug(e);
         }
     }
