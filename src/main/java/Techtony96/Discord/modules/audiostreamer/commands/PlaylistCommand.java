@@ -104,7 +104,14 @@ public class PlaylistCommand {
             }
             Playlist toCreate;
             try {
-                toCreate = manager.createPlaylist(getPLNameArgs(cc), cc.getUser(), cc.getGuild());
+                String title = getPLNameArgs(cc);
+                for (char c : title.toCharArray()) {
+                    if (Character.isLetterOrDigit(c) || c == ' ')
+                        continue;
+                    cc.replyWith("Playlist titles can only contain alphanumeric characters and spaces.");
+                    return;
+                }
+                toCreate = manager.createPlaylist(title, cc.getUser(), cc.getGuild());
             } catch (CommandStateException e) {
                 cc.replyWith(e.getMessage());
                 return;
@@ -225,7 +232,7 @@ public class PlaylistCommand {
             try {
                 int index = Integer.valueOf(song) - 1;
                 current.removeSong(cc.getUser(), index);
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 try {
                     current.removeSong(cc.getUser(), song);
                 } catch (CommandException ex) {
