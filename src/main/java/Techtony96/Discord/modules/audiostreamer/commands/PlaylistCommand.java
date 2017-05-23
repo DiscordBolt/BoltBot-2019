@@ -249,7 +249,7 @@ public class PlaylistCommand {
             StringBuilder sb = new StringBuilder();
             int id = 1;
             for (Playlist pl : playlists) {
-                if (currentUser == null || !pl.getOwnerID().equals(currentUser.getStringID())) {
+                if (currentUser == null || !pl.getOwnerID().equals(currentUser.getLongID())) {
                     if (currentUser != null)
                         embed.appendField(currentUser.getName(), sb.toString(), false);
                     sb.setLength(0);
