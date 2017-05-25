@@ -66,6 +66,8 @@ public class CommandManager {
     }
 
     public static String getCommandPrefix(IGuild guild) {
+        if (guild == null)
+            return DEFAULT_PREFIX;
         return prefixes.getOrDefault(guild.getLongID(), DEFAULT_PREFIX);
     }
 

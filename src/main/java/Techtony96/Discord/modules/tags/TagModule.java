@@ -162,6 +162,8 @@ public class TagModule extends CustomModule implements IModule {
 
     @EventSubscriber
     public void onTagRequest(MessageReceivedEvent e) {
+        if (e.getGuild() == null)
+            return;
         if (e.getMessage().getContent().charAt(0) != getTagPrefix(e.getGuild()))
             return;
 
