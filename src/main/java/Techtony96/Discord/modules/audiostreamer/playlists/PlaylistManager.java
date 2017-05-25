@@ -43,6 +43,7 @@ public class PlaylistManager {
                     Logger.debug(e);
                 }
             });
+            Collections.sort(playlists);
         } catch (IOException e) {
             Logger.error("Unable to walk playlist directory.");
             Logger.debug(e);
