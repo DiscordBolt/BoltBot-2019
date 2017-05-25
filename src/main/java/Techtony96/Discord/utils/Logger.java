@@ -2,7 +2,7 @@ package Techtony96.Discord.utils;
 
 public class Logger {
 
-    private static boolean debug = false;
+    private static boolean debug = true;
     private static final String COLOR_RESET = "\u001B[0m";
     private static final String COLOR_INFO = "\u001B[36m";
     private static final String COLOR_WARNING = "\u001B[33m";

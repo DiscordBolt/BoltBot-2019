@@ -77,6 +77,7 @@ public class DJ extends AudioEventAdapter {
 
     public void setVoiceChannel(IVoiceChannel channel){
         this.connectedChannel = channel;
+        unpause();
     }
 
     public List<AudioTrack> getQueue(){
@@ -140,10 +141,14 @@ public class DJ extends AudioEventAdapter {
 
     public void pause() {
         player.setPaused(true);
+        // TODO Change this to self mute once implemented
+        //guild.setMuteUser(AudioStreamer.getClient().getOurUser(), true);
     }
 
     public void unpause() {
         player.setPaused(false);
+        // TODO Change this to self mute once implemented
+        //guild.setMuteUser(AudioStreamer.getClient().getOurUser(), false);
     }
 
     public boolean isPaused() {
