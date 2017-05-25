@@ -46,8 +46,7 @@ public class StreamAnnouncer extends CustomModule implements IModule {
             if (!guild.getUsers().contains(e.getUser()))
                 continue;
 
-            ChannelUtil.sendMessage(guild.getGeneralChannel(), e.getUser().mention() + " just started streaming " + e.getNewPresence().getPlayingText().get());
-            ChannelUtil.sendMessage(guild.getGeneralChannel(), "Come join in on the fun! <" + e.getNewPresence().getStreamingUrl().orElseGet(null) + ">");
+            ChannelUtil.sendMessage(guild.getGeneralChannel(), e.getUser().mention() + " just started streaming " + e.getNewPresence().getPlayingText().orElse("") + "\nCome join in on the fun! <" + e.getNewPresence().getStreamingUrl().orElse("") + ">");
         }
     }
 }
