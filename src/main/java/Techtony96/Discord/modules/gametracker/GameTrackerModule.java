@@ -17,6 +17,7 @@ import java.util.HashMap;
  */
 public class GameTrackerModule extends CustomModule implements IModule {
 
+    private static final int MIN_GAME_TIME = 15 * 60 * 1000; //15 Minutes
     private HashMap<Long, UserInfo> currentUsers = new HashMap<>();
 
     public GameTrackerModule() {
@@ -39,7 +40,9 @@ public class GameTrackerModule extends CustomModule implements IModule {
                 return;
             }
             // User is finished playing their game
-            GameLog.addGameLog(e.getUser(), currentUsers.get(e.getUser().getLongID()).getGame(), ui.getStartTime(), System.currentTimeMillis());
+            if (System.currentTimeMillis() - ui.getStartTime() >= MIN_GAME_TIME) {
+                GameLog.addGameLog(e.getUser(), currentUsers.get(e.getUser().getLongID()).getGame(), ui.getStartTime(), System.currentTimeMillis());
+            }
             currentUsers.remove(e.getUser().getLongID());
         }
 
