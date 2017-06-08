@@ -69,6 +69,8 @@ public class CommandContext {
     }
 
     public String getArgument(int index) {
+        if (index == 0)
+            return getCommand();
         return getContent().split(" ")[index];
     }
 

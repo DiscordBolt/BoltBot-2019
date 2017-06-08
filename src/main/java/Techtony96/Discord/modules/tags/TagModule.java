@@ -187,6 +187,8 @@ public class TagModule extends CustomModule implements IModule {
     }
 
     private static char getTagPrefix(IGuild guild) {
+        if (guild == null || tagPrefixes == null)
+            return DEFAULT_TAG_PREFIX;
         return tagPrefixes.getOrDefault(guild.getLongID(), DEFAULT_TAG_PREFIX);
     }
 
