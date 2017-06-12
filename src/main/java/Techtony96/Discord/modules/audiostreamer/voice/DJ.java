@@ -141,14 +141,12 @@ public class DJ extends AudioEventAdapter {
 
     public void pause() {
         player.setPaused(true);
-        // TODO Uncomment this code once the race condition is fixed. Issue #46
-        // AudioStreamer.getClient().mute(getGuild(), true);
+        AudioStreamer.getClient().mute(getGuild(), true);
     }
 
     public void unpause() {
         player.setPaused(false);
-        // TODO Uncomment this code once the race condition is fixed. Issue #46
-        // AudioStreamer.getClient().mute(getGuild(), false);
+        AudioStreamer.getClient().mute(getGuild(), false);
     }
 
     public boolean isPaused() {

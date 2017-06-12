@@ -30,7 +30,7 @@ public class AudioStreamer extends CustomModule implements IModule {
     private static VoiceManager voiceManager;
 
     public AudioStreamer() {
-        super("Audio Streamer Module", "0.1");
+        super("Audio Streamer Module", "0.1", "2.8.2", "Techtony96, Spikex21, and Jessee");
         playlistManager = new PlaylistManager();
         voiceManager = new VoiceManager();
     }
