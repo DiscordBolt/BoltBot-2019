@@ -1,6 +1,7 @@
 package Techtony96.Discord.modules.audiostreamer;
 
 import Techtony96.Discord.api.CustomModule;
+import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
 import Techtony96.Discord.modules.audiostreamer.playlists.PlaylistManager;
 import Techtony96.Discord.modules.audiostreamer.voice.VoiceManager;
 import Techtony96.Discord.utils.UserUtil;
@@ -14,6 +15,8 @@ import sx.blah.discord.modules.IModule;
 import sx.blah.discord.util.EmbedBuilder;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by Tony on 4/14/2017.
@@ -41,6 +44,14 @@ public class AudioStreamer extends CustomModule implements IModule {
 
     public static VoiceManager getVoiceManager() {
         return voiceManager;
+    }
+
+    public static String getRandomSong() {
+        ArrayList<Playlist> playlists = new ArrayList<>(AudioStreamer.getPlaylistManager().getPlaylists());
+        Collections.shuffle(playlists);
+        ArrayList<String> songs = new ArrayList<>(playlists.get(0).getSongIDs());
+        Collections.shuffle(songs);
+        return songs.get(0);
     }
 
     @EventSubscriber

@@ -193,6 +193,10 @@ public class VoiceManager {
         return getDJ(guild).isPaused();
     }
 
+    public boolean isPlayingRandom(IGuild guild) {
+        return getDJ(guild).isPlayingRandom();
+    }
+
     public List<AudioTrack> getQueue(IGuild guild) {
         return getDJ(guild).getQueue();
     }
@@ -201,6 +205,13 @@ public class VoiceManager {
         if (!AudioStreamer.hasDJPermissions(requester, guild))
             throw new CommandPermissionException(ExceptionMessage.PERMISSION_DENIED);
         getDJ(guild).shuffle();
+    }
+
+    public void playRandom(IGuild guild, IUser requester) {
+        if (getDJ(guild).isPlayingRandom())
+            getDJ(guild).setPlayingRandom(false, null);
+        else
+            getDJ(guild).setPlayingRandom(true, requester);
     }
 
     public AudioTrack getNowPlaying(IGuild guild) {

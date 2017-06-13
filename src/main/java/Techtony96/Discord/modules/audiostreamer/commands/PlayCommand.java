@@ -12,10 +12,6 @@ import Techtony96.Discord.modules.audiostreamer.voice.VoiceManager;
 import Techtony96.Discord.utils.ExceptionMessage;
 import sx.blah.discord.util.EmbedBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 /**
  * Created by Evan on 4/16/2017.
  */
@@ -102,13 +98,12 @@ public class PlayCommand {
                 }
             }
         } else if (instruction.equalsIgnoreCase("random")) {
-            String songID = getRandomSong();
-            try {
-                voiceManager.queue(cc.getGuild(), cc.getUser(), songID);
-                cc.replyWith("A random song has been queued up for your listening pleasure!");
+            voiceManager.playRandom(cc.getGuild(), cc.getUser());
+            if (voiceManager.isPlayingRandom(cc.getGuild())) {
+                cc.replyWith("I will now continuously queue up random songs!");
                 return;
-            } catch (CommandException e) {
-                cc.replyWith(e.getMessage());
+            } else {
+                cc.replyWith("I will stop playing random songs.");
                 return;
             }
         } else if (instruction.equalsIgnoreCase("help")) {
@@ -130,12 +125,5 @@ public class PlayCommand {
             }
             return;
         }
-    }
-
-    private static String getRandomSong() {
-        List<Playlist> playlists = new ArrayList<>(AudioStreamer.getPlaylistManager().getPlaylists());
-        Playlist pl = playlists.get(new Random().nextInt(playlists.size()));
-        List<String> songs = pl.getSongIDs();
-        return songs.get(new Random().nextInt(songs.size()));
     }
 }

@@ -1,5 +1,6 @@
 package Techtony96.Discord.modules.audiostreamer.voice;
 
+import Techtony96.Discord.api.commands.exceptions.CommandException;
 import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
 import Techtony96.Discord.api.commands.exceptions.CommandStateException;
 import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
@@ -37,6 +38,8 @@ public class DJ extends AudioEventAdapter {
     private IVoiceChannel connectedChannel;
     private IChannel announceChannel;
     private IMessage nowPlayingMessage;
+    private boolean playingRandom = false;
+    private IUser randomRequester;
 
     private BlockingQueue<AudioTrack> queue = new LinkedBlockingQueue<>();
     private HashMap<AudioTrack, IUser> trackOwners = new HashMap<>();
@@ -54,16 +57,15 @@ public class DJ extends AudioEventAdapter {
         announceChannel = guild.getChannelsByName(AudioStreamer.TEXT_CHANNEL).stream().findAny().orElse(null);
     }
 
-
-    public IGuild getGuild(){
+    public IGuild getGuild() {
         return guild;
     }
 
-    public AudioPlayer getAudioPlayer(){
+    public AudioPlayer getAudioPlayer() {
         return player;
     }
 
-    public IMessage getNowPlayingMessage(){
+    public IMessage getNowPlayingMessage() {
         return nowPlayingMessage;
     }
 
@@ -71,34 +73,34 @@ public class DJ extends AudioEventAdapter {
         return trackMessages;
     }
 
-    public IVoiceChannel getVoiceChannel(){
+    public IVoiceChannel getVoiceChannel() {
         return connectedChannel;
     }
 
-    public void setVoiceChannel(IVoiceChannel channel){
+    public void setVoiceChannel(IVoiceChannel channel) {
         this.connectedChannel = channel;
         unpause();
     }
 
-    public List<AudioTrack> getQueue(){
+    public List<AudioTrack> getQueue() {
         return new ArrayList(queue);
     }
 
-    public IUser getTrackRequester(AudioTrack track){
+    public IUser getTrackRequester(AudioTrack track) {
         return trackOwners.get(track);
     }
 
-    public IUser getTrackRequester(String songID){
+    public IUser getTrackRequester(String songID) {
         return trackOwners.get(trackOwners.keySet().stream().filter(t -> t.getIdentifier().equalsIgnoreCase(songID)).findAny().orElse(null));
     }
 
-    public void setVolume(int volume){
+    public void setVolume(int volume) {
         player.setVolume(volume);
     }
 
-    public void queue(IUser requester, AudioTrack track){
+    public void queue(IUser requester, AudioTrack track) {
         // Connect to voice channel if not already
-        if (getVoiceChannel() == null){
+        if (getVoiceChannel() == null) {
             setVoiceChannel(requester.getVoiceStateForGuild(getGuild()).getChannel());
             if (getVoiceChannel() != null)
                 getVoiceChannel().join();
@@ -110,15 +112,30 @@ public class DJ extends AudioEventAdapter {
         // Start playing the track, if a song is already playing, queue it up
         if (!player.startTrack(track, true))
             queue.offer(track);
-
     }
 
     public void skipCurrentTrack(int count) {
+        if (playingRandom && getQueue().size() == 0) {
+            try {
+                AudioStreamer.getVoiceManager().queue(getGuild(), getRandomRequester(), AudioStreamer.getRandomSong());
+            } catch (CommandException e) {
+                Logger.warning("Had to stop playing random songs for " + getRandomRequester());
+            }
+        }
+
         queue.drainTo(new ArrayList<>(), count - 1);
         player.startTrack(queue.poll(), false);
     }
 
     public void skipCurrentTrack() {
+        if (playingRandom && getQueue().size() == 0) {
+            try {
+                AudioStreamer.getVoiceManager().queue(getGuild(), getRandomRequester(), AudioStreamer.getRandomSong());
+            } catch (CommandException e) {
+                Logger.warning("Had to stop playing random songs for " + getRandomRequester());
+            }
+        }
+
         player.startTrack(queue.poll(), false);
     }
 
@@ -127,11 +144,11 @@ public class DJ extends AudioEventAdapter {
         player.stopTrack();
     }
 
-    public void dequeue(AudioTrack track){
+    public void dequeue(AudioTrack track) {
         queue.remove(track);
     }
 
-    public void dequeue(String songID){
+    public void dequeue(String songID) {
         queue.removeIf(a -> a.getIdentifier().equalsIgnoreCase(songID));
     }
 
@@ -164,6 +181,26 @@ public class DJ extends AudioEventAdapter {
         trackMessages.put(message, track);
     }
 
+    public void setPlayingRandom(boolean playingRandom, IUser randomRequester) {
+        this.playingRandom = playingRandom;
+        this.randomRequester = randomRequester;
+        if (getPlaying() == null) {
+            try {
+                AudioStreamer.getVoiceManager().queue(getGuild(), getRandomRequester(), AudioStreamer.getRandomSong());
+            } catch (CommandException e) {
+                Logger.warning("Could not start playing random songs for " + randomRequester.getName());
+            }
+        }
+    }
+
+    public boolean isPlayingRandom() {
+        return playingRandom;
+    }
+
+    public IUser getRandomRequester() {
+        return randomRequester;
+    }
+
     /* Events */
 
     @Override
@@ -178,7 +215,7 @@ public class DJ extends AudioEventAdapter {
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
-        if (trackMessages.size() > 1000){
+        if (trackMessages.size() > 1000) {
             trackMessages.clear();
             Logger.warning("Had to clear TRACK PLAYING MESSAGE HISTORY!");
         }
@@ -194,6 +231,14 @@ public class DJ extends AudioEventAdapter {
         trackOwners.remove(track);
         // Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
         if (endReason.mayStartNext) {
+            if (playingRandom && getQueue().size() == 0) {
+                try {
+                    AudioStreamer.getVoiceManager().queue(getGuild(), getRandomRequester(), AudioStreamer.getRandomSong());
+                } catch (CommandException e) {
+                    Logger.warning("Had to stop playing random songs for " + getRandomRequester());
+                }
+            }
+
             skipCurrentTrack();
         }
     }
@@ -212,7 +257,7 @@ public class DJ extends AudioEventAdapter {
 
     public void starSong(AudioTrack track, IUser user) throws CommandStateException, CommandPermissionException {
         if (track == null || user == null)
-            throw  new CommandStateException("That track can not be found.");
+            throw new CommandStateException("That track can not be found.");
 
         Playlist playlist = AudioStreamer.getPlaylistManager().getSelectedPlaylist(user.getLongID());
         if (playlist == null)
@@ -223,7 +268,7 @@ public class DJ extends AudioEventAdapter {
 
     public void removeStar(IMessage message, IUser user) throws CommandStateException, CommandPermissionException {
         if (message == null || user == null || !trackMessages.containsKey(message))
-            throw  new CommandStateException("That track can not be found.");
+            throw new CommandStateException("That track can not be found.");
 
         AudioTrack track = trackMessages.get(message);
         Playlist playlist = AudioStreamer.getPlaylistManager().getSelectedPlaylist(user.getLongID());
@@ -246,13 +291,14 @@ public class DJ extends AudioEventAdapter {
         return false;
     }
 
-    public void unskip(IUser requester){
+    public void unskip(IUser requester) {
         votesToSkip.remove(requester);
     }
 
     /* Channel Cleanup */
 
     private void checkChannel() {
+        Logger.warning("Size: " + getVoiceChannel().getConnectedUsers().size());
         if (getVoiceChannel().getConnectedUsers().size() <= 1) {
             AudioStreamer.getVoiceManager().forceLeaveChannel(guild);
         }
