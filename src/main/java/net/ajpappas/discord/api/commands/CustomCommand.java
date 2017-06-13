@@ -184,7 +184,7 @@ public class CustomCommand {
     }
 
     @EventSubscriber
-    public void OnMesageEvent(MessageReceivedEvent e) {
+    public void onMesageEvent(MessageReceivedEvent e) {
         String message = e.getMessage().getContent();
         IUser user = e.getAuthor();
 

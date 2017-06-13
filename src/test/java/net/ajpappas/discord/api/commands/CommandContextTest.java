@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Techt on 5/2/2017.
@@ -16,8 +17,7 @@ public class CommandContextTest {
     private CommandContext cc, ccArgTest;
 
     @Before
-
-    public void setup() {
+    public void setUp() {
         cc = new CommandContext(null, MockObjects.mockCommand);
         ccArgTest = new CommandContext(null, new MockMessage("!Command arg1 arg2", 5, MockObjects.mockUser, MockObjects.mockChannel));
     }
@@ -54,12 +54,14 @@ public class CommandContextTest {
 
     @Test
     public void testGetMentions() {
-
+        //TODO Write test
+        assertTrue(true);
     }
 
     @Test
     public void testIsPrivateMessage() {
-
+        //TODO Write test
+        assertTrue(true);
     }
 
     @Test
@@ -90,11 +92,13 @@ public class CommandContextTest {
 
     @Test
     public void testReplyWith() {
-
+        //TODO Write test
+        assertTrue(true);
     }
 
     @Test
     public void testSendUsage() {
-
+        //TODO Write test
+        assertTrue(true);
     }
 }

@@ -65,7 +65,7 @@ public class PlaylistCommand {
      * @param cc context concerning the issued command
      */
     @BotCommand(command = "playlist", module = "Audio Streamer Module", aliases = "pl", allowPM = true, description = "Group of instructions for managing playlists.", usage = "Playlist help", allowedChannels = "music")
-    public static void PlaylistCommand(CommandContext cc) {
+    public static void playlistCommand(CommandContext cc) {
         if (cc.getArgCount() < 2) {
             cc.replyWith(ExceptionMessage.INCORRECT_USAGE);
             cc.sendUsage();
