@@ -1,7 +1,7 @@
-package Techtony96.Discord.modules.tags;
+package net.ajpappas.discord.modules.tags;
 
-import Techtony96.Discord.api.commands.exceptions.CommandException;
-import Techtony96.Discord.utils.Logger;
+import net.ajpappas.discord.api.commands.exceptions.CommandException;
+import net.ajpappas.discord.utils.Logger;
 import com.google.gson.Gson;
 
 import java.io.FileNotFoundException;

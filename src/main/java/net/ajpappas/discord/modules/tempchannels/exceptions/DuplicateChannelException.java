@@ -1,4 +1,4 @@
-package Techtony96.Discord.modules.tempchannels.exceptions;
+package net.ajpappas.discord.modules.tempchannels.exceptions;
 
 public class DuplicateChannelException extends Exception {
 

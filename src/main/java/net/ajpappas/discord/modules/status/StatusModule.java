@@ -1,6 +1,6 @@
-package Techtony96.Discord.modules.status;
+package net.ajpappas.discord.modules.status;
 
-import Techtony96.Discord.api.CustomModule;
+import net.ajpappas.discord.api.CustomModule;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;

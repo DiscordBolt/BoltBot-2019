@@ -1,10 +1,10 @@
-package Techtony96.Discord.modules.dev;
+package net.ajpappas.discord.modules.dev;
 
-import Techtony96.Discord.api.commands.BotCommand;
-import Techtony96.Discord.api.commands.CommandContext;
-import Techtony96.Discord.utils.ExceptionMessage;
-import Techtony96.Discord.utils.Logger;
-import Techtony96.Discord.utils.UserUtil;
+import net.ajpappas.discord.api.commands.BotCommand;
+import net.ajpappas.discord.api.commands.CommandContext;
+import net.ajpappas.discord.utils.ExceptionMessage;
+import net.ajpappas.discord.utils.Logger;
+import net.ajpappas.discord.utils.UserUtil;
 import sx.blah.discord.handle.obj.Permissions;
 
 import java.io.IOException;

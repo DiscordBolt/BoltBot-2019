@@ -1,6 +1,6 @@
-package Techtony96.Discord.api.commands;
+package net.ajpappas.discord.api.commands;
 
-import Techtony96.Discord.utils.Logger;
+import net.ajpappas.discord.utils.Logger;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.reflections.Reflections;

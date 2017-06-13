@@ -1,4 +1,4 @@
-package Techtony96.Discord.modules.streamannouncer;
+package net.ajpappas.discord.modules.streamannouncer;
 
 import sx.blah.discord.handle.obj.IUser;
 

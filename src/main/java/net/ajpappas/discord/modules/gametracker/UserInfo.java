@@ -1,4 +1,4 @@
-package Techtony96.Discord.modules.gametracker;
+package net.ajpappas.discord.modules.gametracker;
 
 import sx.blah.discord.handle.obj.IUser;
 

@@ -1,8 +1,8 @@
-package Techtony96.Discord.modules.audiostreamer.playlists;
+package net.ajpappas.discord.modules.audiostreamer.playlists;
 
-import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
-import Techtony96.Discord.api.commands.exceptions.CommandStateException;
-import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
+import net.ajpappas.discord.api.commands.exceptions.CommandPermissionException;
+import net.ajpappas.discord.api.commands.exceptions.CommandStateException;
+import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IGuild;

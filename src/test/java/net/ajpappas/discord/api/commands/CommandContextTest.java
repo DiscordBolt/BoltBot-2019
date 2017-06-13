@@ -1,4 +1,4 @@
-package Techtony96.Discord.api.commands;
+package net.ajpappas.discord.api.commands;
 
 import mock.MockMessage;
 import mock.MockObjects;

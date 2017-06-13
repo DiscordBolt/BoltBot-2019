@@ -1,4 +1,4 @@
-package Techtony96.Discord.utils;
+package net.ajpappas.discord.utils;
 
 public class Logger {
 

@@ -1,4 +1,4 @@
-package Techtony96.Discord.modules.seen;
+package net.ajpappas.discord.modules.seen;
 
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.StatusType;

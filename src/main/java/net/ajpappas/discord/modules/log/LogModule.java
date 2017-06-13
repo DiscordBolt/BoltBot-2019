@@ -1,7 +1,7 @@
-package Techtony96.Discord.modules.log;
+package net.ajpappas.discord.modules.log;
 
-import Techtony96.Discord.api.CustomModule;
-import Techtony96.Discord.utils.Logger;
+import net.ajpappas.discord.api.CustomModule;
+import net.ajpappas.discord.utils.Logger;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.obj.VoiceChannel;

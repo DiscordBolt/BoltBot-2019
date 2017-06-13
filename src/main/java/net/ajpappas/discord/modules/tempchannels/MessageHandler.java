@@ -1,8 +1,8 @@
-package Techtony96.Discord.modules.tempchannels;
+package net.ajpappas.discord.modules.tempchannels;
 
-import Techtony96.Discord.api.commands.BotCommand;
-import Techtony96.Discord.api.commands.CommandContext;
-import Techtony96.Discord.modules.tempchannels.exceptions.DuplicateChannelException;
+import net.ajpappas.discord.api.commands.BotCommand;
+import net.ajpappas.discord.api.commands.CommandContext;
+import net.ajpappas.discord.modules.tempchannels.exceptions.DuplicateChannelException;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IUser;
 

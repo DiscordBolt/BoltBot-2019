@@ -1,6 +1,7 @@
-package Techtony96.Discord.modules.gametracker;
+package net.ajpappas.discord.gametracker;
 
 import junit.framework.TestCase;
+import net.ajpappas.discord.modules.gametracker.UserInfo;
 
 /**
  * Created by Tony on 2/15/2017.

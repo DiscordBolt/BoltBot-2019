@@ -1,9 +1,9 @@
-package Techtony96.Discord.modules.audiostreamer.commands;
+package net.ajpappas.discord.modules.audiostreamer.commands;
 
-import Techtony96.Discord.api.commands.BotCommand;
-import Techtony96.Discord.api.commands.CommandContext;
-import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
-import Techtony96.Discord.utils.ChannelUtil;
+import net.ajpappas.discord.api.commands.BotCommand;
+import net.ajpappas.discord.api.commands.CommandContext;
+import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
+import net.ajpappas.discord.utils.ChannelUtil;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiManager;

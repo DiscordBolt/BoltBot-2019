@@ -1,7 +1,7 @@
-package Techtony96.Discord.api.commands;
+package net.ajpappas.discord.api.commands;
 
-import Techtony96.Discord.api.list.ArgList;
-import Techtony96.Discord.utils.ChannelUtil;
+import net.ajpappas.discord.api.list.ArgList;
+import net.ajpappas.discord.utils.ChannelUtil;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.obj.PrivateChannel;
 import sx.blah.discord.handle.obj.IChannel;

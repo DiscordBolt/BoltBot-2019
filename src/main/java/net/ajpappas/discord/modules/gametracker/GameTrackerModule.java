@@ -1,6 +1,6 @@
-package Techtony96.Discord.modules.gametracker;
+package net.ajpappas.discord.modules.gametracker;
 
-import Techtony96.Discord.api.CustomModule;
+import net.ajpappas.discord.api.CustomModule;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;

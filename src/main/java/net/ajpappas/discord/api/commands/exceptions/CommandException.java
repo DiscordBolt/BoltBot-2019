@@ -1,6 +1,6 @@
-package Techtony96.Discord.api.commands.exceptions;
+package net.ajpappas.discord.api.commands.exceptions;
 
-import Techtony96.Discord.utils.ExceptionMessage;
+import net.ajpappas.discord.utils.ExceptionMessage;
 
 /**
  * Created by Tony on 4/19/2017.

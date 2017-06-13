@@ -1,14 +1,14 @@
-package Techtony96.Discord.modules.audiostreamer.commands;
+package net.ajpappas.discord.modules.audiostreamer.commands;
 
-import Techtony96.Discord.api.commands.BotCommand;
-import Techtony96.Discord.api.commands.CommandContext;
-import Techtony96.Discord.api.commands.exceptions.CommandArgumentException;
-import Techtony96.Discord.api.commands.exceptions.CommandException;
-import Techtony96.Discord.api.commands.exceptions.CommandStateException;
-import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
-import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
-import Techtony96.Discord.modules.audiostreamer.playlists.PlaylistManager;
-import Techtony96.Discord.utils.ExceptionMessage;
+import net.ajpappas.discord.api.commands.BotCommand;
+import net.ajpappas.discord.api.commands.CommandContext;
+import net.ajpappas.discord.api.commands.exceptions.CommandArgumentException;
+import net.ajpappas.discord.api.commands.exceptions.CommandException;
+import net.ajpappas.discord.api.commands.exceptions.CommandStateException;
+import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
+import net.ajpappas.discord.modules.audiostreamer.playlists.Playlist;
+import net.ajpappas.discord.modules.audiostreamer.playlists.PlaylistManager;
+import net.ajpappas.discord.utils.ExceptionMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.EmbedBuilder;
 

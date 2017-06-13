@@ -1,6 +1,6 @@
-package Techtony96.Discord.modules.tags;
+package net.ajpappas.discord.modules.tags;
 
-import Techtony96.Discord.api.commands.exceptions.CommandException;
+import net.ajpappas.discord.api.commands.exceptions.CommandException;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 

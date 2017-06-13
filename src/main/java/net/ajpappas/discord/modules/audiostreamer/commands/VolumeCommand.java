@@ -1,9 +1,9 @@
-package Techtony96.Discord.modules.audiostreamer.commands;
+package net.ajpappas.discord.modules.audiostreamer.commands;
 
-import Techtony96.Discord.api.commands.BotCommand;
-import Techtony96.Discord.api.commands.CommandContext;
-import Techtony96.Discord.api.commands.exceptions.CommandException;
-import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
+import net.ajpappas.discord.api.commands.BotCommand;
+import net.ajpappas.discord.api.commands.CommandContext;
+import net.ajpappas.discord.api.commands.exceptions.CommandException;
+import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
 
 /**
  * Created by Tony on 4/22/2017.

@@ -1,12 +1,12 @@
-package Techtony96.Discord.modules.tags;
+package net.ajpappas.discord.modules.tags;
 
-import Techtony96.Discord.api.CustomModule;
-import Techtony96.Discord.api.commands.BotCommand;
-import Techtony96.Discord.api.commands.CommandContext;
-import Techtony96.Discord.api.commands.CommandManager;
-import Techtony96.Discord.api.commands.exceptions.CommandException;
-import Techtony96.Discord.utils.ChannelUtil;
-import Techtony96.Discord.utils.Logger;
+import net.ajpappas.discord.api.CustomModule;
+import net.ajpappas.discord.api.commands.BotCommand;
+import net.ajpappas.discord.api.commands.CommandContext;
+import net.ajpappas.discord.api.commands.CommandManager;
+import net.ajpappas.discord.api.commands.exceptions.CommandException;
+import net.ajpappas.discord.utils.ChannelUtil;
+import net.ajpappas.discord.utils.Logger;
 import com.google.gson.reflect.TypeToken;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;

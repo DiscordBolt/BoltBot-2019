@@ -1,9 +1,9 @@
-package Techtony96.Discord.modules.seen;
+package net.ajpappas.discord.modules.seen;
 
-import Techtony96.Discord.api.CustomModule;
-import Techtony96.Discord.api.commands.BotCommand;
-import Techtony96.Discord.api.commands.CommandContext;
-import Techtony96.Discord.utils.UserUtil;
+import net.ajpappas.discord.api.CustomModule;
+import net.ajpappas.discord.api.commands.BotCommand;
+import net.ajpappas.discord.api.commands.CommandContext;
+import net.ajpappas.discord.utils.UserUtil;
 import org.ocpsoft.prettytime.PrettyTime;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;

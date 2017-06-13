@@ -1,6 +1,6 @@
-package Techtony96.Discord.modules.log;
+package net.ajpappas.discord.modules.log;
 
-import Techtony96.Discord.utils.ChannelUtil;
+import net.ajpappas.discord.utils.ChannelUtil;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEvent;

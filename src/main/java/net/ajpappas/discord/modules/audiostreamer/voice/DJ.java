@@ -1,13 +1,13 @@
-package Techtony96.Discord.modules.audiostreamer.voice;
+package net.ajpappas.discord.modules.audiostreamer.voice;
 
-import Techtony96.Discord.api.commands.exceptions.CommandException;
-import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
-import Techtony96.Discord.api.commands.exceptions.CommandStateException;
-import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
-import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
-import Techtony96.Discord.modules.audiostreamer.voice.internal.AudioProvider;
-import Techtony96.Discord.utils.ChannelUtil;
-import Techtony96.Discord.utils.Logger;
+import net.ajpappas.discord.api.commands.exceptions.CommandException;
+import net.ajpappas.discord.api.commands.exceptions.CommandPermissionException;
+import net.ajpappas.discord.api.commands.exceptions.CommandStateException;
+import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
+import net.ajpappas.discord.modules.audiostreamer.playlists.Playlist;
+import net.ajpappas.discord.modules.audiostreamer.voice.internal.AudioProvider;
+import net.ajpappas.discord.utils.ChannelUtil;
+import net.ajpappas.discord.utils.Logger;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;

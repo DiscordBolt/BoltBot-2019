@@ -1,6 +1,6 @@
-package Techtony96.Discord.modules.tempchannels;
+package net.ajpappas.discord.modules.tempchannels;
 
-import Techtony96.Discord.api.CustomModule;
+import net.ajpappas.discord.api.CustomModule;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.modules.IModule;
 

@@ -1,10 +1,10 @@
-package Techtony96.Discord.modules.audiostreamer;
+package net.ajpappas.discord.modules.audiostreamer;
 
-import Techtony96.Discord.api.CustomModule;
-import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
-import Techtony96.Discord.modules.audiostreamer.playlists.PlaylistManager;
-import Techtony96.Discord.modules.audiostreamer.voice.VoiceManager;
-import Techtony96.Discord.utils.UserUtil;
+import net.ajpappas.discord.api.CustomModule;
+import net.ajpappas.discord.modules.audiostreamer.playlists.Playlist;
+import net.ajpappas.discord.modules.audiostreamer.playlists.PlaylistManager;
+import net.ajpappas.discord.modules.audiostreamer.voice.VoiceManager;
+import net.ajpappas.discord.utils.UserUtil;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;

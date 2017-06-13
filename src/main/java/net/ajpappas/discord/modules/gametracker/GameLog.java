@@ -1,7 +1,7 @@
-package Techtony96.Discord.modules.gametracker;
+package net.ajpappas.discord.modules.gametracker;
 
-import Techtony96.Discord.api.mysql.MySQL;
-import Techtony96.Discord.utils.Logger;
+import net.ajpappas.discord.api.mysql.MySQL;
+import net.ajpappas.discord.utils.Logger;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.sql.PreparedStatement;

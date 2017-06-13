@@ -1,6 +1,6 @@
-package Techtony96.Discord.api.mysql;
+package net.ajpappas.discord.api.mysql;
 
-import Techtony96.Discord.utils.Logger;
+import net.ajpappas.discord.utils.Logger;
 import com.mysql.cj.jdbc.MysqlDataSource;
 
 import java.io.File;

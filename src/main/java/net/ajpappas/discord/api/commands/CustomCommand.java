@@ -1,9 +1,9 @@
-package Techtony96.Discord.api.commands;
+package net.ajpappas.discord.api.commands;
 
-import Techtony96.Discord.api.commands.exceptions.CommandException;
-import Techtony96.Discord.utils.ChannelUtil;
-import Techtony96.Discord.utils.ExceptionMessage;
-import Techtony96.Discord.utils.Logger;
+import net.ajpappas.discord.api.commands.exceptions.CommandException;
+import net.ajpappas.discord.utils.ChannelUtil;
+import net.ajpappas.discord.utils.ExceptionMessage;
+import net.ajpappas.discord.utils.Logger;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.obj.PrivateChannel;

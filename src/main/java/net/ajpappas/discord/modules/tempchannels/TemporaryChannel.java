@@ -1,7 +1,7 @@
-package Techtony96.Discord.modules.tempchannels;
+package net.ajpappas.discord.modules.tempchannels;
 
-import Techtony96.Discord.utils.ExceptionMessage;
-import Techtony96.Discord.utils.Logger;
+import net.ajpappas.discord.utils.ExceptionMessage;
+import net.ajpappas.discord.utils.Logger;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.GuildLeaveEvent;

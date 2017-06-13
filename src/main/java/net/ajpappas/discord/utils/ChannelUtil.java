@@ -1,4 +1,4 @@
-package Techtony96.Discord.utils;
+package net.ajpappas.discord.utils;
 
 import com.vdurmont.emoji.Emoji;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;

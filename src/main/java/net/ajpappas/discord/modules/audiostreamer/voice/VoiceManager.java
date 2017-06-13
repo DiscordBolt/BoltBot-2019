@@ -1,10 +1,10 @@
-package Techtony96.Discord.modules.audiostreamer.voice;
+package net.ajpappas.discord.modules.audiostreamer.voice;
 
-import Techtony96.Discord.api.commands.exceptions.*;
-import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
-import Techtony96.Discord.modules.audiostreamer.playlists.Playlist;
-import Techtony96.Discord.utils.ChannelUtil;
-import Techtony96.Discord.utils.ExceptionMessage;
+import net.ajpappas.discord.api.commands.exceptions.*;
+import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
+import net.ajpappas.discord.modules.audiostreamer.playlists.Playlist;
+import net.ajpappas.discord.utils.ChannelUtil;
+import net.ajpappas.discord.utils.ExceptionMessage;
 import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;

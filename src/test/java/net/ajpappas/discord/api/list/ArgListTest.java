@@ -1,4 +1,4 @@
-package Techtony96.Discord.api.list;
+package net.ajpappas.discord.api.list;
 
 import org.junit.Before;
 import org.junit.Test;

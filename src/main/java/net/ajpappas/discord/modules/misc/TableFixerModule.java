@@ -1,7 +1,7 @@
-package Techtony96.Discord.modules.misc;
+package net.ajpappas.discord.modules.misc;
 
-import Techtony96.Discord.api.CustomModule;
-import Techtony96.Discord.utils.ChannelUtil;
+import net.ajpappas.discord.api.CustomModule;
+import net.ajpappas.discord.utils.ChannelUtil;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.modules.IModule;

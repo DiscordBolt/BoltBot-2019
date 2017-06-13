@@ -1,4 +1,4 @@
-package Techtony96.Discord.api.commands;
+package net.ajpappas.discord.api.commands;
 
 import sx.blah.discord.handle.obj.Permissions;
 

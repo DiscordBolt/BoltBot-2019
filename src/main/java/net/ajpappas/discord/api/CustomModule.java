@@ -1,6 +1,6 @@
-package Techtony96.Discord.api;
+package net.ajpappas.discord.api;
 
-import Techtony96.Discord.utils.Logger;
+import net.ajpappas.discord.utils.Logger;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;

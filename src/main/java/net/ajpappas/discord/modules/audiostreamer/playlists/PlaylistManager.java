@@ -1,11 +1,11 @@
-package Techtony96.Discord.modules.audiostreamer.playlists;
+package net.ajpappas.discord.modules.audiostreamer.playlists;
 
-import Techtony96.Discord.api.commands.exceptions.CommandArgumentException;
-import Techtony96.Discord.api.commands.exceptions.CommandPermissionException;
-import Techtony96.Discord.api.commands.exceptions.CommandStateException;
-import Techtony96.Discord.modules.audiostreamer.AudioStreamer;
-import Techtony96.Discord.utils.Logger;
-import Techtony96.Discord.utils.UserUtil;
+import net.ajpappas.discord.api.commands.exceptions.CommandArgumentException;
+import net.ajpappas.discord.api.commands.exceptions.CommandPermissionException;
+import net.ajpappas.discord.api.commands.exceptions.CommandStateException;
+import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
+import net.ajpappas.discord.utils.Logger;
+import net.ajpappas.discord.utils.UserUtil;
 import com.google.gson.Gson;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;

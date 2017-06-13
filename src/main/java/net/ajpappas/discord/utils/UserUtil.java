@@ -1,4 +1,4 @@
-package Techtony96.Discord.utils;
+package net.ajpappas.discord.utils;
 
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;

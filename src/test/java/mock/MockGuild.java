@@ -4,6 +4,7 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.IShard;
 import sx.blah.discord.handle.audio.IAudioManager;
 import sx.blah.discord.handle.obj.*;
+import sx.blah.discord.util.Ban;
 import sx.blah.discord.util.Image;
 
 import java.time.LocalDateTime;
@@ -178,6 +179,12 @@ public class MockGuild implements IGuild {
 
     @Deprecated
     @Override
+    public List<Ban> getBans() {
+        return null;
+    }
+
+    @Deprecated
+    @Override
     public void banUser(IUser user) {
 
     }
@@ -185,6 +192,18 @@ public class MockGuild implements IGuild {
     @Deprecated
     @Override
     public void banUser(IUser user, int deleteMessagesForDays) {
+
+    }
+
+    @Deprecated
+    @Override
+    public void banUser(IUser iUser, String s) {
+
+    }
+
+    @Deprecated
+    @Override
+    public void banUser(IUser iUser, String s, int i) {
 
     }
 
@@ -200,6 +219,17 @@ public class MockGuild implements IGuild {
 
     }
 
+    @Override
+    public void banUser(long l, String s) {
+
+    }
+
+    @Deprecated
+    @Override
+    public void banUser(long l, String s, int i) {
+
+    }
+
     @Deprecated
     @Override
     public void pardonUser(long userID) {
@@ -209,6 +239,12 @@ public class MockGuild implements IGuild {
     @Deprecated
     @Override
     public void kickUser(IUser user) {
+
+    }
+
+    @Deprecated
+    @Override
+    public void kickUser(IUser iUser, String s) {
 
     }
 
