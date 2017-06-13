@@ -266,17 +266,17 @@ public class VoiceManager {
 
             @Override
             public void playlistLoaded(AudioPlaylist playlist) {
-
+                s.release();
             }
 
             @Override
             public void noMatches() {
-
+                s.release();
             }
 
             @Override
             public void loadFailed(FriendlyException exception) {
-
+                s.release();
             }
         });
         s.acquireUninterruptibly();
@@ -326,6 +326,7 @@ public class VoiceManager {
                 } catch (CommandException ex) {
                     ChannelUtil.sendMessage(e.getChannel(), ex.getMessage());
                 }
+                break;
         }
 
     }
@@ -345,6 +346,7 @@ public class VoiceManager {
                 } catch (CommandException ex) {
                     ChannelUtil.sendMessage(e.getChannel(), ex.getMessage());
                 }
+                break;
         }
     }
 }
