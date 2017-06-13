@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Tony on 2/12/2017.
@@ -29,6 +30,8 @@ public class GameLog {
      * @return True if successfully added entry
      */
     protected static boolean addGameLog(IUser user, String gameTitle, long startTime, long endTime) {
+        if (user.isBot())
+            return false;
         if (user == null || startTime == 0 || endTime == 0 || gameTitle == null || gameTitle.length() <= 0)
             throw new IllegalArgumentException("A supplied argument was in an invalid state.");
         if (startTime - endTime > 0)
@@ -62,6 +65,8 @@ public class GameLog {
      * @return Number of rows inserted/updated in the table.
      */
     protected static int addUser(IUser user) {
+        if (user.isBot())
+            return -1;
         try {
             PreparedStatement ps = MySQL.getConnection().prepareStatement("REPLACE INTO `users` (`id`, `name`) VALUES (?,?);");
             ps.setLong(1, user.getLongID());
@@ -71,6 +76,24 @@ public class GameLog {
             Logger.error("Unable to add " + user.getName() + " to the database.");
             Logger.debug(e);
             return -1;
+        }
+    }
+
+    protected static int[] addUsers(List<IUser> users) {
+        try {
+            PreparedStatement ps = MySQL.getConnection().prepareStatement("REPLACE INTO `users` (`id`, `name`) VALUES (?,?);");
+            for (IUser user : users) {
+                if (user.isBot())
+                    continue;
+                ps.setLong(1, user.getLongID());
+                ps.setString(2, user.getName());
+                ps.addBatch();
+            }
+            return ps.executeBatch();
+        } catch (SQLException e) {
+            Logger.error("Unable to add users to the database.");
+            Logger.debug(e);
+            return new int[]{-1};
         }
     }
 

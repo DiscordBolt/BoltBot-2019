@@ -21,7 +21,9 @@ public @interface BotCommand {
 
     String module();
 
-    String[] aliases() default "";
+    String[] aliases() default {};
+
+    String[] allowedChannels() default {};
 
     Permissions[] permissions() default {};
 
@@ -34,4 +36,6 @@ public @interface BotCommand {
     boolean secret() default false;
 
     boolean allowPM() default false;
+
+    boolean deleteMessages() default false;
 }

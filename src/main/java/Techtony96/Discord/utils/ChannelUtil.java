@@ -24,11 +24,12 @@ public class ChannelUtil {
             } catch (DiscordException ex) {
                 Logger.error("Discord Exception: " + ex.getErrorMessage());
                 Logger.debug(ex);
+                return null;
             } catch (MissingPermissionsException e) {
                 Logger.error("Unable to send message in channel " + channel.getName() + ". Missing Permissions.");
                 Logger.debug(e);
+                return null;
             }
-            return null;
         }).get();
     }
 
@@ -42,11 +43,12 @@ public class ChannelUtil {
             } catch (DiscordException ex) {
                 Logger.error("Discord Exception: " + ex.getErrorMessage());
                 Logger.debug(ex);
+                return null;
             } catch (MissingPermissionsException e) {
                 Logger.error("Unable to send message in channel " + channel.getName() + ". Missing Permissions.");
                 Logger.debug(e);
+                return null;
             }
-            return null;
         }).get();
     }
 

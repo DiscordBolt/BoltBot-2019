@@ -1,8 +1,8 @@
 package Techtony96.Discord.modules.disconnect;
 
 import Techtony96.Discord.api.CustomModule;
-import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.api.commands.BotCommand;
+import Techtony96.Discord.api.commands.CommandContext;
 import Techtony96.Discord.modules.log.LogModule;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
@@ -18,7 +18,7 @@ public class DisconnectModule extends CustomModule implements IModule {
         super("Disconnect Module", "1.1");
     }
 
-    @BotCommand(command = "disconnect", module = "Disconnect Module", aliases = "dis", description = "Disconnect user(s) from their voice channel.", usage = "!Disconnect @User1 @User2", permissions = Permissions.VOICE_MOVE_MEMBERS)
+    @BotCommand(command = "disconnect", module = "Disconnect Module", aliases = "dis", description = "Disconnect user(s) from their voice channel.", usage = "Disconnect @User1 @User2", permissions = Permissions.VOICE_MOVE_MEMBERS)
     public static void disconnectCommand(CommandContext cc) {
         if (cc.getMessage().getMentions().size() < 1) {
             cc.sendUsage();

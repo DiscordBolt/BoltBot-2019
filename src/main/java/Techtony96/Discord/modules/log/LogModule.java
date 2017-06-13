@@ -1,7 +1,6 @@
 package Techtony96.Discord.modules.log;
 
 import Techtony96.Discord.api.CustomModule;
-import Techtony96.Discord.utils.ChannelUtil;
 import Techtony96.Discord.utils.Logger;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
@@ -36,7 +35,8 @@ public class LogModule extends CustomModule implements IModule {
                     break;
                 }
             }
-            Logger.warning("No logging channel found for " + guild.getName());
+            if (!listeners.containsKey(guild))
+                Logger.warning("No logging channel found for " + guild.getName());
         }
     }
 
