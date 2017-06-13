@@ -178,6 +178,12 @@ public class MockChannel implements IChannel {
 
     @Deprecated
     @Override
+    public boolean isNSFW() {
+        return false;
+    }
+
+    @Deprecated
+    @Override
     public String getTopic() {
         return null;
     }
