@@ -2,7 +2,6 @@ package net.ajpappas.discord.modules.status;
 
 import net.ajpappas.discord.api.CustomModule;
 import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.guild.GuildLeaveEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
@@ -19,13 +18,6 @@ public class StatusModule extends CustomModule implements IModule {
 
     public StatusModule() {
         super("Status Module", "1.0");
-    }
-
-    @EventSubscriber
-    public void onReady(ReadyEvent e) {
-        //guildCount = getClient().getGuilds().size();
-        //userCount = getClient().getGuilds().stream().mapToInt(g -> g.getUsers().size()).sum();
-        // updatePlayingText();
     }
 
     @EventSubscriber

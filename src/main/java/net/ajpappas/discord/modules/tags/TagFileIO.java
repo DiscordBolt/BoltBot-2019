@@ -51,6 +51,8 @@ public class TagFileIO {
 
     protected static void loadTags() {
         try {
+            if (!TAG_DIRECTORY.toFile().exists())
+                Files.createDirectories(TAG_DIRECTORY);
             Files.walk(TAG_DIRECTORY).forEach(p -> {
                 try {
                     if (!Files.isDirectory(p))

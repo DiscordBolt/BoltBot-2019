@@ -2,8 +2,6 @@ package net.ajpappas.discord.modules.log;
 
 import net.ajpappas.discord.api.CustomModule;
 import net.ajpappas.discord.utils.Logger;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.obj.VoiceChannel;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
@@ -22,10 +20,6 @@ public class LogModule extends CustomModule implements IModule {
 
     public LogModule() {
         super("Log", "1.0");
-    }
-
-    @EventSubscriber
-    public void readyEvent(ReadyEvent e) {
         for (IGuild guild : client.getGuilds()){
             for (IChannel channel : guild.getChannels()){
                 if (channel instanceof VoiceChannel)
@@ -39,7 +33,6 @@ public class LogModule extends CustomModule implements IModule {
                 Logger.warning("No logging channel found for " + guild.getName());
         }
     }
-
 
     public static void logMessage(IGuild guild, String s){
         if (listeners.containsKey(guild)){

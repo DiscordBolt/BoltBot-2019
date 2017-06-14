@@ -1,14 +1,12 @@
 package net.ajpappas.discord.modules.audiostreamer;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.ajpappas.discord.api.CustomModule;
 import net.ajpappas.discord.modules.audiostreamer.playlists.Playlist;
 import net.ajpappas.discord.modules.audiostreamer.playlists.PlaylistManager;
 import net.ajpappas.discord.modules.audiostreamer.voice.VoiceManager;
 import net.ajpappas.discord.utils.UserUtil;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.modules.IModule;
@@ -36,6 +34,7 @@ public class AudioStreamer extends CustomModule implements IModule {
         super("Audio Streamer Module", "0.1", "2.8.2", "Techtony96, Spikex21, and Jessee");
         playlistManager = new PlaylistManager();
         voiceManager = new VoiceManager();
+        client.getDispatcher().registerListener(getVoiceManager());
     }
 
     public static PlaylistManager getPlaylistManager() {
@@ -52,11 +51,6 @@ public class AudioStreamer extends CustomModule implements IModule {
         ArrayList<String> songs = new ArrayList<>(playlists.get(0).getSongIDs());
         Collections.shuffle(songs);
         return songs.get(0);
-    }
-
-    @EventSubscriber
-    public void onReady(ReadyEvent e) {
-        client.getDispatcher().registerListener(voiceManager);
     }
 
     public static boolean hasAdminPermissions(IUser user, IGuild guild) {

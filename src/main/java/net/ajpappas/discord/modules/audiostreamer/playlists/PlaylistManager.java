@@ -34,6 +34,8 @@ public class PlaylistManager {
 
     private void loadPlaylists() {
         try {
+            if (!PLAYLIST_DIRECTORY.toFile().exists())
+                Files.createDirectories(PLAYLIST_DIRECTORY);
             Files.walk(PLAYLIST_DIRECTORY).forEach(p -> {
                 try {
                     if (!Files.isDirectory(p))

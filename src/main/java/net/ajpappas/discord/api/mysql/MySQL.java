@@ -1,7 +1,7 @@
 package net.ajpappas.discord.api.mysql;
 
-import net.ajpappas.discord.utils.Logger;
 import com.mysql.cj.jdbc.MysqlDataSource;
+import net.ajpappas.discord.utils.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,7 +17,7 @@ public class MySQL {
 
     private static MysqlDataSource dataSource = null;
 
-    public static Connection getConnection() throws SQLException {
+    public static Connection getConnection() {
         if (dataSource == null) {
             try {
                 Properties props = new Properties();
@@ -29,18 +29,16 @@ public class MySQL {
                 dataSource.setPassword(props.getProperty("PASSWORD"));
                 dataSource.setServerName(props.getProperty("HOST"));
                 dataSource.setDatabaseName(props.getProperty("DATABASE"));
-            } catch (IOException e) {
+                return dataSource.getConnection();
+            } catch (IOException | SQLException e) {
+                Logger.error(e.getMessage());
                 Logger.debug(e);
             }
         }
-        return dataSource.getConnection();
+        return null;
     }
 
-    private void init() {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static boolean isConnected(){
+        return getConnection() != null;
     }
 }

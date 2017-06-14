@@ -1,42 +1,32 @@
 package net.ajpappas.discord.utils;
 
+import sx.blah.discord.Discord4J;
+
 public class Logger {
 
-    private static boolean debug = true;
     private static final String COLOR_RESET = "\u001B[0m";
     private static final String COLOR_INFO = "\u001B[36m";
     private static final String COLOR_WARNING = "\u001B[33m";
     private static final String COLOR_ERROR = "\u001B[31m";
-    private static final String COLOR_SEVERE = "\u001B[31m";
 
 
     public static void debug(Exception e) {
-        if (debug) {
-            e.printStackTrace();
-        }
+        Discord4J.LOGGER.debug(e.getMessage(), e);
     }
 
     public static void debug(String s) {
-        if (debug) {
-            System.out.println(s);
-        }
+        Discord4J.LOGGER.debug(s);
     }
 
     public static void info(String s) {
-        System.out.println(COLOR_INFO + "[Info] " + s + COLOR_RESET);
+        Discord4J.LOGGER.info(COLOR_INFO + s + COLOR_RESET);
     }
 
     public static void warning(String s) {
-        System.out.println(COLOR_WARNING + "[Warning] " + s + COLOR_RESET);
+        Discord4J.LOGGER.warn(COLOR_WARNING + s + COLOR_RESET);
     }
 
     public static void error(String s) {
-        System.out.println(COLOR_ERROR + "[ERROR] " + s + COLOR_RESET);
-    }
-
-    public static void severe(String s) {
-        System.out.println(COLOR_SEVERE + "[SEVERE] " + s + COLOR_RESET);
+        Discord4J.LOGGER.error(COLOR_ERROR + s + COLOR_RESET);
     }
 }
-
-// embed.withFooterText("Requested by: " + user.getName() + "#" + user.getDiscriminator() + " at " + new SimpleDateFormat("EEE MMM d, yyyy 'at' h:mm a").format(new Date()));

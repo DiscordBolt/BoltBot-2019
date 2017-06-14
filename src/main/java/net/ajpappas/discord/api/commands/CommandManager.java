@@ -48,7 +48,7 @@ public class CommandManager {
         for (Method command : commandMethods) {
             BotCommand a = command.getAnnotation(BotCommand.class);
             if (!Modifier.isStatic(command.getModifiers())) {
-                Logger.severe("Command \"" + a.command().toUpperCase() + "\" is not a static method!");
+                Logger.error("Command \"" + a.command().toUpperCase() + "\" is not a static method!");
                 continue;
             }
             //          if (modules.stream().filter(x -> x.getName().equalsIgnoreCase(a.module())).findAny().isPresent()){

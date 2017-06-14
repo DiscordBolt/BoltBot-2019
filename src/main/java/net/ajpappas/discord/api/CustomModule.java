@@ -2,8 +2,6 @@ package net.ajpappas.discord.api;
 
 import net.ajpappas.discord.utils.Logger;
 import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
 
 /**
  * Created by Tony on 12/24/2016.
@@ -19,6 +17,7 @@ public abstract class CustomModule {
     public CustomModule(String moduleName, String moduleVersion) {
         this.moduleName = moduleName;
         this.moduleVersion = moduleVersion;
+        Logger.info("[Discord.java] " + getName() + " version " + getVersion() + " is initializing.");
     }
 
     public CustomModule(String moduleName, String moduleVersion, String moduleMinimumVersion, String author) {
@@ -54,10 +53,5 @@ public abstract class CustomModule {
 
     public static IDiscordClient getClient() {
         return client;
-    }
-
-    @EventSubscriber
-    public void onReady(ReadyEvent e) {
-        Logger.info("[Discord.java] " + getName() + " version " + getVersion() + " is READY.");
     }
 }
