@@ -12,6 +12,11 @@
         <version>2.3.1</version>
         <configuration>
           <outputDirectory>artifacts</outputDirectory>
+            <archive>
+                <manifest>
+                    <mainClass>net.ajpappas.discord.Discord</mainClass>
+                </manifest>
+            </archive>
         </configuration>
       </plugin>
       <plugin>
