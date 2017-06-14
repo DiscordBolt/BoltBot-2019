@@ -1,7 +1,7 @@
 package net.ajpappas.discord.modules.seen;
 
-import net.ajpappas.discord.utils.Logger;
 import com.google.gson.Gson;
+import net.ajpappas.discord.utils.Logger;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

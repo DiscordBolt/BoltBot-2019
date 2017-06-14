@@ -25,15 +25,14 @@ import sx.blah.discord.modules.Configuration;
  */
 public class Discord {
 
-    public static void main(String[] args){
-        if (args.length < 1){
+    public static void main(String[] args) {
+        if (args.length < 1) {
             Logger.error("No Bot Token specified.");
             return;
         }
 
         Configuration.AUTOMATICALLY_ENABLE_MODULES = false;
         Configuration.LOAD_EXTERNAL_MODULES = false;
-
 
         ClientBuilder builder = new ClientBuilder();
         IDiscordClient client = builder.withToken(args[0]).login();
@@ -44,7 +43,7 @@ public class Discord {
         });
     }
 
-    private static void registerModules(IDiscordClient client){
+    private static void registerModules(IDiscordClient client) {
         // API Modules
         client.getModuleLoader().loadModule(new CommandModule(client));
         client.getModuleLoader().loadModule(new LogModule(client));

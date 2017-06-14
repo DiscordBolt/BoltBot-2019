@@ -1,5 +1,12 @@
 package net.ajpappas.discord.modules.audiostreamer.voice;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import com.vdurmont.emoji.Emoji;
+import com.vdurmont.emoji.EmojiManager;
 import net.ajpappas.discord.api.commands.exceptions.CommandException;
 import net.ajpappas.discord.api.commands.exceptions.CommandPermissionException;
 import net.ajpappas.discord.api.commands.exceptions.CommandStateException;
@@ -8,13 +15,6 @@ import net.ajpappas.discord.modules.audiostreamer.playlists.Playlist;
 import net.ajpappas.discord.modules.audiostreamer.voice.internal.AudioProvider;
 import net.ajpappas.discord.utils.ChannelUtil;
 import net.ajpappas.discord.utils.Logger;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import com.vdurmont.emoji.Emoji;
-import com.vdurmont.emoji.EmojiManager;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.GuildLeaveEvent;
 import sx.blah.discord.handle.impl.events.guild.voice.user.UserVoiceChannelLeaveEvent;

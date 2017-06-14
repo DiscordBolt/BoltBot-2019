@@ -1,10 +1,10 @@
 package net.ajpappas.discord.modules.audiostreamer.commands;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.ajpappas.discord.api.commands.BotCommand;
 import net.ajpappas.discord.api.commands.CommandContext;
 import net.ajpappas.discord.api.commands.exceptions.CommandException;
 import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import sx.blah.discord.util.EmbedBuilder;
 
 import java.util.List;
@@ -62,10 +62,10 @@ public class QueueCommand {
         cc.replyWith(embed.build());
     }
 
-    public static String getFormattedTime(long timestamp){
+    public static String getFormattedTime(long timestamp) {
 
         final long totalSeconds = timestamp / 1000;
-        final String[] strings = new String[] {"days", "hours", "minutes", "seconds"};
+        final String[] strings = new String[]{"days", "hours", "minutes", "seconds"};
         final long[] data = new long[4];
         data[0] = TimeUnit.SECONDS.toDays(totalSeconds);
         data[1] = TimeUnit.SECONDS.toHours(totalSeconds) - (data[0] * 24);
@@ -74,7 +74,7 @@ public class QueueCommand {
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        for(int i = 0; i < data.length; i++) {
+        for (int i = 0; i < data.length; i++) {
             long time = data[i];
 
             if (time > 0) {
@@ -98,7 +98,5 @@ public class QueueCommand {
             }
         }
         return stringBuilder.toString();
-
     }
-
 }

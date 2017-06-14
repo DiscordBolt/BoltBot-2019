@@ -17,14 +17,14 @@ public class LogListener {
     private IGuild guild;
     private IChannel logChannel;
 
-    public LogListener(IDiscordClient client, IGuild guild, IChannel logChannel){
+    public LogListener(IDiscordClient client, IGuild guild, IChannel logChannel) {
         this.guild = guild;
         this.logChannel = logChannel;
 
         client.getDispatcher().registerListener(this);
     }
 
-    public void log(String message){
+    public void log(String message) {
         ChannelUtil.sendMessage(logChannel, message);
     }
 

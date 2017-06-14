@@ -1,12 +1,12 @@
 package net.ajpappas.discord.modules.audiostreamer.commands;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.vdurmont.emoji.Emoji;
+import com.vdurmont.emoji.EmojiManager;
 import net.ajpappas.discord.api.commands.BotCommand;
 import net.ajpappas.discord.api.commands.CommandContext;
 import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
 import net.ajpappas.discord.utils.ChannelUtil;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.vdurmont.emoji.Emoji;
-import com.vdurmont.emoji.EmojiManager;
 import sx.blah.discord.handle.obj.IMessage;
 
 /**

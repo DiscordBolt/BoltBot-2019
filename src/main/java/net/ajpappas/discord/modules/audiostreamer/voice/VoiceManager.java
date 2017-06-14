@@ -1,10 +1,5 @@
 package net.ajpappas.discord.modules.audiostreamer.voice;
 
-import net.ajpappas.discord.api.commands.exceptions.*;
-import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
-import net.ajpappas.discord.modules.audiostreamer.playlists.Playlist;
-import net.ajpappas.discord.utils.ChannelUtil;
-import net.ajpappas.discord.utils.ExceptionMessage;
 import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats;
 import com.sedmelluq.discord.lavaplayer.player.AudioConfiguration;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
@@ -14,6 +9,11 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.ajpappas.discord.api.commands.exceptions.*;
+import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
+import net.ajpappas.discord.modules.audiostreamer.playlists.Playlist;
+import net.ajpappas.discord.utils.ChannelUtil;
+import net.ajpappas.discord.utils.ExceptionMessage;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionAddEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionRemoveEvent;
@@ -287,10 +287,9 @@ public class VoiceManager {
         public String title;
     }
 
-
     /* Listeners */
     @EventSubscriber
-    public void reactionEvent(ReactionAddEvent e){
+    public void reactionEvent(ReactionAddEvent e) {
         if (e.getUser().equals(AudioStreamer.getClient().getOurUser()))
             return;
 
@@ -306,8 +305,7 @@ public class VoiceManager {
         if (track == null)
             return;
 
-
-        switch (e.getReaction().getUnicodeEmoji().getAliases().get(0)){
+        switch (e.getReaction().getUnicodeEmoji().getAliases().get(0)) {
             case "black_right_pointing_double_triangle_with_vertical_bar":
                 if (track.getIdentifier().equals(dj.getPlaying().getIdentifier())) {
                     try {
@@ -328,15 +326,14 @@ public class VoiceManager {
                 }
                 break;
         }
-
     }
 
     @EventSubscriber
-    public void removeReactionEvent(ReactionRemoveEvent e){
+    public void removeReactionEvent(ReactionRemoveEvent e) {
         if (e.getUser().equals(AudioStreamer.getClient().getOurUser()))
             return;
 
-        switch (e.getReaction().getUnicodeEmoji().getAliases().get(0)){
+        switch (e.getReaction().getUnicodeEmoji().getAliases().get(0)) {
             case "black_right_pointing_double_triangle_with_vertical_bar":
                 getDJ(e.getGuild()).unskip(e.getUser());
                 break;

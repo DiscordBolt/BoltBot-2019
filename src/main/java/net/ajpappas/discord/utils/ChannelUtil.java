@@ -69,7 +69,6 @@ public class ChannelUtil {
                     m.addReaction(es[i.intValue()]);
                 }
             }
-
         });
     }
 
@@ -78,5 +77,4 @@ public class ChannelUtil {
             return;
         RequestBuffer.request(() -> message.addReaction(emoji));
     }
-
 }

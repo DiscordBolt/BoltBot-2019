@@ -18,14 +18,13 @@ public class LogModule extends CustomModule implements IModule {
     private static final String LOG_CHANNEL = "bot-log";
     private static HashMap<IGuild, LogListener> listeners = new HashMap<>();
 
-
     public LogModule(IDiscordClient client) {
         super(client, "Log", "1.0");
-        for (IGuild guild : client.getGuilds()){
-            for (IChannel channel : guild.getChannels()){
+        for (IGuild guild : client.getGuilds()) {
+            for (IChannel channel : guild.getChannels()) {
                 if (channel instanceof VoiceChannel)
                     continue;
-                if (channel.getName().equalsIgnoreCase(LOG_CHANNEL)){
+                if (channel.getName().equalsIgnoreCase(LOG_CHANNEL)) {
                     listeners.put(guild, new LogListener(client, guild, channel));
                     break;
                 }
@@ -35,8 +34,8 @@ public class LogModule extends CustomModule implements IModule {
         }
     }
 
-    public static void logMessage(IGuild guild, String s){
-        if (listeners.containsKey(guild)){
+    public static void logMessage(IGuild guild, String s) {
+        if (listeners.containsKey(guild)) {
             listeners.get(guild).log(s);
         }
     }

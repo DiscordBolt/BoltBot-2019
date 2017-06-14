@@ -30,7 +30,6 @@ public class HelpModule extends CustomModule implements IModule {
             all = cc.getArgument(1).equalsIgnoreCase("all");
         }
 
-
         EmbedBuilder embed = new EmbedBuilder();
         StringBuilder sb = new StringBuilder();
 

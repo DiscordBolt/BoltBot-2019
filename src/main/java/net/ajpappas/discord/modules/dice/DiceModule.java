@@ -54,7 +54,6 @@ public class DiceModule extends CustomModule implements IModule {
         }
 
         cc.replyWith(getDieEmbed(numDice, numSides));
-
     }
 
     @EventSubscriber
@@ -83,7 +82,6 @@ public class DiceModule extends CustomModule implements IModule {
 
         for (int i = 0; i < numDice; i++)
             result += random(1, numSides);
-
 
         EmbedBuilder embed = new EmbedBuilder();
         embed.withColor(255, 235, 59); // Hex #FFEB3B (Yellow)

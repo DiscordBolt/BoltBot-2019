@@ -53,7 +53,6 @@ public class GameListener {
             if (user.getPresence().getPlayingText().isPresent() && !user.getPresence().getStatus().equals(StatusType.STREAMING))
                 currentUsers.put(user.getLongID(), new UserInfo(user, user.getPresence().getPlayingText().get(), System.currentTimeMillis()));
         }
-
     }
 
     @EventSubscriber

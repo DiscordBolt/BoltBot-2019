@@ -1,8 +1,8 @@
 package net.ajpappas.discord.api.commands;
 
-import net.ajpappas.discord.utils.Logger;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import net.ajpappas.discord.utils.Logger;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import sx.blah.discord.handle.obj.IGuild;
@@ -25,7 +25,6 @@ public class CommandManager {
 
     private static List<CustomCommand> commands = new ArrayList<>();
     private static HashMap<Long, String> prefixes = new HashMap<>();
-
 
     // Don't make instances of this class
     private CommandManager() {

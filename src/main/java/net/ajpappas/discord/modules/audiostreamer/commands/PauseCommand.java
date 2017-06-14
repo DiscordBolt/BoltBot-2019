@@ -11,7 +11,7 @@ import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
 public class PauseCommand {
 
     @BotCommand(command = "pause", description = "Pause the currently playing song", usage = "Pause", module = "Audio Streamer Module", allowedChannels = "music")
-    public static void pauseCommand(CommandContext cc){
+    public static void pauseCommand(CommandContext cc) {
         try {
             AudioStreamer.getVoiceManager().pause(cc.getGuild(), cc.getUser());
         } catch (CommandException e) {
@@ -21,7 +21,7 @@ public class PauseCommand {
     }
 
     @BotCommand(command = "unpause", aliases = "resume", description = "Unpause the currently playing song", usage = "Unpause", module = "Audio Streamer Module", allowedChannels = "music")
-    public static void unpauseCommand(CommandContext cc){
+    public static void unpauseCommand(CommandContext cc) {
         try {
             AudioStreamer.getVoiceManager().unpause(cc.getGuild(), cc.getUser());
         } catch (CommandException e) {

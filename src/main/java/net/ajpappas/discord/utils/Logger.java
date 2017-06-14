@@ -9,7 +9,6 @@ public class Logger {
     private static final String COLOR_WARNING = "\u001B[33m";
     private static final String COLOR_ERROR = "\u001B[31m";
 
-
     public static void debug(Exception e) {
         Discord4J.LOGGER.debug(e.getMessage(), e);
     }

@@ -13,5 +13,4 @@ public class CommandModule extends CustomModule implements IModule {
         super(client, "Command Module", "1.0");
         CommandManager.initializeCommands();
     }
-
 }

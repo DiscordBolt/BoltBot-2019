@@ -17,7 +17,6 @@ public class MockUser implements IUser {
     private String name;
     private IPresence presence;
 
-
     public MockUser(String name, long id, IPresence presence) {
         this.name = name;
         this.id = id;

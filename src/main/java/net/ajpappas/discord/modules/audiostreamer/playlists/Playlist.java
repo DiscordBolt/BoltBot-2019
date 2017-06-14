@@ -1,9 +1,9 @@
 package net.ajpappas.discord.modules.audiostreamer.playlists;
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.ajpappas.discord.api.commands.exceptions.CommandPermissionException;
 import net.ajpappas.discord.api.commands.exceptions.CommandStateException;
 import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
@@ -120,7 +120,7 @@ public class Playlist implements Comparable<Playlist> {
         return this.getOwnerID().compareTo(that.getOwnerID());
     }
 
-    public EmbedObject toEmbed(){
+    public EmbedObject toEmbed() {
         EmbedBuilder embed = new EmbedBuilder();
         embed.withColor(AudioStreamer.EMBED_COLOR);
         embed.withAuthorName(getTitle());

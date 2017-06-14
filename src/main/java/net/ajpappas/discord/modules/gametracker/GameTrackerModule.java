@@ -15,7 +15,7 @@ public class GameTrackerModule extends CustomModule implements IModule {
 
     public GameTrackerModule(IDiscordClient client) {
         super(client, "GameTracker", "1.1");
-        if (MySQL.isConnected()){
+        if (MySQL.isConnected()) {
             getClient().getDispatcher().registerListener(new GameListener());
         } else {
             Logger.error("Unable to connect to MySQL database. Disabling Game Tracker.");

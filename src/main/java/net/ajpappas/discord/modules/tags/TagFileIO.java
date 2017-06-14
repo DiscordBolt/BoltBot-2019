@@ -1,8 +1,8 @@
 package net.ajpappas.discord.modules.tags;
 
+import com.google.gson.Gson;
 import net.ajpappas.discord.api.commands.exceptions.CommandException;
 import net.ajpappas.discord.utils.Logger;
-import com.google.gson.Gson;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
