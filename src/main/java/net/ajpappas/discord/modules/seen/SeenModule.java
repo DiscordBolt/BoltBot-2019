@@ -5,6 +5,7 @@ import net.ajpappas.discord.api.commands.BotCommand;
 import net.ajpappas.discord.api.commands.CommandContext;
 import net.ajpappas.discord.utils.UserUtil;
 import org.ocpsoft.prettytime.PrettyTime;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
@@ -22,8 +23,8 @@ public class SeenModule extends CustomModule implements IModule {
 
     private static HashMap<Long, UserStatus> statuses;
 
-    public SeenModule() {
-        super("Seen Module", "1.1");
+    public SeenModule(IDiscordClient client) {
+        super(client, "Seen Module", "1.1");
         statuses = StatusFileIO.loadStatuses();
     }
 

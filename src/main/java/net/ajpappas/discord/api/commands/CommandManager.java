@@ -42,8 +42,7 @@ public class CommandManager {
             Logger.debug(e);
         }
 
-
-        Reflections ref = new Reflections("Techtony96.Discord", new MethodAnnotationsScanner());
+        Reflections ref = new Reflections("net.ajpappas.discord", new MethodAnnotationsScanner());
         Set<Method> commandMethods = ref.getMethodsAnnotatedWith(BotCommand.class);
         for (Method command : commandMethods) {
             BotCommand a = command.getAnnotation(BotCommand.class);

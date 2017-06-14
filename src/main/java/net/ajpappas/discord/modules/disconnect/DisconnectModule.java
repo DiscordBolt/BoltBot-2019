@@ -4,6 +4,7 @@ import net.ajpappas.discord.api.CustomModule;
 import net.ajpappas.discord.api.commands.BotCommand;
 import net.ajpappas.discord.api.commands.CommandContext;
 import net.ajpappas.discord.modules.log.LogModule;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.Permissions;
@@ -14,8 +15,8 @@ import sx.blah.discord.modules.IModule;
  */
 public class DisconnectModule extends CustomModule implements IModule {
 
-    public DisconnectModule() {
-        super("Disconnect Module", "1.1");
+    public DisconnectModule(IDiscordClient client) {
+        super(client, "Disconnect Module", "1.1");
     }
 
     @BotCommand(command = "disconnect", module = "Disconnect Module", aliases = "dis", description = "Disconnect user(s) from their voice channel.", usage = "Disconnect @User1 @User2", permissions = Permissions.VOICE_MOVE_MEMBERS)

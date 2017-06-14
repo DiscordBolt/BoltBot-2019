@@ -1,5 +1,6 @@
 package net.ajpappas.discord.modules.tags;
 
+import com.google.gson.reflect.TypeToken;
 import net.ajpappas.discord.api.CustomModule;
 import net.ajpappas.discord.api.commands.BotCommand;
 import net.ajpappas.discord.api.commands.CommandContext;
@@ -7,7 +8,7 @@ import net.ajpappas.discord.api.commands.CommandManager;
 import net.ajpappas.discord.api.commands.exceptions.CommandException;
 import net.ajpappas.discord.utils.ChannelUtil;
 import net.ajpappas.discord.utils.Logger;
-import com.google.gson.reflect.TypeToken;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IGuild;
@@ -29,8 +30,8 @@ public class TagModule extends CustomModule implements IModule {
 
     protected static List<Tag> tags = new ArrayList<>();
 
-    public TagModule() {
-        super("Tag Module", "1.0");
+    public TagModule(IDiscordClient client) {
+        super(client, "Tag Module", "1.0");
         TagFileIO.loadTags();
         try {
             tagPrefixes = TagFileIO.gson.fromJson(new FileReader(prefixFile), new TypeToken<Map<Long, Character>>() {

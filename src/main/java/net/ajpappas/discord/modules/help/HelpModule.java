@@ -6,6 +6,7 @@ import net.ajpappas.discord.api.commands.CommandContext;
 import net.ajpappas.discord.api.commands.CommandManager;
 import net.ajpappas.discord.api.commands.CustomCommand;
 import net.ajpappas.discord.utils.ChannelUtil;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MentionEvent;
 import sx.blah.discord.modules.IModule;
@@ -16,8 +17,8 @@ import sx.blah.discord.util.EmbedBuilder;
  */
 public class HelpModule extends CustomModule implements IModule {
 
-    public HelpModule() {
-        super("Help Module", "1.1");
+    public HelpModule(IDiscordClient client) {
+        super(client, "Help Module", "1.1");
     }
 
     @BotCommand(command = "help", aliases = "h", module = "Help Module", description = "View all available commands.", usage = "Help [All]")

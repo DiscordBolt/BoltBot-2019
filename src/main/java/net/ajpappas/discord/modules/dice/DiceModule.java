@@ -5,6 +5,7 @@ import net.ajpappas.discord.api.commands.BotCommand;
 import net.ajpappas.discord.api.commands.CommandContext;
 import net.ajpappas.discord.api.commands.exceptions.CommandArgumentException;
 import net.ajpappas.discord.utils.ChannelUtil;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -31,8 +32,8 @@ public class DiceModule extends CustomModule implements IModule {
     private static final String DIE_URL_5 = "http://i.imgur.com/KYgqzWC.png";
     private static final String DIE_URL_6 = "http://i.imgur.com/Exx1Pmz.png";
 
-    public DiceModule() {
-        super("Dice Module", "1.1");
+    public DiceModule(IDiscordClient client) {
+        super(client, "Dice Module", "1.1");
     }
 
     @BotCommand(command = "roll", module = "Dice Module", description = "Roll a die!", usage = "Roll #d##", args = 2)

@@ -1,6 +1,7 @@
 package net.ajpappas.discord.api.commands;
 
 import net.ajpappas.discord.api.CustomModule;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.modules.IModule;
 
 /**
@@ -8,8 +9,8 @@ import sx.blah.discord.modules.IModule;
  */
 public class CommandModule extends CustomModule implements IModule {
 
-    public CommandModule() {
-        super("Command Module", "1.0");
+    public CommandModule(IDiscordClient client) {
+        super(client, "Command Module", "1.0");
         CommandManager.initializeCommands();
     }
 

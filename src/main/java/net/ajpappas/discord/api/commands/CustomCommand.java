@@ -188,6 +188,8 @@ public class CustomCommand {
         String message = e.getMessage().getContent();
         IUser user = e.getAuthor();
 
+        Logger.warning("Message Received");
+
         // Do not respond to PMs right now
         if (!isAllowPM() && e.getChannel() instanceof PrivateChannel) {
             return;
@@ -200,11 +202,15 @@ public class CustomCommand {
         if (!message.startsWith(CommandManager.getCommandPrefix(e.getGuild())))
             return;
 
+        Logger.warning("Is a command");
+
         // Check if command was this command
         CommandContext cc = new CommandContext(this, e.getMessage());
 
         if (!(cc.getCommand().equalsIgnoreCase(getName()) || (getAliases().size() > 0 && getAliases().stream().filter(a -> a.equalsIgnoreCase(cc.getCommand())).findAny().isPresent())))
             return;
+
+        Logger.warning("thingy");
 
         if (getAllowedChannels().size() > 0 && !getAllowedChannels().contains(cc.getChannel().getName())) {
             cc.replyWith(cc.getCommand() + " can not be executed in " + cc.getChannel().mention());

@@ -1,6 +1,7 @@
 package net.ajpappas.discord.modules.status;
 
 import net.ajpappas.discord.api.CustomModule;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.guild.GuildLeaveEvent;
@@ -16,8 +17,8 @@ public class StatusModule extends CustomModule implements IModule {
     private int guildCount = 0;
     private int userCount = 0;
 
-    public StatusModule() {
-        super("Status Module", "1.0");
+    public StatusModule(IDiscordClient client) {
+        super(client, "Status Module", "1.0");
     }
 
     @EventSubscriber

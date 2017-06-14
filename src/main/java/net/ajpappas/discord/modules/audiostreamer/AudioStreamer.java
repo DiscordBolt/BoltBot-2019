@@ -6,6 +6,7 @@ import net.ajpappas.discord.modules.audiostreamer.playlists.Playlist;
 import net.ajpappas.discord.modules.audiostreamer.playlists.PlaylistManager;
 import net.ajpappas.discord.modules.audiostreamer.voice.VoiceManager;
 import net.ajpappas.discord.utils.UserUtil;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
@@ -30,8 +31,8 @@ public class AudioStreamer extends CustomModule implements IModule {
     private static PlaylistManager playlistManager;
     private static VoiceManager voiceManager;
 
-    public AudioStreamer() {
-        super("Audio Streamer Module", "0.1", "2.8.2", "Techtony96, Spikex21, and Jessee");
+    public AudioStreamer(IDiscordClient client) {
+        super(client, "Audio Streamer Module", "0.1", "2.8.2", "Techtony96, Spikex21, and Jessee");
         playlistManager = new PlaylistManager();
         voiceManager = new VoiceManager();
         client.getDispatcher().registerListener(getVoiceManager());

@@ -2,6 +2,7 @@ package net.ajpappas.discord.modules.log;
 
 import net.ajpappas.discord.api.CustomModule;
 import net.ajpappas.discord.utils.Logger;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.impl.obj.VoiceChannel;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
@@ -18,8 +19,8 @@ public class LogModule extends CustomModule implements IModule {
     private static HashMap<IGuild, LogListener> listeners = new HashMap<>();
 
 
-    public LogModule() {
-        super("Log", "1.0");
+    public LogModule(IDiscordClient client) {
+        super(client, "Log", "1.0");
         for (IGuild guild : client.getGuilds()){
             for (IChannel channel : guild.getChannels()){
                 if (channel instanceof VoiceChannel)

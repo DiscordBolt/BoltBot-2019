@@ -14,14 +14,15 @@ public abstract class CustomModule {
     private String moduleMinimumVersion = "2.7.0";
     private String author = "Techtony96";
 
-    public CustomModule(String moduleName, String moduleVersion) {
+    public CustomModule(IDiscordClient client, String moduleName, String moduleVersion) {
         this.moduleName = moduleName;
         this.moduleVersion = moduleVersion;
         Logger.info("[Discord.java] " + getName() + " version " + getVersion() + " is initializing.");
+        enable(client);
     }
 
-    public CustomModule(String moduleName, String moduleVersion, String moduleMinimumVersion, String author) {
-        this(moduleName, moduleVersion);
+    public CustomModule(IDiscordClient client, String moduleName, String moduleVersion, String moduleMinimumVersion, String author) {
+        this(client, moduleName, moduleVersion);
         this.moduleMinimumVersion = moduleMinimumVersion;
         this.author = author;
     }

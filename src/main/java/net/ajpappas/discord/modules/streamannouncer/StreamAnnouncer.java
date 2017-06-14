@@ -2,6 +2,7 @@ package net.ajpappas.discord.modules.streamannouncer;
 
 import net.ajpappas.discord.api.CustomModule;
 import net.ajpappas.discord.utils.ChannelUtil;
+import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.user.PresenceUpdateEvent;
 import sx.blah.discord.handle.obj.IGuild;
@@ -18,8 +19,8 @@ public class StreamAnnouncer extends CustomModule implements IModule {
 
     private ArrayList<Streamer> streamers = new ArrayList<>();
 
-    public StreamAnnouncer() {
-        super("Stream Announcer", "1.0");
+    public StreamAnnouncer(IDiscordClient client) {
+        super(client, "Stream Announcer", "1.0");
     }
 
     @EventSubscriber

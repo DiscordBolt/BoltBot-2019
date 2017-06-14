@@ -46,22 +46,22 @@ public class Discord {
 
     private static void registerModules(IDiscordClient client){
         // API Modules
-        client.getModuleLoader().loadModule(new CommandModule());
-        client.getModuleLoader().loadModule(new LogModule());
+        client.getModuleLoader().loadModule(new CommandModule(client));
+        client.getModuleLoader().loadModule(new LogModule(client));
 
         // Feature Modules
-        client.getModuleLoader().loadModule(new AudioStreamer());
-        client.getModuleLoader().loadModule(new DiceModule());
-        client.getModuleLoader().loadModule(new DisconnectModule());
-        client.getModuleLoader().loadModule(new GameTrackerModule());
-        client.getModuleLoader().loadModule(new TableFixerModule());
-        client.getModuleLoader().loadModule(new SeenModule());
-        client.getModuleLoader().loadModule(new StatusModule());
-        client.getModuleLoader().loadModule(new StreamAnnouncer());
-        client.getModuleLoader().loadModule(new TagModule());
-        client.getModuleLoader().loadModule(new TempChannelModule());
+        client.getModuleLoader().loadModule(new AudioStreamer(client));
+        client.getModuleLoader().loadModule(new DiceModule(client));
+        client.getModuleLoader().loadModule(new DisconnectModule(client));
+        client.getModuleLoader().loadModule(new GameTrackerModule(client));
+        client.getModuleLoader().loadModule(new TableFixerModule(client));
+        client.getModuleLoader().loadModule(new SeenModule(client));
+        client.getModuleLoader().loadModule(new StatusModule(client));
+        client.getModuleLoader().loadModule(new StreamAnnouncer(client));
+        client.getModuleLoader().loadModule(new TagModule(client));
+        client.getModuleLoader().loadModule(new TempChannelModule(client));
 
         // Dependent Modules
-        client.getModuleLoader().loadModule(new HelpModule());
+        client.getModuleLoader().loadModule(new HelpModule(client));
     }
 }
