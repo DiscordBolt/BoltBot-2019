@@ -7,6 +7,7 @@ import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.guild.GuildLeaveEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserLeaveEvent;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.modules.IModule;
 
 /**
@@ -19,6 +20,11 @@ public class StatusModule extends CustomModule implements IModule {
 
     public StatusModule(IDiscordClient client) {
         super(client, "Status Module", "1.0");
+        for (IGuild g : client.getGuilds()) {
+            guildCount++;
+            userCount += g.getUsers().size();
+        }
+        updatePlayingText();
     }
 
     @EventSubscriber
