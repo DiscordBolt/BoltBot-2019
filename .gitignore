@@ -1,3 +1,14 @@
+# Server Files
+CommandPrefixes.json
+database.properties
+TagPrefixes.json
+modules/
+playlists/
+logs/
+statuses/
+tags/
+
+
 *.class
 
 # Mobile Tools for Java (J2ME)
