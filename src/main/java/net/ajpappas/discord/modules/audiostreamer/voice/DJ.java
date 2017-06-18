@@ -298,7 +298,6 @@ public class DJ extends AudioEventAdapter {
     /* Channel Cleanup */
 
     private void checkChannel() {
-        Logger.warning("Size: " + getVoiceChannel().getConnectedUsers().size());
         if (getVoiceChannel().getConnectedUsers().size() <= 1) {
             AudioStreamer.getVoiceManager().forceLeaveChannel(guild);
         }
