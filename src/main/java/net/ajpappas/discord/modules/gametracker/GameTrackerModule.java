@@ -6,6 +6,8 @@ import net.ajpappas.discord.utils.Logger;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.modules.IModule;
 
+import java.sql.SQLException;
+
 /**
  * Created by Tony Pappas on 9/29/2016.
  */
@@ -15,10 +17,18 @@ public class GameTrackerModule extends CustomModule implements IModule {
 
     public GameTrackerModule(IDiscordClient client) {
         super(client, "GameTracker", "1.1");
-        if (MySQL.isConnected()) {
-            getClient().getDispatcher().registerListener(new GameListener());
-        } else {
-            Logger.error("Unable to connect to MySQL database. Disabling Game Tracker.");
+        init();
+    }
+
+    private void init() {
+        try {
+            if (MySQL.getDataSource().getConnection() != null) {
+                getClient().getDispatcher().registerListener(new GameListener());
+                return;
+            }
+        } catch (SQLException e) {
+            // Print error below
         }
+        Logger.error("Unable to connect to MySQL database. Disabling Game Tracker.");
     }
 }

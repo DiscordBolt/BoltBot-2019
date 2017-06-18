@@ -44,7 +44,7 @@ public class GameLog {
         }
 
         try {
-            PreparedStatement ps = MySQL.getConnection().prepareStatement("INSERT INTO `game_log` (`user`, `game`, `startTime`, `endTime`) VALUES (?, (SELECT `id` FROM `games` WHERE `title` = ?), ?, ?);");
+            PreparedStatement ps = MySQL.getDataSource().getConnection().prepareStatement("INSERT INTO `game_log` (`user`, `game`, `startTime`, `endTime`) VALUES (?, (SELECT `id` FROM `games` WHERE `title` = ?), ?, ?);");
             ps.setLong(1, user.getLongID());
             ps.setString(2, gameTitle);
             ps.setTimestamp(3, new Timestamp(startTime));
@@ -68,7 +68,7 @@ public class GameLog {
         if (user.isBot())
             return -1;
         try {
-            PreparedStatement ps = MySQL.getConnection().prepareStatement("REPLACE INTO `users` (`id`, `name`) VALUES (?,?);");
+            PreparedStatement ps = MySQL.getDataSource().getConnection().prepareStatement("REPLACE INTO `users` (`id`, `name`) VALUES (?,?);");
             ps.setLong(1, user.getLongID());
             ps.setString(2, user.getName());
             return ps.executeUpdate();
@@ -81,7 +81,7 @@ public class GameLog {
 
     protected static int[] addUsers(List<IUser> users) {
         try {
-            PreparedStatement ps = MySQL.getConnection().prepareStatement("REPLACE INTO `users` (`id`, `name`) VALUES (?,?);");
+            PreparedStatement ps = MySQL.getDataSource().getConnection().prepareStatement("REPLACE INTO `users` (`id`, `name`) VALUES (?,?);");
             for (IUser user : users) {
                 if (user.isBot())
                     continue;
@@ -106,7 +106,7 @@ public class GameLog {
      */
     private static int addGame(String gameTitle) {
         try {
-            PreparedStatement ps = MySQL.getConnection().prepareStatement("INSERT IGNORE INTO `games` (`title`) VALUES (?);");
+            PreparedStatement ps = MySQL.getDataSource().getConnection().prepareStatement("INSERT IGNORE INTO `games` (`title`) VALUES (?);");
             ps.setString(1, gameTitle);
             return ps.executeUpdate();
         } catch (SQLException e) {
