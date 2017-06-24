@@ -7,6 +7,7 @@ import net.ajpappas.discord.modules.disconnect.DisconnectModule;
 import net.ajpappas.discord.modules.gametracker.GameTrackerModule;
 import net.ajpappas.discord.modules.help.HelpModule;
 import net.ajpappas.discord.modules.log.LogModule;
+import net.ajpappas.discord.modules.misc.CuntModule;
 import net.ajpappas.discord.modules.misc.TableFixerModule;
 import net.ajpappas.discord.modules.seen.SeenModule;
 import net.ajpappas.discord.modules.status.StatusModule;
@@ -50,6 +51,7 @@ public class Discord {
 
         // Feature Modules
         client.getModuleLoader().loadModule(new AudioStreamer(client));
+        client.getModuleLoader().loadModule(new CuntModule(client));
         client.getModuleLoader().loadModule(new DiceModule(client));
         client.getModuleLoader().loadModule(new DisconnectModule(client));
         client.getModuleLoader().loadModule(new GameTrackerModule(client));
