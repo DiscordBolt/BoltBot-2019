@@ -2,7 +2,7 @@
 CommandPrefixes.json
 database.properties
 TagPrefixes.json
-modules/
+#modules/
 playlists/
 logs/
 statuses/
