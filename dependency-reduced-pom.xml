@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>me.Techtony96</groupId>
+  <groupId>net.ajpappas</groupId>
   <artifactId>Discord.java</artifactId>
   <version>1.0-SNAPSHOT</version>
   <url>https://github.com/Techtony96/Discord.java</url>
@@ -12,11 +12,11 @@
         <version>2.3.1</version>
         <configuration>
           <outputDirectory>artifacts</outputDirectory>
-            <archive>
-                <manifest>
-                    <mainClass>net.ajpappas.discord.Discord</mainClass>
-                </manifest>
-            </archive>
+          <archive>
+            <manifest>
+              <mainClass>net.ajpappas.discord.Discord</mainClass>
+            </manifest>
+          </archive>
         </configuration>
       </plugin>
       <plugin>
