@@ -16,6 +16,8 @@ import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.modules.IModule;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -33,6 +35,16 @@ public class TagModule extends CustomModule implements IModule {
     public TagModule(IDiscordClient client) {
         super(client, "Tag Module", "1.0");
         TagFileIO.loadTags();
+
+        try {
+            if (!prefixFile.exists()){
+                Files.write(prefixFile.toPath(), Collections.singletonList("{}"), Charset.forName("UTF-8"));
+            }
+        } catch (IOException e){
+            Logger.error("Unable to create tag prefix file.");
+            Logger.debug(e);
+        }
+
         try {
             tagPrefixes = TagFileIO.gson.fromJson(new FileReader(prefixFile), new TypeToken<Map<Long, Character>>() {
             }.getType());
