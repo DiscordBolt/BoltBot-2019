@@ -8,12 +8,32 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RequestBuffer;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ChannelUtil {
+
+    public static IMessage sendFile(IChannel channel, String message, String fileName, InputStream is) {
+        if (channel == null || is == null)
+            return null;
+        return RequestBuffer.request(() -> {
+            try {
+                return channel.sendFile(message, is, fileName);
+            } catch (DiscordException ex) {
+                Logger.error("Discord Exception: " + ex.getErrorMessage());
+                Logger.debug(ex);
+                return null;
+            } catch (MissingPermissionsException e) {
+                Logger.error("Unable to upload file in channel " + channel.getName() + ". Missing Permissions.");
+                Logger.debug(e);
+                return null;
+            }
+        }).get();
+
+    }
 
     public static IMessage sendMessage(IChannel channel, String message) {
         if (channel == null || message == null || message.length() == 0)

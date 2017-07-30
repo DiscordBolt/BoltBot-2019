@@ -177,7 +177,7 @@ public class TagModule extends CustomModule implements IModule {
     public void onTagRequest(MessageReceivedEvent e) {
         if (e.getGuild() == null)
             return;
-        if (e.getMessage().getContent() == null)
+        if (e.getMessage().getContent() == null || e.getMessage().getContent().length() <= 0)
             return;
         if (e.getMessage().getContent().charAt(0) != getTagPrefix(e.getGuild()))
             return;
