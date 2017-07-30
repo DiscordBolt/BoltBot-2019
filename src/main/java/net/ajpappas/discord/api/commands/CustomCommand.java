@@ -206,7 +206,7 @@ public class CustomCommand {
         if (!(cc.getCommand().equalsIgnoreCase(getName()) || (getAliases().size() > 0 && getAliases().stream().filter(a -> a.equalsIgnoreCase(cc.getCommand())).findAny().isPresent())))
             return;
 
-        if (getAllowedChannels().size() > 0 && !getAllowedChannels().contains(cc.getChannel().getName())) {
+        if (!(cc.isPrivateMessage() && isAllowPM()) && getAllowedChannels().size() > 0 && !getAllowedChannels().contains(cc.getChannel().getName())) {
             cc.replyWith(cc.getCommand() + " can not be executed in " + cc.getChannel().mention());
             return;
         }
