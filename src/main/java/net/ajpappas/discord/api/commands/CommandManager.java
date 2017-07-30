@@ -11,6 +11,8 @@ import sx.blah.discord.handle.obj.Permissions;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -32,6 +34,14 @@ public class CommandManager {
     }
 
     public static void initializeCommands() {
+        try {
+            if (!prefixFile.exists()){
+                Files.write(prefixFile.toPath(), Collections.singletonList("{}"), Charset.forName("UTF-8"));
+            }
+        } catch (IOException e) {
+            Logger.error("Unable to create command prefix file.");
+            Logger.debug(e);
+        }
         // Load custom command prefixes
         try {
             prefixes = g.fromJson(new FileReader(prefixFile), new TypeToken<Map<Long, String>>() {
