@@ -54,6 +54,6 @@ public class StatusModule extends CustomModule implements IModule {
     }
 
     private void updatePlayingText() {
-        getClient().changePlayingText(String.format("%d guild%s with %d users", guildCount, guildCount > 1 ? "s" : "", userCount));
+        getClient().changePlayingText(String.format("%d guild%s w/ %d users", guildCount, guildCount > 1 ? "s" : "", userCount));
     }
 }
