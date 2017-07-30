@@ -1,7 +1,6 @@
 # Discord.java
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f958086355d246389def31f2fd2179e8)](https://www.codacy.com/app/techtony96/Discord.java?utm_source=github.com&utm_medium=referral&utm_content=Techtony96/Discord.java&utm_campaign=badger)
-[![Build Status](https://travis-ci.org/Techtony96/Discord.java.svg?branch=master)](https://travis-ci.org/Techtony96/Discord.java) [![Coverage Status](https://coveralls.io/repos/github/Techtony96/Discord.java/badge.svg?branch=master)](https://coveralls.io/github/Techtony96/Discord.java?branch=master)
+[![Build Status](https://travis-ci.org/ajpappas/Discord.java.svg?branch=master)](https://travis-ci.org/ajpappas/Discord.java) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f958086355d246389def31f2fd2179e8)](https://www.codacy.com/app/techtony96/Discord.java?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ajpappas/Discord.java&amp;utm_campaign=Badge_Grade)
 ======
 
 ## Discord4J Documentation
