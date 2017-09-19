@@ -3,6 +3,8 @@ package mock;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.IShard;
 import sx.blah.discord.handle.audio.IAudioManager;
+import sx.blah.discord.handle.audit.ActionType;
+import sx.blah.discord.handle.audit.AuditLog;
 import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.Ban;
 import sx.blah.discord.util.Image;
@@ -316,18 +318,6 @@ public class MockGuild implements IGuild {
 
     @Deprecated
     @Override
-    public void deleteGuild() {
-
-    }
-
-    @Deprecated
-    @Override
-    public void leaveGuild() {
-
-    }
-
-    @Deprecated
-    @Override
     public void leave() {
 
     }
@@ -368,9 +358,8 @@ public class MockGuild implements IGuild {
         return null;
     }
 
-    @Deprecated
     @Override
-    public List<IInvite> getInvites() {
+    public IChannel getDefaultChannel() {
         return null;
     }
 
@@ -462,6 +451,26 @@ public class MockGuild implements IGuild {
     @Override
     public int getTotalMemberCount() {
         return 0;
+    }
+
+    @Override
+    public AuditLog getAuditLog() {
+        return null;
+    }
+
+    @Override
+    public AuditLog getAuditLog(ActionType actionType) {
+        return null;
+    }
+
+    @Override
+    public AuditLog getAuditLog(IUser iUser) {
+        return null;
+    }
+
+    @Override
+    public AuditLog getAuditLog(IUser iUser, ActionType actionType) {
+        return null;
     }
 
     @Deprecated

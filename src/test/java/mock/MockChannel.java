@@ -46,12 +46,6 @@ public class MockChannel implements IChannel {
 
     @Deprecated
     @Override
-    public MessageList getMessages() {
-        return null;
-    }
-
-    @Deprecated
-    @Override
     public MessageHistory getMessageHistory() {
         return null;
     }
@@ -362,6 +356,11 @@ public class MockChannel implements IChannel {
 
     }
 
+    @Override
+    public void changeNSFW(boolean b) {
+
+    }
+
     @Deprecated
     @Override
     public int getPosition() {
@@ -420,12 +419,6 @@ public class MockChannel implements IChannel {
     @Override
     public void overrideUserPermissions(IUser user, EnumSet<Permissions> toAdd, EnumSet<Permissions> toRemove) {
 
-    }
-
-    @Deprecated
-    @Override
-    public List<IInvite> getInvites() {
-        return null;
     }
 
     @Deprecated
