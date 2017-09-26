@@ -5,6 +5,7 @@ import sx.blah.discord.api.IShard;
 import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.cache.LongMap;
 
+import java.awt.*;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -62,12 +63,6 @@ public class MockUser implements IUser {
 
     @Deprecated
     @Override
-    public Status getStatus() {
-        return null;
-    }
-
-    @Deprecated
-    @Override
     public String mention(boolean mentionWithNickname) {
         return null;
     }
@@ -81,6 +76,11 @@ public class MockUser implements IUser {
     @Deprecated
     @Override
     public List<IRole> getRolesForGuild(IGuild guild) {
+        return null;
+    }
+
+    @Override
+    public Color getColorForGuild(IGuild iGuild) {
         return null;
     }
 

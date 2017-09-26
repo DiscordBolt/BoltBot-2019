@@ -4,6 +4,7 @@ import com.vdurmont.emoji.Emoji;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.IShard;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
+import sx.blah.discord.handle.impl.obj.ReactionEmoji;
 import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.MessageTokenizer;
 
@@ -80,12 +81,6 @@ public class MockMessage implements IMessage {
     @Deprecated
     @Override
     public List<Attachment> getAttachments() {
-        return null;
-    }
-
-    @Deprecated
-    @Override
-    public List<IEmbed> getEmbedded() {
         return null;
     }
 
@@ -173,21 +168,30 @@ public class MockMessage implements IMessage {
         return null;
     }
 
+    @Override
+    public IReaction getReactionByEmoji(IEmoji iEmoji) {
+        return null;
+    }
+
+    @Override
+    public IReaction getReactionByID(long l) {
+        return null;
+    }
+
     @Deprecated
     @Override
     public IReaction getReactionByUnicode(String name) {
         return null;
     }
 
-    @Deprecated
     @Override
-    public IReaction getReactionByUnicode(Emoji emoji) {
+    public IReaction getReactionByEmoji(ReactionEmoji reactionEmoji) {
         return null;
     }
 
     @Deprecated
     @Override
-    public IReaction getReactionByName(String name) {
+    public IReaction getReactionByUnicode(Emoji emoji) {
         return null;
     }
 
@@ -215,6 +219,11 @@ public class MockMessage implements IMessage {
 
     }
 
+    @Override
+    public void addReaction(ReactionEmoji reactionEmoji) {
+
+    }
+
     @Deprecated
     @Override
     public void addReaction(Emoji emoji) {
@@ -224,6 +233,26 @@ public class MockMessage implements IMessage {
     @Deprecated
     @Override
     public void removeReaction(IUser user, IReaction reaction) {
+
+    }
+
+    @Override
+    public void removeReaction(IUser iUser, ReactionEmoji reactionEmoji) {
+
+    }
+
+    @Override
+    public void removeReaction(IUser iUser, IEmoji iEmoji) {
+
+    }
+
+    @Override
+    public void removeReaction(IUser iUser, Emoji emoji) {
+
+    }
+
+    @Override
+    public void removeReaction(IUser iUser, String s) {
 
     }
 
