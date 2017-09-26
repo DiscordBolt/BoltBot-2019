@@ -152,25 +152,16 @@ public class TagModule extends CustomModule implements IModule {
         }
     }
 
-    @BotCommand(command = "TagConfig", description = "Set Configuration options for Tag Module", usage = "TagConfig [prefix]", module = "Tag Module", permissions = Permissions.ADMINISTRATOR)
+    @BotCommand(command = "TagPrefix", description = "Set prefix options for Tag Module", usage = "TagPrefix [prefix]", module = "Tag Module", permissions = Permissions.ADMINISTRATOR)
     public static void tagConfig(CommandContext cc) {
-        if (cc.getArgCount() < 2) {
+        if (cc.getArgCount() < 2 || cc.getArgCount() > 2 || cc.getArgument(1).length() > 1) {
             cc.sendUsage();
             return;
         }
 
-        String instruction = cc.getArgument(1).toLowerCase();
-        if (instruction.equals("prefix")) {
-            if (cc.getArgCount() < 3) {
-                cc.replyWith("Incorrect number of arguments. Usage: " + CommandManager.getCommandPrefix(cc.getGuild()) + "TagConfig prefix [character]");
-                return;
-            }
-
-            char newPrefix = cc.getArgument(2).charAt(0);
-            setGuildTagPrefix(cc.getGuild(), newPrefix);
-            cc.replyWith("Set your tag prefix to `" + getTagPrefix(cc.getGuild()) + "`");
-            return;
-        }
+        char newPrefix = cc.getArgument(1).charAt(0);
+        setGuildTagPrefix(cc.getGuild(), newPrefix);
+        cc.replyWith("Set your tag prefix to `" + getTagPrefix(cc.getGuild()) + "`");
     }
 
     @EventSubscriber
