@@ -4,6 +4,7 @@ import net.ajpappas.discord.api.commands.exceptions.CommandException;
 import net.ajpappas.discord.utils.ChannelUtil;
 import net.ajpappas.discord.utils.ExceptionMessage;
 import net.ajpappas.discord.utils.Logger;
+import net.ajpappas.discord.utils.UserUtil;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.obj.PrivateChannel;
@@ -188,6 +189,10 @@ public class CustomCommand {
         String message = e.getMessage().getContent();
         IUser user = e.getAuthor();
 
+        if (user.isBot()){ // Ignore bots
+            return;
+        }
+
         // Do not respond to PMs right now
         if (!isAllowPM() && e.getChannel() instanceof PrivateChannel) {
             return;
@@ -231,10 +236,15 @@ public class CustomCommand {
             cc.replyWith("This command requires permissions which can not be checked in a PM. Please execute this command in a guild.");
             return;
         }
-        for (Permissions p : getPermissions()) {
-            if (!user.getPermissionsForGuild(e.getGuild()).contains(p)) {
-                cc.replyWith(cc.mentionUser() + " " + ExceptionMessage.PERMISSION_DENIED);
-                return;
+
+        if (UserUtil.isBotOwner(cc.getUser())) {
+            // Do not check permissions
+        } else {
+            for (Permissions p : getPermissions()) {
+                if (!user.getPermissionsForGuild(e.getGuild()).contains(p)) {
+                    cc.replyWith(cc.mentionUser() + " " + ExceptionMessage.PERMISSION_DENIED);
+                    return;
+                }
             }
         }
 

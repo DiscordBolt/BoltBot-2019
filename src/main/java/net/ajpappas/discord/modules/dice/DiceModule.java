@@ -58,6 +58,8 @@ public class DiceModule extends CustomModule implements IModule {
 
     @EventSubscriber
     public void onFlipRequest(MessageReceivedEvent e) {
+        if (e.getAuthor().isBot())
+            return;
         if (e.getMessage().getContent().toLowerCase().contains("flip a coin")) {
             ChannelUtil.sendMessage(e.getChannel(), getCoinEmbed());
         }

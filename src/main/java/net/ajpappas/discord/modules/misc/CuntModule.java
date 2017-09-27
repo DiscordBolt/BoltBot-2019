@@ -18,6 +18,8 @@ public class CuntModule extends CustomModule implements IModule {
 
     @EventSubscriber
     public void onCunt(MessageReceivedEvent e) {
+        if (e.getAuthor().isBot())
+            return;
         if (e.getMessage().getContent().toLowerCase().startsWith("cunt")) {
             ChannelUtil.sendMessage(e.getChannel(), "cunt");
         }
