@@ -88,9 +88,12 @@ public class VoiceManager {
             throw new CommandPermissionException("You must be a \"" + AudioStreamer.ADMIN_ROLE + "\" to add Twitch.tv live streams!");
         if (requester.getVoiceStateForGuild(guild).getChannel() == null)
             throw new CommandStateException("You must be connected to a voice channel to execute this command!");
-        if (getDJ(guild).getVoiceChannel() != null && requester.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getVoiceChannel())
+        if (getDJ(guild).getVoiceChannel() != null && !requester.getVoiceStateForGuild(guild).getChannel().equals(getDJ(guild).getVoiceChannel()))
             throw new CommandStateException("You must be in my voice channel to control the music!");
         DJ dj = getDJ(guild);
+        if (( dj.getPlaying() != null && songID.contains(dj.getPlaying().getIdentifier())) || dj.getQueue().stream().anyMatch(t -> songID.contains(t.getIdentifier()))) {
+            throw new CommandStateException("That song is already in the queue!");
+        }
         playerManager.loadItemOrdered(dj, songID, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
