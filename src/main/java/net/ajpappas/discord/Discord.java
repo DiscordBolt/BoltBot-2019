@@ -49,6 +49,8 @@ public class Discord {
         client.getModuleLoader().loadModule(new CommandModule(client));
         client.getModuleLoader().loadModule(new LogModule(client));
 
+        Logger.debug("API MODULES LOADED");
+
         // Feature Modules
         client.getModuleLoader().loadModule(new AudioStreamer(client));
         client.getModuleLoader().loadModule(new CuntModule(client));

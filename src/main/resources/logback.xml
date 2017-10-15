@@ -13,8 +13,11 @@
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>[%level] %msg%n</pattern>
+            <pattern>%highlight(%-5level) %cyan(%logger{25}) - %msg%n</pattern>
         </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -34,9 +37,8 @@
         <appender-ref ref="FILE"/>
     </appender>
 
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="CONSOLE"/>
-        <!-- Uncomment the next line to also log to a file -->
-        <!-- <appender-ref ref="ASYNC"/> -->
+        <appender-ref ref="ASYNC"/>
     </root>
 </configuration>
