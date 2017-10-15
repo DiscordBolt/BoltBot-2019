@@ -3,130 +3,97 @@ package net.ajpappas.discord.modules.reddit;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.ajpappas.discord.utils.Logger;
+import net.ajpappas.discord.modules.reddit.internal.RawRedditObject;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.http.client.HttpResponseException;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 public class Subreddit {
 
-    private String subredditName;
-    private List<RedditObject> posts;
-
+    private static Set<Subreddit> subreddits = new HashSet<>();
     private static OkHttpClient client = new OkHttpClient();
-    private static final String REDDIT_URL = "https://www.reddit.com/r/{subreddit}/top.json?t=day";
     private static JsonParser parser = new JsonParser();
     private static Gson gson = new Gson();
+    public static final int CACHE_TTL = 30; // Number of minutes we won't send a new request to reddit for
 
-    public Subreddit(String subredditName) throws IOException {
-        this.subredditName = subredditName;
+    private String subredditName;
+    private HashMap<SortMethod, PostList> posts = new HashMap<>();
 
-        try {
-            posts = getTopPosts(subredditName);
-        } catch (IOException ex) {
-            Logger.error("Failed to get posts of subreddit \"" + subredditName + "\"");
-            Logger.debug(ex);
-            throw ex;
-        }
-        Logger.info("Subreddit constructor finished");
-    }
+    private Subreddit(String subredditName) {
+        this.subredditName = subredditName.toLowerCase();
 
-    public RedditPost getTopPost() {
-        Logger.info("Looking for top post");
-        for (RedditObject post : posts) {
-            if (post.data.getPost_hint().equals("image")) {
-                Logger.info("Found an image post!");
-                return post.data;
-            }
-        }
-        Logger.warning("No post found for subreddit: " + subredditName);
-        return null;
+        // Cache our object in the HashSet. We are only allowed to store a single instance of a given subreddit.
+        subreddits.add(this);
     }
 
     /**
-     * Get the top post of the past 24 hours from the given subreddit
+     * Get the first 25 posts of a given subreddit with given sorting method
      *
-     * @param subreddit subreddit name, no /r/ formatting
-     * @return Subreddit that contains the top post
+     * @param subredditName Subreddit string to fetch posts of. No formatting.
+     * @param sortMethod How you want reddit to sort the returned posts
+     * @return List of raw reddit objects
+     * @throws IOException If response fails or other IOException occurs
      */
-    private static List<RedditObject> getTopPosts(String subreddit) throws IOException {
-        Request request = new Request.Builder().url(REDDIT_URL.replace("{subreddit}", subreddit)).build();
+    private static PostList getPosts(String subredditName, SortMethod sortMethod) throws IOException {
+        // Check the cache first
+        Optional<Subreddit> subredditSerach = subreddits.stream().filter(s -> s.getSubredditName().equalsIgnoreCase(subredditName)).findAny();
+        if (subredditSerach.isPresent()) {
+            // Subreddit exists in cache
+            Subreddit subreddit = subredditSerach.get();
+            if (subreddit.posts.containsKey(sortMethod)) {
+                // Sort method exists in subreddit
+                if (subreddit.posts.get(sortMethod).isCacheValid()) {
+                    // Cache hit
+                    return subreddit.posts.get(sortMethod);
+                }
+            }
+        }
 
-        Logger.info("Sending request");
+        // Cache miss, request the info from Github
+        Request request = new Request.Builder().url("https://www.reddit.com/r/" + subredditName + sortMethod).build();
+
         Response response = client.newCall(request).execute();
-        Logger.info("Request done");
 
         if (!response.isSuccessful())
             throw new HttpResponseException(response.code(), response.message());
 
-        Logger.info("Request successful");
-
         JsonObject json = parser.parse(response.body().string()).getAsJsonObject();
 
-        Logger.info("Json conversion complete");
+        RawRedditObject[] rawRedditObjects = gson.fromJson(json.getAsJsonObject("data").getAsJsonArray("children"), RawRedditObject[].class);
+        RedditPost[] redditPosts = new RedditPost[rawRedditObjects.length];
 
-        return Arrays.asList(gson.fromJson(json.getAsJsonObject("data").getAsJsonArray("children"), RedditObject[].class));
     }
 
-    private class RedditObject {
-        private String kind;
-        private RedditPost data;
+    /**
+     * Get the name of the subreddit
+     *
+     * @return String subreddit name
+     */
+    public String getSubredditName() {
+        return subredditName;
     }
 
-    class RedditPost {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
-        private String id;
-        private String url;
+        Subreddit subreddit = (Subreddit) o;
 
-        private String author; //null if promotional link
-        private String title; //may contain newlines for some reason
+        return getSubredditName().equals(subreddit.getSubredditName());
+    }
 
-        private String domain; //domain or if self post: "self.[subreddit]"
-        private String post_hint; //image, link
-
-        private int score;
-        private int gilded;
-        private boolean over_18;
-
-        public String getId() {
-            return id;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public String getAuthor() {
-            return author;
-        }
-
-        public String getTitle() {
-            return title;
-        }
-
-        public String getDomain() {
-            return domain;
-        }
-
-        public String getPost_hint() {
-            return post_hint;
-        }
-
-        public int getScore() {
-            return score;
-        }
-
-        public int getGilded() {
-            return gilded;
-        }
-
-        public boolean isOver_18() {
-            return over_18;
-        }
+    @Override
+    public int hashCode() {
+        return getSubredditName().hashCode();
     }
 }
