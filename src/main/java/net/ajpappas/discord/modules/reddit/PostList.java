@@ -18,7 +18,23 @@ public class PostList {
         this.redditPostList = redditPostList;
     }
 
+    public String getSubreddit() {
+        return subreddit;
+    }
+
+    public SortMethod getSortMethod() {
+        return sortMethod;
+    }
+
     public boolean isCacheValid() {
         return Instant.now().isBefore(validUntil);
+    }
+
+    public RedditPost get(int index) {
+        return redditPostList.get(index);
+    }
+
+    public List<RedditPost> get() {
+        return redditPostList;
     }
 }

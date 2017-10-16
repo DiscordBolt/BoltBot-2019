@@ -2,7 +2,17 @@ package net.ajpappas.discord.modules.reddit;
 
 public enum SortMethod {
 
-    HOT(""), NEW("/new"), RISING("/rising"), CONTROVERSAL("/controversial"), GILDED("/gilded"), TOP_HOUR("/top/?sort=top&t=hour"), TOP_DAY("/top/?sort=top&t=day"), TOP_WEEK("/top/?sort=top&t=week"), TOP_MONTH("/top/?sort=top&t=month"), TOP_YEAR("/top/?sort=top&t=year"), TOP_ALL("/top/?sort=top&t=all");
+    HOT(""),
+    NEW("/new"),
+    RISING("/rising"),
+    CONTROVERSAL("/controversial"),
+    GILDED("/gilded"),
+    TOP_HOUR("/top/?sort=top&t=hour"),
+    TOP_DAY("/top/?sort=top&t=day"),
+    TOP_WEEK("/top/?sort=top&t=week"),
+    TOP_MONTH("/top/?sort=top&t=month"),
+    TOP_YEAR("/top/?sort=top&t=year"),
+    TOP_ALL("/top/?sort=top&t=all");
 
     private String urlTag;
 

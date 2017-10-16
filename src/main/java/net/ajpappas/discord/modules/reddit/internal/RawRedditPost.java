@@ -1,16 +1,17 @@
 package net.ajpappas.discord.modules.reddit.internal;
 
 public class RawRedditPost {
-    private String id;
-    private String url;
+    public String id;
+    public String url;
+    public String subreddit;
 
-    private String author; //null if promotional link
-    private String title; //may contain newlines for some reason
+    public String author; //null if promotional link
+    public String title; //may contain newlines for some reason
 
-    private String domain; //domain or if self post: "self.[subreddit]"
-    private String post_hint; //image, link
+    public String domain; //domain or if self post: "self.[subreddit]"
+    public String post_hint; //image, link, sometimes null
 
-    private int score;
-    private int gilded;
-    private boolean over_18;
+    public int score;
+    public int gilded;
+    public boolean over_18;
 }
