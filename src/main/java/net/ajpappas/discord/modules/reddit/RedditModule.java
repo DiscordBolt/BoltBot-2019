@@ -3,11 +3,13 @@ package net.ajpappas.discord.modules.reddit;
 import net.ajpappas.discord.api.CustomModule;
 import net.ajpappas.discord.api.commands.BotCommand;
 import net.ajpappas.discord.api.commands.CommandContext;
+import net.ajpappas.discord.modules.reddit.enums.PostType;
+import net.ajpappas.discord.modules.reddit.enums.SortMethod;
+import net.ajpappas.discord.utils.Logger;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.modules.IModule;
 
 import java.io.IOException;
-import java.util.Optional;
 
 public class RedditModule extends CustomModule implements IModule {
 
@@ -20,15 +22,15 @@ public class RedditModule extends CustomModule implements IModule {
         String subreddit = cc.getArgument(1);
 
         try {
-            Optional<RedditPost> post = Subreddit.getHotImage(subreddit);
-            if (post.isPresent()) {
-                cc.replyWith("Here is your post!");
-                cc.replyWith(post.get().toEmbed());
-            } else {
-                cc.replyWith("No images where found in the hot listing of that subreddit.");
-            }
+            Logger.info("Starting");
+            PostList list = Subreddit.getPosts(subreddit, SortMethod.HOT);
+            Logger.info("Size=" + list.get().size());
+
+            cc.replyWith(list.filter(PostType.IMAGE).getTopPost().toEmbed());
         } catch (IOException e) {
             cc.replyWith("IO Exception occurred, try again later.");
+        } catch (IndexOutOfBoundsException e) {
+            cc.replyWith("Sorry, no posts were able to be found.");
         }
     }
 }

@@ -1,8 +1,12 @@
 package net.ajpappas.discord.modules.reddit;
 
+import net.ajpappas.discord.modules.reddit.enums.PostType;
+import net.ajpappas.discord.modules.reddit.enums.SortMethod;
+
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PostList {
 
@@ -36,5 +40,21 @@ public class PostList {
 
     public List<RedditPost> get() {
         return redditPostList;
+    }
+
+    public RedditPost getTopPost() {
+        if (get().size() <= 0)
+            throw new IndexOutOfBoundsException("The post list is empty!");
+        return get(0);
+    }
+
+    /**
+     * Returns a new instance of PostList with
+     *
+     * @param postType
+     * @return
+     */
+    public PostList filter(PostType postType) {
+        return new PostList(getSubreddit(), getSortMethod(), get().stream().filter(s -> s.isPostType(postType)).collect(Collectors.toList()));
     }
 }

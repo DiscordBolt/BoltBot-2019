@@ -1,4 +1,4 @@
-package net.ajpappas.discord.modules.reddit;
+package net.ajpappas.discord.modules.reddit.enums;
 
 public enum SortMethod {
 

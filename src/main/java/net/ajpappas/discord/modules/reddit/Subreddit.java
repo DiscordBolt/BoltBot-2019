@@ -3,6 +3,7 @@ package net.ajpappas.discord.modules.reddit;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.ajpappas.discord.modules.reddit.enums.SortMethod;
 import net.ajpappas.discord.modules.reddit.internal.RawRedditObject;
 import net.ajpappas.discord.utils.Logger;
 import okhttp3.OkHttpClient;
@@ -11,7 +12,10 @@ import okhttp3.Response;
 import org.apache.http.client.HttpResponseException;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Subreddit {
 
@@ -39,7 +43,7 @@ public class Subreddit {
      * @return List of raw reddit objects
      * @throws IOException If response fails or other IOException occurs
      */
-    private static PostList getPosts(String subredditName, SortMethod sortMethod) throws IOException {
+    public static PostList getPosts(String subredditName, SortMethod sortMethod) throws IOException {
         // Check the cache first
         if (subreddits.containsKey(subredditName.toLowerCase())) {
             // Subreddit exists in cache
@@ -78,14 +82,6 @@ public class Subreddit {
         PostList ps = new PostList(subredditName, sortMethod, redditPosts);
         subreddits.get(subredditName.toLowerCase()).posts.put(sortMethod, ps);
         return ps;
-    }
-
-    public static RedditPost getHotPost(String subredditName) throws IOException {
-        return getPosts(subredditName, SortMethod.HOT).get(0);
-    }
-
-    public static Optional<RedditPost> getHotImage(String subredditName) throws IOException {
-        return getPosts(subredditName, SortMethod.HOT).get().stream().filter(RedditPost::isImage).findFirst();
     }
 
     /**

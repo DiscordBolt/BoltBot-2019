@@ -1,5 +1,6 @@
 package net.ajpappas.discord.modules.reddit;
 
+import net.ajpappas.discord.modules.reddit.enums.PostType;
 import net.ajpappas.discord.modules.reddit.internal.RawRedditPost;
 import net.ajpappas.discord.utils.EmbedUtil;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
@@ -34,6 +35,8 @@ public class RedditPost {
         this.title = rawRedditPost.title;
         this.domain = rawRedditPost.domain;
         this.postHint = PostType.getEnum(rawRedditPost.post_hint);
+        if (this.postHint == null)
+            this.postHint = PostType.convertURL(getUrl());
         this.score = rawRedditPost.score;
         this.gilded = rawRedditPost.gilded;
         this.over_18 = rawRedditPost.over_18;
@@ -63,6 +66,10 @@ public class RedditPost {
         return embed.build();
     }
 
+    public boolean isPostType(PostType postType) {
+        return getPostType() == postType;
+    }
+
     /* Getters and Setters */
 
     public String getId() {
@@ -89,7 +96,7 @@ public class RedditPost {
         return domain;
     }
 
-    public PostType getPostHint() {
+    public PostType getPostType() {
         return postHint;
     }
 
