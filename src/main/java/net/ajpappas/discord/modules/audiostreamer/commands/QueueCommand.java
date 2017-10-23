@@ -31,6 +31,42 @@ public class QueueCommand {
         List<AudioTrack> queue = AudioStreamer.getVoiceManager().getQueue(cc.getGuild());
         AudioTrack nowPlaying = AudioStreamer.getVoiceManager().getNowPlaying(cc.getGuild());
 
+        //!queue remove <index>
+        if (cc.getArgCount() > 1 && cc.getArgument(1).equalsIgnoreCase("remove")) {
+            //user must have
+            if (!AudioStreamer.hasDJPermissions(cc.getUser(), cc.getGuild())) {
+                cc.replyWith("You do not have permissions to use this command.");
+                return;
+            }
+            final String usage = "usage: !queue remove [1-X]";
+            if (cc.getArgCount() != 3) {
+                cc.replyWith(usage);
+                return;
+            }
+            int songIndex;
+            try {
+                songIndex = Integer.parseInt(cc.getArgument(2));
+            } catch (NumberFormatException e) {
+                cc.replyWith(cc.getArgument(2) + " is not a valid song index.");
+                return;
+            }
+            if (songIndex < 1 || songIndex > queue.size() + 1) {
+                cc.replyWith(cc.getArgument(2) + " is not a valid song index.");
+                return;
+            }
+            try {
+                if (songIndex == 1) { //just skip
+                    AudioStreamer.getVoiceManager().skip(cc.getGuild(), cc.getUser(), true, 1);
+                } else {
+                    AudioStreamer.getVoiceManager().dequeue(cc.getGuild(), cc.getUser(), queue.get(songIndex - 2).getInfo().identifier);
+                    cc.replyWith("Song #" + (songIndex) + ": " + queue.get(songIndex - 2).getInfo().title + " has been removed from the queue.");
+                }
+            } catch (CommandException e) {
+                cc.replyWith(e.getMessage());
+            }
+            return;
+        }
+
         if (nowPlaying == null) {
             cc.replyWith("The queue is empty! Play something with !Play");
             return;

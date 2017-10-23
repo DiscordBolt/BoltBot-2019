@@ -139,7 +139,7 @@ public class VoiceManager {
         if (getDJ(guild).getVoiceChannel() != null && requester.getVoiceStateForGuild(guild).getChannel() != getDJ(guild).getVoiceChannel())
             throw new CommandStateException("You must be in my voice channel to control the music!");
         DJ dj = getDJ(guild);
-        if (!AudioStreamer.hasAdminPermissions(requester, guild) || !dj.getTrackRequester(songID).equals(requester))
+        if (!(AudioStreamer.hasDJPermissions(requester, guild) || dj.getTrackRequester(songID).equals(requester)))
             throw new CommandPermissionException("You do not have permission to remove this song!");
         dj.dequeue(songID);
     }
