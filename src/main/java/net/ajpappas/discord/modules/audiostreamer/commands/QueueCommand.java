@@ -3,6 +3,7 @@ package net.ajpappas.discord.modules.audiostreamer.commands;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.ajpappas.discord.api.commands.BotCommand;
 import net.ajpappas.discord.api.commands.CommandContext;
+import net.ajpappas.discord.api.commands.CommandManager;
 import net.ajpappas.discord.api.commands.exceptions.CommandException;
 import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
 import sx.blah.discord.util.EmbedBuilder;
@@ -14,6 +15,8 @@ import java.util.concurrent.TimeUnit;
  * Created by Tony on 4/22/2017.
  */
 public class QueueCommand {
+
+    public static final String QUEUE_REMOVE_USAGE = "Usage: %sQueue remove #";
 
     @BotCommand(command = "queue", module = "Audio Streamer Module", description = "Print out the list of currently queued songs.", usage = "Queue", allowedChannels = "music")
     public static void queueCommand(CommandContext cc) {
@@ -33,30 +36,33 @@ public class QueueCommand {
 
         //!queue remove <index>
         if (cc.getArgCount() > 1 && cc.getArgument(1).equalsIgnoreCase("remove")) {
-            //user must have
+            //user must have DJ permissions
             if (!AudioStreamer.hasDJPermissions(cc.getUser(), cc.getGuild())) {
                 cc.replyWith("You do not have permissions to use this command.");
                 return;
             }
-            final String usage = "usage: !queue remove [1-X]";
+            //check argument count
             if (cc.getArgCount() != 3) {
-                cc.replyWith(usage);
+                cc.replyWith(String.format(QUEUE_REMOVE_USAGE, CommandManager.getCommandPrefix(cc.getGuild())));
                 return;
             }
             int songIndex;
+            //checks bounds
             try {
                 songIndex = Integer.parseInt(cc.getArgument(2));
             } catch (NumberFormatException e) {
-                cc.replyWith(cc.getArgument(2) + " is not a valid song index.");
+                cc.replyWith("\"" + cc.getArgument(2) + "\" is not a valid song index.");
                 return;
             }
             if (songIndex < 1 || songIndex > queue.size() + 1) {
-                cc.replyWith(cc.getArgument(2) + " is not a valid song index.");
+                cc.replyWith("\"" + cc.getArgument(2) + "\" is not a valid song index.");
                 return;
             }
+            //deletes song
             try {
                 if (songIndex == 1) { //just skip
                     AudioStreamer.getVoiceManager().skip(cc.getGuild(), cc.getUser(), true, 1);
+                    cc.replyWith("Song #1: " + nowPlaying.getInfo().title + " has been removed from the queue.");
                 } else {
                     AudioStreamer.getVoiceManager().dequeue(cc.getGuild(), cc.getUser(), queue.get(songIndex - 2).getInfo().identifier);
                     cc.replyWith("Song #" + (songIndex) + ": " + queue.get(songIndex - 2).getInfo().title + " has been removed from the queue.");
