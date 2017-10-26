@@ -5,6 +5,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.ajpappas.discord.modules.reddit.enums.SortMethod;
 import net.ajpappas.discord.modules.reddit.internal.RawRedditObject;
+import net.ajpappas.discord.modules.reddit.posts.ImagePost;
+import net.ajpappas.discord.modules.reddit.posts.RedditPost;
+import net.ajpappas.discord.modules.reddit.posts.SelfPost;
 import net.ajpappas.discord.utils.Logger;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -76,7 +79,11 @@ public class Subreddit {
         List<RedditPost> redditPosts = new ArrayList<>();
 
         for (RawRedditObject raw : rawRedditObjects) {
-            redditPosts.add(new RedditPost(raw.getData()));
+            if (raw.getData().domain.equalsIgnoreCase("self." + raw.getData().subreddit)) {
+                redditPosts.add(new SelfPost(raw.getData()));
+            } else {
+                redditPosts.add(new ImagePost(raw.getData()));
+            }
         }
 
         PostList ps = new PostList(subredditName, sortMethod, redditPosts);

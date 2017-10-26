@@ -2,6 +2,7 @@ package net.ajpappas.discord.modules.reddit;
 
 import net.ajpappas.discord.modules.reddit.enums.PostType;
 import net.ajpappas.discord.modules.reddit.enums.SortMethod;
+import net.ajpappas.discord.modules.reddit.posts.RedditPost;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -51,10 +52,10 @@ public class PostList {
     /**
      * Returns a new instance of PostList with
      *
-     * @param postType
+     * @param postTypes
      * @return
      */
-    public PostList filter(PostType postType) {
-        return new PostList(getSubreddit(), getSortMethod(), get().stream().filter(s -> s.isPostType(postType)).collect(Collectors.toList()));
+    public PostList filter(PostType... postTypes) {
+        return new PostList(getSubreddit(), getSortMethod(), get().stream().filter(s -> s.isPostType(postTypes)).collect(Collectors.toList()));
     }
 }

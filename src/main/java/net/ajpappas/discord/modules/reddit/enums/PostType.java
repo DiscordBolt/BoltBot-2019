@@ -27,7 +27,16 @@ public enum PostType {
         for (PostType pt : PostType.values())
             if (pt.getValue() != null && pt.getValue().equalsIgnoreCase(value))
                 return pt;
-        Logger.warning("No Post Type found for \"" + value + "\"");
+        Logger.warning("No Post Type found for post_hint: \"" + value + "\"");
+        return null;
+    }
+
+    public static PostType convertDomain(String domain) {
+        if (domain == null || domain.length() == 0)
+            return null;
+        if (domain.startsWith("self."))
+            return SELF;
+
         return null;
     }
 
@@ -42,6 +51,6 @@ public enum PostType {
         } else if (url.contains("youtube.com") || url.contains("youtu.be")) {
             return VIDEO;
         }
-        return UNKNOWN;
+        return null;
     }
 }

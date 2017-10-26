@@ -14,4 +14,6 @@ public class RawRedditPost {
     public int score;
     public int gilded;
     public boolean over_18;
+
+    public String selftext;
 }

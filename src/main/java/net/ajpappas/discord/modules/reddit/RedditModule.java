@@ -5,7 +5,6 @@ import net.ajpappas.discord.api.commands.BotCommand;
 import net.ajpappas.discord.api.commands.CommandContext;
 import net.ajpappas.discord.modules.reddit.enums.PostType;
 import net.ajpappas.discord.modules.reddit.enums.SortMethod;
-import net.ajpappas.discord.utils.Logger;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.modules.IModule;
 
@@ -22,11 +21,7 @@ public class RedditModule extends CustomModule implements IModule {
         String subreddit = cc.getArgument(1);
 
         try {
-            Logger.info("Starting");
-            PostList list = Subreddit.getPosts(subreddit, SortMethod.HOT);
-            Logger.info("Size=" + list.get().size());
-
-            cc.replyWith(list.filter(PostType.IMAGE).getTopPost().toEmbed());
+            cc.replyWith(Subreddit.getPosts(subreddit, SortMethod.HOT).filter(PostType.IMAGE, PostType.SELF).getTopPost().toEmbed());
         } catch (IOException e) {
             cc.replyWith("IO Exception occurred, try again later.");
         } catch (IndexOutOfBoundsException e) {
