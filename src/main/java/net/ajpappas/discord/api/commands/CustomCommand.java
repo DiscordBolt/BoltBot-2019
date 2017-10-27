@@ -12,7 +12,6 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -250,15 +249,17 @@ public class CustomCommand {
 
         try {
             execute.invoke(null, cc);
-        } catch (InvocationTargetException ex) {
+        } catch (Exception ex) {
+            Logger.error("Internal error occurred while running " + getName() + " command.");
+            Logger.error(ex.getMessage());
+            ex.printStackTrace();
+            Logger.debug(ex);
             if (ex.getCause() instanceof CommandException) {
                 cc.replyWith(ex.getMessage());
+            } else {
+                cc.replyWith(ExceptionMessage.COMMAND_PROCESS_EXCEPTION);
             }
-            return;
-        } catch (Exception ex) {
-            Logger.error(ex.getMessage());
-            Logger.debug(ex);
-            cc.replyWith(ExceptionMessage.COMMAND_PROCESS_EXCEPTION);
+
             return;
         }
 
