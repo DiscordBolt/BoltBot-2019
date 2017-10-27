@@ -8,6 +8,7 @@ public enum PostType {
     GIFV(null),
     LINK("link"),
     VIDEO("rich:video"),
+    HOSTED_VIDEO("hosted:video"),
     SELF("self"),
     UNKNOWN(null);
 
@@ -36,6 +37,9 @@ public enum PostType {
             return null;
         if (domain.startsWith("self."))
             return SELF;
+        if (domain.equalsIgnoreCase("i.redd.it")) {
+            return IMAGE;
+        }
 
         return null;
     }

@@ -33,9 +33,6 @@ public class Subreddit {
 
     private Subreddit(String subredditName) {
         this.subredditName = subredditName.toLowerCase();
-
-        // Cache our object in the HashSet. We are only allowed to store a single instance of a given subreddit.
-        subreddits.put(this.subredditName, this);
     }
 
     /**
@@ -58,11 +55,11 @@ public class Subreddit {
                     return subreddit.posts.get(sortMethod);
                 }
             }
-        } else {
+        } else if (!subredditName.equalsIgnoreCase("random")) {
             subreddits.put(subredditName.toLowerCase(), new Subreddit(subredditName));
         }
 
-        Logger.warning("Cache miss for subreddit " + subredditName + " with sorting method " + sortMethod.name());
+        Logger.debug("Cache miss for subreddit " + subredditName + " with sorting method " + sortMethod.name());
 
         // Cache miss, request the info from Github
         Request request = new Request.Builder().url("https://www.reddit.com/r/" + subredditName + ".json" + sortMethod).build();
@@ -73,12 +70,13 @@ public class Subreddit {
             throw new HttpResponseException(response.code(), response.message());
 
         JsonObject json = parser.parse(response.body().string()).getAsJsonObject();
-
         RawRedditObject[] rawRedditObjects = gson.fromJson(json.getAsJsonObject("data").getAsJsonArray("children"), RawRedditObject[].class);
 
         List<RedditPost> redditPosts = new ArrayList<>();
 
         for (RawRedditObject raw : rawRedditObjects) {
+            if (raw.getData().stickied.equalsIgnoreCase("true"))
+                continue;
             if (raw.getData().domain.equalsIgnoreCase("self." + raw.getData().subreddit)) {
                 redditPosts.add(new SelfPost(raw.getData()));
             } else {
@@ -86,8 +84,11 @@ public class Subreddit {
             }
         }
 
+        response.close();
+
         PostList ps = new PostList(subredditName, sortMethod, redditPosts);
-        subreddits.get(subredditName.toLowerCase()).posts.put(sortMethod, ps);
+        if (!subredditName.equalsIgnoreCase("random"))  // Do not cache subreddit "random"
+            subreddits.get(subredditName.toLowerCase()).posts.put(sortMethod, ps);
         return ps;
     }
 

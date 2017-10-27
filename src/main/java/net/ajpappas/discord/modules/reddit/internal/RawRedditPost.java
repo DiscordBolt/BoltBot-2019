@@ -16,4 +16,5 @@ public class RawRedditPost {
     public boolean over_18;
 
     public String selftext;
+    public String stickied;
 }

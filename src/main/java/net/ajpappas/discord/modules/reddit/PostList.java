@@ -49,13 +49,11 @@ public class PostList {
         return get(0);
     }
 
-    /**
-     * Returns a new instance of PostList with
-     *
-     * @param postTypes
-     * @return
-     */
     public PostList filter(PostType... postTypes) {
-        return new PostList(getSubreddit(), getSortMethod(), get().stream().filter(s -> s.isPostType(postTypes)).collect(Collectors.toList()));
+        return filter(true, postTypes);
+    }
+
+    public PostList filter(boolean allowNSFW, PostType... postTypes) {
+        return new PostList(getSubreddit(), getSortMethod(), get().stream().filter(s -> !s.isNSFW() || allowNSFW).filter(s -> s.isPostType(postTypes)).collect(Collectors.toList()));
     }
 }

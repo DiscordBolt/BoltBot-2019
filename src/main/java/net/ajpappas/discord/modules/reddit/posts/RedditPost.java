@@ -70,6 +70,10 @@ public abstract class RedditPost {
         return domain.equals("v.redd.it");
     }
 
+    public boolean isNSFW() {
+        return over_18;
+    }
+
     public boolean isPostType(PostType... postTypes) {
         return Arrays.asList(postTypes).contains(getPostType());
     }
@@ -110,9 +114,5 @@ public abstract class RedditPost {
 
     public int getGilded() {
         return gilded;
-    }
-
-    public boolean isOver_18() {
-        return over_18;
     }
 }
