@@ -25,7 +25,7 @@ public class PlayCommand {
     public static void playCommand(CommandContext cc) {
         if (cc.getArgCount() == 1 && AudioStreamer.getVoiceManager().isPaused(cc.getGuild())) {
             try {
-                AudioStreamer.getVoiceManager().unpause(cc.getGuild(), cc.getUser());
+                AudioStreamer.getVoiceManager().unpause(cc.getGuild(), cc.getAuthor());
                 return;
             } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
@@ -41,7 +41,7 @@ public class PlayCommand {
 
         PlaylistManager playlistManager = AudioStreamer.getPlaylistManager();
         VoiceManager voiceManager = AudioStreamer.getVoiceManager();
-        Playlist current = playlistManager.getSelectedPlaylist(cc.getUser().getLongID());
+        Playlist current = playlistManager.getSelectedPlaylist(cc.getAuthor().getLongID());
         String instruction = cc.getArgument(1);
 
         if (instruction.equalsIgnoreCase("playlist") || instruction.equalsIgnoreCase("-p")) {
@@ -70,7 +70,7 @@ public class PlayCommand {
                     }
 
                     try {
-                        voiceManager.queue(cc.getGuild(), cc.getUser(), toPlay.getSongIDs().get(songNumber - 1));
+                        voiceManager.queue(cc.getGuild(), cc.getAuthor(), toPlay.getSongIDs().get(songNumber - 1));
                         //cc.replyWith("Successfully queued song #" + songNumber + " from " + toPlay.getTitle());
                         return;
                     } catch (CommandPermissionException e) {
@@ -83,7 +83,7 @@ public class PlayCommand {
                 } else {
                     toPlay = playlistManager.getPlaylist(playlistRequest).orElse(null);
                     try {
-                        voiceManager.queue(cc.getGuild(), cc.getUser(), toPlay);
+                        voiceManager.queue(cc.getGuild(), cc.getAuthor(), toPlay);
                         if (toPlay.getSongIDs().size() > 5) {
                             cc.replyWith("Your playlist is now being queued and may take ~30 seconds to fully appear in the queue.");
                             return;
@@ -98,7 +98,7 @@ public class PlayCommand {
                 }
             }
         } else if (instruction.equalsIgnoreCase("random")) {
-            voiceManager.playRandom(cc.getGuild(), cc.getUser());
+            voiceManager.playRandom(cc.getGuild(), cc.getAuthor());
             if (voiceManager.isPlayingRandom(cc.getGuild())) {
                 cc.replyWith("I will now continuously queue up random songs!");
                 return;
@@ -118,7 +118,7 @@ public class PlayCommand {
             return;
         } else {
             try {
-                voiceManager.queue(cc.getGuild(), cc.getUser(), cc.getArgument(1));
+                voiceManager.queue(cc.getGuild(), cc.getAuthor(), cc.getArgument(1));
                 cc.replyWith("Your song is now being queued up");
             } catch (CommandException e) {
                 cc.replyWith(e.getMessage());

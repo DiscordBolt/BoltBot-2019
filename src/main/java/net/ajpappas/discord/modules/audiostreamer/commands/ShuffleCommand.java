@@ -13,7 +13,7 @@ public class ShuffleCommand {
     @BotCommand(command = "shuffle", description = "Shuffle the current queue", usage = "Shuffle", module = "Audio Streamer Module", allowedChannels = "music")
     public static void shuffleCommand(CommandContext cc) {
         try {
-            AudioStreamer.getVoiceManager().shuffle(cc.getGuild(), cc.getUser());
+            AudioStreamer.getVoiceManager().shuffle(cc.getGuild(), cc.getAuthor());
         } catch (CommandPermissionException e) {
             cc.replyWith(e.getMessage());
             return;

@@ -36,7 +36,7 @@ public class DisconnectModule extends CustomModule implements IModule {
             }
         }
         if (!createChannel) {
-            cc.replyWith(cc.getUserDisplayName() + ", none of the users specified are connected to a voice channel.");
+            cc.replyWith(cc.getAuthorDisplayName() + ", none of the users specified are connected to a voice channel.");
             return;
         }
 
@@ -47,12 +47,12 @@ public class DisconnectModule extends CustomModule implements IModule {
             u.moveToVoiceChannel(temp);
         }
         temp.delete();
-        cc.replyWith(cc.getUserDisplayName() + ", successfully removed users from voice channels.");
+        cc.replyWith(cc.getAuthorDisplayName() + ", successfully removed users from voice channels.");
         StringBuilder sb = new StringBuilder();
 
         sb.append(mentions.get(0).getName());
         for (int i = 1; i < mentions.size(); i++)
             sb.append(", " + mentions.get(i).getName());
-        LogModule.logMessage(cc.getGuild(), cc.getUser() + " just disconnected: " + sb.toString());
+        LogModule.logMessage(cc.getGuild(), cc.getAuthor() + " just disconnected: " + sb.toString());
     }
 }

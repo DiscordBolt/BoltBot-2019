@@ -13,7 +13,7 @@ public class UpdateCommand {
 
     @BotCommand(command = "update", description = "Update the bot and restart.", usage = "Update", module = "dev", permissions = Permissions.ADMINISTRATOR, secret = true)
     public static void updateCommand(CommandContext cc) {
-        if (!UserUtil.isBotOwner(cc.getUser())) {
+        if (!UserUtil.isBotOwner(cc.getAuthor())) {
             cc.replyWith(ExceptionMessage.PERMISSION_DENIED);
             return;
         }

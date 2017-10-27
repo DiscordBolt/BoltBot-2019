@@ -38,7 +38,7 @@ public class HelpModule extends CustomModule implements IModule {
 
         for (CustomCommand command : CommandManager.getCommands()) {
             // Check if the user has permission for the command.
-            if (!(all || cc.getUser().getPermissionsForGuild(cc.getGuild()).containsAll(command.getPermissions())))
+            if (!(all || cc.getAuthor().getPermissionsForGuild(cc.getGuild()).containsAll(command.getPermissions())))
                 continue;
 
             if (!currentModule.equalsIgnoreCase(command.getModule())) {
@@ -58,7 +58,7 @@ public class HelpModule extends CustomModule implements IModule {
             if (command.getUsage(cc.getGuild()).length() > 1 && command.getDescription().length() > 0) {
                 sb.append(command.getUsage(cc.getGuild())).append(" | ").append(command.getDescription()).append('\n');
             } else
-                sb.append(command.getUsage(cc.getGuild()).length() > 1 ? command.getUsage(cc.getGuild()) : "!" + command.getName() + " " + command.getDescription()).append('\n');
+                sb.append(command.getUsage(cc.getGuild()).length() > 1 ? command.getUsage(cc.getGuild()) : "!" + command.getCommand() + " " + command.getDescription()).append('\n');
         }
 
         embed.appendField(currentModule, sb.toString(), false);

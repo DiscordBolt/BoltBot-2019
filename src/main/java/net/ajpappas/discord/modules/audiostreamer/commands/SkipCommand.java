@@ -20,7 +20,7 @@ public class SkipCommand {
                 } catch (NumberFormatException e) {
                 }
             }
-            AudioStreamer.getVoiceManager().skip(cc.getGuild(), cc.getUser(), cc.getArgCount() > 1, count);
+            AudioStreamer.getVoiceManager().skip(cc.getGuild(), cc.getAuthor(), cc.getArgCount() > 1, count);
         } catch (CommandException e) {
             cc.replyWith(e.getMessage());
             return;

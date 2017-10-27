@@ -23,8 +23,8 @@ public class ListRoles {
         embed.withAuthorIcon(cc.getGuild().getIconURL());
         embed.withColor(36, 153, 153);
         embed.setLenient(true);
-        embed.withFooterIcon(cc.getUser().getAvatarURL());
-        embed.withFooterText("Requested by " + cc.getUser().getName());
+        embed.withFooterIcon(cc.getAuthor().getAvatarURL());
+        embed.withFooterText("Requested by " + cc.getAuthor().getName());
         embed.appendDescription(sb.append("```").toString());
         embed.withTimestamp(System.currentTimeMillis());
         cc.replyWith(embed.build());

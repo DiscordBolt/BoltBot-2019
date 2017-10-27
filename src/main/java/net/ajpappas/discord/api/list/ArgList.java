@@ -1,6 +1,7 @@
 package net.ajpappas.discord.api.list;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by Tony on 2/17/2017.
@@ -8,14 +9,10 @@ import java.util.ArrayList;
 public class ArgList extends ArrayList<String> {
 
     public ArgList(String[] args) {
-        for (String s : args)
-            add(s);
+        addAll(Arrays.asList(args));
     }
 
     public boolean containsIgnoreCase(String s) {
-        for (String s1 : this)
-            if (s.equalsIgnoreCase(s1))
-                return true;
-        return false;
+        return this.stream().anyMatch(s1 -> s1.equalsIgnoreCase(s));
     }
 }

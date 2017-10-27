@@ -23,7 +23,7 @@ public class QueueCommand {
 
         if (cc.getArgCount() > 1 && cc.getArgument(1).equalsIgnoreCase("clear")) {
             try {
-                AudioStreamer.getVoiceManager().clearQueue(cc.getGuild(), cc.getUser());
+                AudioStreamer.getVoiceManager().clearQueue(cc.getGuild(), cc.getAuthor());
                 return;
             } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
@@ -37,7 +37,7 @@ public class QueueCommand {
         //!queue remove <index>
         if (cc.getArgCount() > 1 && cc.getArgument(1).equalsIgnoreCase("remove")) {
             //user must have DJ permissions
-            if (!AudioStreamer.hasDJPermissions(cc.getUser(), cc.getGuild())) {
+            if (!AudioStreamer.hasDJPermissions(cc.getAuthor(), cc.getGuild())) {
                 cc.replyWith("You do not have permissions to use this command.");
                 return;
             }
@@ -61,10 +61,10 @@ public class QueueCommand {
             //deletes song
             try {
                 if (songIndex == 1) { //just skip
-                    AudioStreamer.getVoiceManager().skip(cc.getGuild(), cc.getUser(), true, 1);
+                    AudioStreamer.getVoiceManager().skip(cc.getGuild(), cc.getAuthor(), true, 1);
                     cc.replyWith("Song #1: " + nowPlaying.getInfo().title + " has been removed from the queue.");
                 } else {
-                    AudioStreamer.getVoiceManager().dequeue(cc.getGuild(), cc.getUser(), queue.get(songIndex - 2).getInfo().identifier);
+                    AudioStreamer.getVoiceManager().dequeue(cc.getGuild(), cc.getAuthor(), queue.get(songIndex - 2).getInfo().identifier);
                     cc.replyWith("Song #" + (songIndex) + ": " + queue.get(songIndex - 2).getInfo().title + " has been removed from the queue.");
                 }
             } catch (CommandException e) {

@@ -73,7 +73,7 @@ public class PlaylistCommand {
         }
 
         manager = AudioStreamer.getPlaylistManager();
-        Playlist current = manager.getSelectedPlaylist(cc.getUser().getLongID());
+        Playlist current = manager.getSelectedPlaylist(cc.getAuthor().getLongID());
         String instruction = cc.getArgument(1);
 
         if (instruction.equalsIgnoreCase("view")) {
@@ -111,12 +111,12 @@ public class PlaylistCommand {
                     cc.replyWith("Playlist titles can only contain alphanumeric characters and spaces.");
                     return;
                 }
-                toCreate = manager.createPlaylist(title, cc.getUser(), cc.getGuild());
+                toCreate = manager.createPlaylist(title, cc.getAuthor(), cc.getGuild());
             } catch (CommandStateException e) {
                 cc.replyWith(e.getMessage());
                 return;
             }
-            manager.setSelectedPlaylist(cc.getUser().getLongID(), toCreate);
+            manager.setSelectedPlaylist(cc.getAuthor().getLongID(), toCreate);
             cc.replyWith("Successfully created playlist: " + toCreate.getTitle());
         } else if (instruction.equalsIgnoreCase("delete")) {
             if (cc.isPrivateMessage()) {
@@ -128,7 +128,7 @@ public class PlaylistCommand {
                 return;
             }
             try {
-                manager.deletePlaylist(getPLNameArgs(cc), cc.getUser());
+                manager.deletePlaylist(getPLNameArgs(cc), cc.getAuthor());
             } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
@@ -143,7 +143,7 @@ public class PlaylistCommand {
                 int playlistIndex = Integer.valueOf(cc.getArgument(2)) - 1;
                 try {
                     Playlist toSelect = manager.getPlaylist(playlistIndex);
-                    manager.setSelectedPlaylist(cc.getUser().getLongID(), toSelect);
+                    manager.setSelectedPlaylist(cc.getAuthor().getLongID(), toSelect);
                     cc.replyWith("Successfully selected " + toSelect.getTitle() + " by " + toSelect.getOwner().getName() + " as your selected playlist.");
                 } catch (CommandArgumentException e) {
                     cc.replyWith(e.getMessage());
@@ -155,7 +155,7 @@ public class PlaylistCommand {
                     cc.replyWith(NO_SUCH_PLAYLIST);
                     return;
                 }
-                manager.setSelectedPlaylist(cc.getUser().getLongID(), toSelect.get());
+                manager.setSelectedPlaylist(cc.getAuthor().getLongID(), toSelect.get());
                 cc.replyWith("Successfully selected " + toSelect.get().getTitle() + " by " + toSelect.get().getOwner().getName() + " as your selected playlist.");
             }
         } else if (instruction.equalsIgnoreCase("share")) {
@@ -173,7 +173,7 @@ public class PlaylistCommand {
                 return;
             }
             try {
-                current.addContributor(cc.getUser(), mentions.get(0));
+                current.addContributor(cc.getAuthor(), mentions.get(0));
             } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
@@ -194,7 +194,7 @@ public class PlaylistCommand {
                 return;
             }
             try {
-                current.removeContributor(cc.getUser(), mentions.get(0));
+                current.removeContributor(cc.getAuthor(), mentions.get(0));
             } catch (CommandException e) {
                 cc.replyWith(e.getMessage());
                 return;
@@ -211,7 +211,7 @@ public class PlaylistCommand {
             }
 
             try {
-                String title = current.addSong(cc.getUser(), cc.getArgument(2));
+                String title = current.addSong(cc.getAuthor(), cc.getArgument(2));
                 cc.replyWith("Added \"" + title + "\" to " + current.getTitle());
                 return;
             } catch (CommandException e) {
@@ -231,10 +231,10 @@ public class PlaylistCommand {
             String song = cc.getArgument(2);
             try {
                 int index = Integer.valueOf(song) - 1;
-                current.removeSong(cc.getUser(), index);
+                current.removeSong(cc.getAuthor(), index);
             } catch (NumberFormatException e) {
                 try {
-                    current.removeSong(cc.getUser(), song);
+                    current.removeSong(cc.getAuthor(), song);
                 } catch (CommandException ex) {
                     cc.replyWith(ex.getMessage());
                     return;

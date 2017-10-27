@@ -77,7 +77,7 @@ public class TagModule extends CustomModule implements IModule {
             }
 
             try {
-                tags.add(new Tag(cc.getUser(), cc.getGuild(), tag, cc.combineArgs(3, cc.getArgCount() - 1)));
+                tags.add(new Tag(cc.getAuthor(), cc.getGuild(), tag, cc.combineArgs(3, cc.getArgCount() - 1)));
                 cc.replyWith("Successfully registered your new tag. Use `" + getTagPrefix(cc.getGuild()) + tag + "` to view it.");
                 return;
             } catch (CommandException e) {
@@ -97,7 +97,7 @@ public class TagModule extends CustomModule implements IModule {
                 return;
             }
 
-            if (!tag.get().getCreatorID().equals(cc.getUser().getLongID())) {
+            if (!tag.get().getCreatorID().equals(cc.getAuthor().getLongID())) {
                 cc.replyWith("You do not have permission to edit this tag!");
                 return;
             }
@@ -112,7 +112,7 @@ public class TagModule extends CustomModule implements IModule {
             }
 
             try {
-                tags.add(new Tag(cc.getUser(), cc.getGuild(), tag.get().getTag(), cc.combineArgs(3, cc.getArgCount() - 1)));
+                tags.add(new Tag(cc.getAuthor(), cc.getGuild(), tag.get().getTag(), cc.combineArgs(3, cc.getArgCount() - 1)));
                 cc.replyWith("Successfully updated your tag. Use `" + getTagPrefix(cc.getGuild()) + tag.get().getTag() + "` to view it.");
                 return;
             } catch (CommandException e) {
@@ -132,7 +132,7 @@ public class TagModule extends CustomModule implements IModule {
                 return;
             }
 
-            if (!tag.get().getCreatorID().equals(cc.getUser().getLongID())) {
+            if (!tag.get().getCreatorID().equals(cc.getAuthor().getLongID())) {
                 cc.replyWith("You do not have permission to delete this tag!");
                 return;
             }

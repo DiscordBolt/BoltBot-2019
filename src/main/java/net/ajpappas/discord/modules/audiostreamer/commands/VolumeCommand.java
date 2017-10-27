@@ -13,7 +13,7 @@ public class VolumeCommand {
     @BotCommand(command = "volume", module = "Audio Streamer Module", description = "Change the music volume", usage = "Volume [0-150]", args = 2, allowedChannels = "music")
     public static void joinCommand(CommandContext cc) {
         try {
-            AudioStreamer.getVoiceManager().setVolume(cc.getGuild(), cc.getUser(), Integer.valueOf(cc.getArgument(1)));
+            AudioStreamer.getVoiceManager().setVolume(cc.getGuild(), cc.getAuthor(), Integer.valueOf(cc.getArgument(1)));
         } catch (CommandException e) {
             cc.replyWith(e.getMessage());
             return;
