@@ -27,6 +27,7 @@ public class AudioStreamer extends CustomModule implements IModule {
     public static final String TEXT_CHANNEL = "music";
     public static final double VOTE_SKIP_PERCENT = 0.40;
     public static final Color EMBED_COLOR = new Color(255, 215, 0);
+    public static final String MODULE = "Music Bot";
 
     private static PlaylistManager playlistManager;
     private static VoiceManager voiceManager;

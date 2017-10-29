@@ -38,32 +38,6 @@ public class PlaylistCommand {
         return cc.combineArgs(2, cc.getArgCount() - 1);
     }
 
-    /**
-     * Has several different instructions concerning playlists
-     * -view [PlayListName] | view
-     * Replies with a lists of songs in the playlist
-     * -create [PlayListName]
-     * creates a new (empty) playlist with the given name
-     * The user that calls the method will be made the owner of the playlist
-     * The new playlist will automatically become the selected playlist
-     * -delete [PlayListName]
-     * deletes an entire playlist with the given name
-     * -select [PlayListName]
-     * sets the given playlist as "selected" meaning all add, remove, share, unshare will now be in the reference frame of that one playlist
-     * -share [@user]
-     * gives @user the ability to add songs to and remove songs from the playlist that is selected at the time of the command
-     * -unshare [@user]
-     * removes @user's ability to add songs to and remove songs from the playlist that is selected at the time of the command
-     * -add [Youtube URL]
-     * Uses URL link to add audio track to the selected playlist
-     * gives song a unique ID number
-     * -remove [Song ID]
-     * Uses unique ID to remove
-     * -help | h
-     * replies with usage of all the former instructions
-     *
-     * @param cc context concerning the issued command
-     */
     @BotCommand(command = "playlist", module = "Audio Streamer Module", aliases = "pl", allowPM = true, description = "Group of instructions for managing playlists.", usage = "Playlist help", allowedChannels = "music")
     public static void playlistCommand(CommandContext cc) {
         if (cc.getArgCount() < 2) {
@@ -76,49 +50,7 @@ public class PlaylistCommand {
         Playlist current = manager.getSelectedPlaylist(cc.getAuthor().getLongID());
         String instruction = cc.getArgument(1);
 
-        if (instruction.equalsIgnoreCase("view")) {
-            if (cc.getArgCount() == 2) {
-                if (current == null) {
-                    cc.replyWith(NO_PL_SELECTED);
-                    return;
-                }
-                cc.replyWith(current.toEmbed());
-                return;
-            } else {
-                Optional<Playlist> temp = manager.getPlaylist(getPLNameArgs(cc));
-                if (!temp.isPresent()) {
-                    cc.replyWith(NO_SUCH_PLAYLIST);
-                    return;
-                }
-                cc.replyWith(temp.get().toEmbed());
-                return;
-            }
-        } else if (instruction.equalsIgnoreCase("create")) {
-            if (cc.getArgCount() < 3) {
-                cc.replyWith(ExceptionMessage.INCORRECT_USAGE + "\n" + "Usage: " + CREATE_USAGE);
-                return;
-            }
-            if (cc.isPrivateMessage()) {
-                cc.replyWith(ExceptionMessage.EXECUTE_IN_GUILD);
-                return;
-            }
-            Playlist toCreate;
-            try {
-                String title = getPLNameArgs(cc);
-                for (char c : title.toCharArray()) {
-                    if (Character.isLetterOrDigit(c) || c == ' ')
-                        continue;
-                    cc.replyWith("Playlist titles can only contain alphanumeric characters and spaces.");
-                    return;
-                }
-                toCreate = manager.createPlaylist(title, cc.getAuthor(), cc.getGuild());
-            } catch (CommandStateException e) {
-                cc.replyWith(e.getMessage());
-                return;
-            }
-            manager.setSelectedPlaylist(cc.getAuthor().getLongID(), toCreate);
-            cc.replyWith("Successfully created playlist: " + toCreate.getTitle());
-        } else if (instruction.equalsIgnoreCase("delete")) {
+         else  else if (instruction.equalsIgnoreCase("delete")) {
             if (cc.isPrivateMessage()) {
                 cc.replyWith(ExceptionMessage.EXECUTE_IN_GUILD);
                 return;
@@ -167,7 +99,7 @@ public class PlaylistCommand {
                 cc.replyWith(NO_PL_SELECTED);
                 return;
             }
-            List<IUser> mentions = cc.getMentions();
+            List<IUser> mentions = cc.getMessage().getMentions();
             if (mentions.size() != 1) {
                 cc.replyWith("usage: " + SHARE_USAGE);
                 return;
@@ -188,7 +120,7 @@ public class PlaylistCommand {
                 cc.replyWith(NO_PL_SELECTED);
                 return;
             }
-            List<IUser> mentions = cc.getMentions();
+            List<IUser> mentions = cc.getMessage().getMentions();
             if (mentions.size() != 1) {
                 cc.replyWith("usage: " + UNSHARE_USAGE);
                 return;
@@ -287,5 +219,77 @@ public class PlaylistCommand {
         } else {
             cc.replyWith("Your command was not recognized.\nType !Playlist help for more options.");
         }
+    }
+
+    @BotCommand(command = {"playlist", "view"}, module = AudioStreamer.MODULE, aliases = "pl", allowPM = true, description = "", usage = "Playlist view <playlist>", allowedChannels = "music", minArgs = 2, maxArgs = 100)
+    public static void playlistViewCommand(CommandContext cc) {
+        if (cc.getArgCount() == 2) {
+            Playlist playlist = AudioStreamer.getPlaylistManager().getSelectedPlaylist(cc.getAuthor().getLongID());
+            if (playlist != null)
+                cc.replyWith(playlist.toEmbed());
+            else
+                cc.replyWith(NO_PL_SELECTED);
+        } else {
+            Optional<Playlist> playlist = manager.getPlaylist(getPLNameArgs(cc));
+            if (playlist.isPresent())
+                cc.replyWith(playlist.get().toEmbed());
+            else
+                cc.replyWith(NO_SUCH_PLAYLIST);
+        }
+    }
+
+    @BotCommand(command = {"playlist", "create"}, module = AudioStreamer.MODULE, aliases = "pl", description = "", usage = "Playlist create <name>", allowedChannels = "music", minArgs = 3, maxArgs = 100)
+    public static void playlistCreateCommand(CommandContext cc) {
+        Playlist toCreate;
+        try {
+            String title = getPLNameArgs(cc);
+            for (char c : title.toCharArray()) {
+                if (Character.isLetterOrDigit(c) || c == ' ')
+                    continue;
+                cc.replyWith("Playlist titles can only contain alphanumeric characters and spaces.");
+                return;
+            }
+            toCreate = manager.createPlaylist(title, cc.getAuthor(), cc.getGuild());
+        } catch (CommandStateException e) {
+            cc.replyWith(e.getMessage());
+            return;
+        }
+        manager.setSelectedPlaylist(cc.getAuthor().getLongID(), toCreate);
+        cc.replyWith("Successfully created playlist: " + toCreate.getTitle());
+    }
+
+    @BotCommand(command = {"playlist", "COMMAND"}, module = AudioStreamer.MODULE, aliases = "pl", allowPM = true, description = "", usage = "Playlist COMMAND", allowedChannels = "music")
+    public static void playlistCommand(CommandContext cc) {
+
+    }
+
+    @BotCommand(command = {"playlist", "COMMAND"}, module = AudioStreamer.MODULE, aliases = "pl", allowPM = true, description = "", usage = "Playlist COMMAND", allowedChannels = "music")
+    public static void playlistCommand(CommandContext cc) {
+
+    }
+
+    @BotCommand(command = {"playlist", "COMMAND"}, module = AudioStreamer.MODULE, aliases = "pl", allowPM = true, description = "", usage = "Playlist COMMAND", allowedChannels = "music")
+    public static void playlistCommand(CommandContext cc) {
+
+    }
+
+    @BotCommand(command = {"playlist", "COMMAND"}, module = AudioStreamer.MODULE, aliases = "pl", allowPM = true, description = "", usage = "Playlist COMMAND", allowedChannels = "music")
+    public static void playlistCommand(CommandContext cc) {
+
+    }
+
+    @BotCommand(command = {"playlist", "COMMAND"}, module = AudioStreamer.MODULE, aliases = "pl", allowPM = true, description = "", usage = "Playlist COMMAND", allowedChannels = "music")
+    public static void playlistCommand(CommandContext cc) {
+
+    }
+
+    @BotCommand(command = {"playlist", "COMMAND"}, module = AudioStreamer.MODULE, aliases = "pl", allowPM = true, description = "", usage = "Playlist COMMAND", allowedChannels = "music")
+    public static void playlistCommand(CommandContext cc) {
+
+    }
+
+    @BotCommand(command = {"playlist", "COMMAND"}, module = AudioStreamer.MODULE, aliases = "pl", allowPM = true, description = "", usage = "Playlist COMMAND", allowedChannels = "music")
+    public static void playlistCommand(CommandContext cc) {
+
     }
 }

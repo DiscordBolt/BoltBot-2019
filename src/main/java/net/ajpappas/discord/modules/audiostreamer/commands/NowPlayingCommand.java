@@ -14,7 +14,7 @@ import sx.blah.discord.handle.obj.IMessage;
  */
 public class NowPlayingCommand {
 
-    @BotCommand(command = "nowplaying", aliases = {"np", "current", "playing"}, module = "Audio Streamer Module", description = "View what is currently playing", usage = "NowPlaying", allowedChannels = "music")
+    @BotCommand(command = "nowplaying", aliases = {"np", "current", "playing"}, module = AudioStreamer.MODULE, description = "View what is currently playing", usage = "NowPlaying", allowedChannels = "music")
     public static void nowPlayingCommand(CommandContext cc) {
         AudioTrack at = AudioStreamer.getVoiceManager().getNowPlaying(cc.getGuild());
         if (at != null) {

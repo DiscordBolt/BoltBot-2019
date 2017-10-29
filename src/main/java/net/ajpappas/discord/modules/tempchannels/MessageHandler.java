@@ -16,7 +16,7 @@ public class MessageHandler {
 
     @BotCommand(command = "create", module = "Temporary Channels Module", description = "Create a voice channel", usage = "Create -Private [Channel Name]", minArgs = 2, maxArgs = 100)
     public static void createCommand(CommandContext cc) {
-        if (cc.getMentions().size() > 0 || cc.getMessage().getChannelMentions().size() > 0) {
+        if (cc.getMessage().getMentions().size() > 0 || cc.getMessage().getChannelMentions().size() > 0) {
             cc.replyWith(cc.getAuthorDisplayName() + ", you should not mention any users in this command.");
             return;
         }
@@ -50,12 +50,12 @@ public class MessageHandler {
             return;
         }
 
-        if (cc.getMentions().size() < 1) {
+        if (cc.getMessage().getMentions().size() < 1) {
             cc.replyWith(cc.getAuthorDisplayName() + ", no users were @Mentioned in your message.");
             return;
         }
 
-        for (IUser mentioned : cc.getMentions()) {
+        for (IUser mentioned : cc.getMessage().getMentions()) {
             if (!(mentioned.isBot() || mentioned.equals(ch.getOwner()) || ch.getChannel().getUserOverridesLong().containsKey(mentioned.getLongID())))
                 ch.giveUserPermission(mentioned);
         }

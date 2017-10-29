@@ -11,7 +11,7 @@ import sx.blah.discord.util.EmbedBuilder;
  */
 public class ListRoles {
 
-    @BotCommand(command = "ListRoles", module = "dev", description = "List the roles of the guild and their ID.", usage = "ListRoles", permissions = Permissions.MANAGE_ROLES)
+    @BotCommand(command = "ListRoles", module = "Development", description = "List the roles of the guild and their ID.", usage = "ListRoles", permissions = Permissions.MANAGE_ROLES)
     public static void listRolesCommand(CommandContext cc) {
         StringBuilder sb = new StringBuilder("```");
 

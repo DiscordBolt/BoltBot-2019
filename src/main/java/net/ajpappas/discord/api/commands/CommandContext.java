@@ -20,7 +20,7 @@ public class CommandContext {
 
     public CommandContext(IMessage message, CustomCommand customCommand) {
         this.message = message;
-        arguments = new ArgList(getMessageContent().split(" "));
+        arguments = new ArgList(getMessageContent().substring(1, getMessageContent().length()).split(" "));
         this.customCommand = customCommand;
     }
 

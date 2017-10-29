@@ -31,8 +31,8 @@ public class SeenModule extends CustomModule implements IModule {
     @BotCommand(command = "seen", module = "Seen Module", description = "See when the user was last online.", usage = "Seen @User", minArgs = 2, maxArgs = 100)
     public static void seenCommand(CommandContext cc) {
 
-        IUser searchUser = UserUtil.findUser(cc.getMessage(), cc.getContent().indexOf(' ') + 1);
-        String name = cc.getContent().substring(cc.getContent().indexOf(' ') + 1, cc.getContent().length());
+        IUser searchUser = UserUtil.findUser(cc.getMessage(), cc.getMessageContent().indexOf(' ') + 1);
+        String name = cc.getMessageContent().substring(cc.getMessageContent().indexOf(' ') + 1, cc.getMessageContent().length());
 
         if (searchUser == null) {
             cc.replyWith("Sorry, I could not find \"" + name + "\".");

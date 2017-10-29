@@ -3,126 +3,102 @@ package net.ajpappas.discord.modules.audiostreamer.commands;
 import net.ajpappas.discord.api.commands.BotCommand;
 import net.ajpappas.discord.api.commands.CommandContext;
 import net.ajpappas.discord.api.commands.exceptions.CommandException;
-import net.ajpappas.discord.api.commands.exceptions.CommandPermissionException;
-import net.ajpappas.discord.api.commands.exceptions.CommandStateException;
 import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
 import net.ajpappas.discord.modules.audiostreamer.playlists.Playlist;
-import net.ajpappas.discord.modules.audiostreamer.playlists.PlaylistManager;
-import net.ajpappas.discord.modules.audiostreamer.voice.VoiceManager;
-import net.ajpappas.discord.utils.ExceptionMessage;
-import sx.blah.discord.util.EmbedBuilder;
 
 /**
  * Created by Evan on 4/16/2017.
  */
 public class PlayCommand {
 
-    private static final String PLAY_SONG = "!Play [URL]";
-    private static final String PLAY_PLAYLIST = "!Play playlist <playlist name>";
-    private static final String PLAY_RANDOM = "!Play random";
-
-    @BotCommand(command = "play", module = "Audio Streamer Module", description = "Instruct the bot to start playing something.", usage = "Play help", allowedChannels = "music")
+    @BotCommand(command = "play", module = AudioStreamer.MODULE, description = "Instruct the bot to start playing something.", usage = "Play help", allowedChannels = "music", minArgs = 1, maxArgs = 2)
     public static void playCommand(CommandContext cc) {
-        if (cc.getArgCount() == 1 && AudioStreamer.getVoiceManager().isPaused(cc.getGuild())) {
-            try {
-                AudioStreamer.getVoiceManager().unpause(cc.getGuild(), cc.getAuthor());
-                return;
-            } catch (CommandException e) {
-                cc.replyWith(e.getMessage());
-                return;
-            }
-        }
-
-        if (cc.getArgCount() < 2) {
-            cc.replyWith(ExceptionMessage.INCORRECT_USAGE);
-            cc.sendUsage();
+        if (cc.getArgCount() == 1) {
+            if (AudioStreamer.getVoiceManager().isPaused(cc.getGuild()))
+                try {
+                    AudioStreamer.getVoiceManager().unpause(cc.getGuild(), cc.getAuthor());
+                } catch (CommandException e) {
+                    cc.replyWith(e.getMessage());
+                }
+            else
+                cc.replyWith("I am not paused!");
             return;
         }
 
-        PlaylistManager playlistManager = AudioStreamer.getPlaylistManager();
-        VoiceManager voiceManager = AudioStreamer.getVoiceManager();
-        Playlist current = playlistManager.getSelectedPlaylist(cc.getAuthor().getLongID());
-        String instruction = cc.getArgument(1);
+        try {
+            AudioStreamer.getVoiceManager().queue(cc.getGuild(), cc.getAuthor(), cc.getArgument(1));
+            cc.replyWith("Your song is now being queued up");
+        } catch (CommandException e) {
+            cc.replyWith(e.getMessage());
+        }
+    }
 
-        if (instruction.equalsIgnoreCase("playlist") || instruction.equalsIgnoreCase("-p")) {
-            Playlist toPlay = null;
-            if (cc.getArgCount() == 2) {
-                toPlay = current;
-            } else if (cc.getArgCount() > 2) {
-                String playlistRequest = cc.combineArgs(2, cc.getArgCount() - 1);
-                if (playlistRequest.contains(":")) {
-                    String playlistTitle = playlistRequest.split(":")[0];
-                    int songNumber = -1;
-                    try {
-                        songNumber = Integer.valueOf(playlistRequest.split(":")[1]);
-                    } catch (NumberFormatException e) {
-                        cc.replyWith("You have not specified a valid song number!");
-                        return;
-                    }
-                    toPlay = playlistManager.getPlaylist(playlistTitle).orElse(null);
-                    if (toPlay == null) {
-                        cc.replyWith("You do not have a selected playlist!");
-                        return;
-                    }
-                    if (songNumber < 1 || songNumber > toPlay.getSongIDs().size()) {
-                        cc.replyWith("You have not specified a valid song number!");
-                        return;
-                    }
+    @BotCommand(command = {"play", "-p"}, module = AudioStreamer.MODULE, description = "Play a saved playlist.", usage = "Play playlist <name>", allowedChannels = "music", minArgs = 2, maxArgs = 100)
+    public static void playPlaylist(CommandContext cc) {
 
-                    try {
-                        voiceManager.queue(cc.getGuild(), cc.getAuthor(), toPlay.getSongIDs().get(songNumber - 1));
-                        //cc.replyWith("Successfully queued song #" + songNumber + " from " + toPlay.getTitle());
-                        return;
-                    } catch (CommandPermissionException e) {
-                        cc.replyWith(e.getMessage());
-                        return;
-                    } catch (CommandStateException e) {
-                        cc.replyWith(e.getMessage());
-                        return;
-                    }
-                } else {
-                    toPlay = playlistManager.getPlaylist(playlistRequest).orElse(null);
-                    try {
-                        voiceManager.queue(cc.getGuild(), cc.getAuthor(), toPlay);
-                        if (toPlay.getSongIDs().size() > 5) {
-                            cc.replyWith("Your playlist is now being queued and may take ~30 seconds to fully appear in the queue.");
-                            return;
-                        } else {
-                            cc.replyWith("Your playlist is now being queued.");
-                            return;
-                        }
-                    } catch (CommandException e) {
-                        cc.replyWith(e.getMessage());
-                        return;
-                    }
-                }
-            }
-        } else if (instruction.equalsIgnoreCase("random")) {
-            voiceManager.playRandom(cc.getGuild(), cc.getAuthor());
-            if (voiceManager.isPlayingRandom(cc.getGuild())) {
-                cc.replyWith("I will now continuously queue up random songs!");
-                return;
-            } else {
-                cc.replyWith("I will stop playing random songs.");
+        if (cc.getArgCount() == 2) {
+            Playlist current = AudioStreamer.getPlaylistManager().getSelectedPlaylist(cc.getAuthor().getLongID());
+            if (current == null) {
+                cc.replyWith("You do not have a selected playlist to queue!");
                 return;
             }
-        } else if (instruction.equalsIgnoreCase("help")) {
-            EmbedBuilder embed = new EmbedBuilder();
-            embed.withColor(AudioStreamer.EMBED_COLOR);
-            embed.withAuthorName("Play Commands");
-            embed.withTitle(PLAY_SONG);
-            embed.withDesc("Play the song from a given URL.");
-            embed.appendField(PLAY_PLAYLIST, "Play all songs on a given playlist.", false);
-            embed.appendField(PLAY_RANDOM, "Play a random song.", false);
-            cc.replyWith(embed.build());
+            queuePlaylist(cc, current);
             return;
         } else {
-            try {
-                voiceManager.queue(cc.getGuild(), cc.getAuthor(), cc.getArgument(1));
-                cc.replyWith("Your song is now being queued up");
-            } catch (CommandException e) {
-                cc.replyWith(e.getMessage());
+            String playlistRequest = cc.combineArgs(2, cc.getArgCount() - 1);
+            if (playlistRequest.contains(":")) {
+                String playlistTitle = playlistRequest.split(":")[0];
+                int songNumber;
+                try {
+                    songNumber = Integer.valueOf(playlistRequest.split(":")[1]);
+                } catch (NumberFormatException e) {
+                    cc.replyWith("\"" + playlistRequest.split(":")[1] + "\" is not a valid number!");
+                    return;
+                }
+
+                Playlist toPlay = AudioStreamer.getPlaylistManager().getPlaylist(playlistTitle).orElse(null);
+                if (toPlay == null) {
+                    cc.replyWith("\"" + playlistTitle + "\" could not be found!");
+                    return;
+                }
+                if (songNumber < 1 || songNumber > toPlay.getSongIDs().size()) {
+                    cc.replyWith("\"" + songNumber + "\" is not a valid number for \"" + toPlay.getTitle() + "\"");
+                    return;
+                }
+                try {
+                    AudioStreamer.getVoiceManager().queue(cc.getGuild(), cc.getAuthor(), toPlay.getSongIDs().get(songNumber - 1));
+                } catch (CommandException e) {
+                    cc.replyWith(e.getMessage());
+                    return;
+                }
+            } else {
+                Playlist toPlay = AudioStreamer.getPlaylistManager().getPlaylist(playlistRequest).orElse(null);
+                if (toPlay == null) {
+                    cc.replyWith("\"" + playlistRequest + "\" could not be found!");
+                    return;
+                }
+                queuePlaylist(cc, toPlay);
             }
+        }
+    }
+
+    @BotCommand(command = {"play", "random"}, module = AudioStreamer.MODULE, description = "Play a random song.", usage = "Play random", allowedChannels = "music", args = 2)
+    public static void playRandom(CommandContext cc) {
+        AudioStreamer.getVoiceManager().playRandom(cc.getGuild(), cc.getAuthor());
+        if (AudioStreamer.getVoiceManager().isPlayingRandom(cc.getGuild())) {
+            cc.replyWith("I will now continuously queue up random songs!");
+        } else {
+            cc.replyWith("I will stop playing random songs.");
+        }
+    }
+
+    private static void queuePlaylist(CommandContext cc, Playlist current) {
+        try {
+            AudioStreamer.getVoiceManager().queue(cc.getGuild(), cc.getAuthor(), current);
+            cc.replyWith("Your playlist is now being queued and may take ~30 seconds to fully appear in the queue.");
+            return;
+        } catch (CommandException e) {
+            cc.replyWith(e.getMessage());
             return;
         }
     }

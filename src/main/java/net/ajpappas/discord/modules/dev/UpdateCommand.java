@@ -11,7 +11,7 @@ import sx.blah.discord.handle.obj.Permissions;
  */
 public class UpdateCommand {
 
-    @BotCommand(command = "update", description = "Update the bot and restart.", usage = "Update", module = "dev", permissions = Permissions.ADMINISTRATOR, secret = true)
+    @BotCommand(command = "update", description = "Update the bot and restart.", usage = "Update", module = "Development", permissions = Permissions.ADMINISTRATOR)
     public static void updateCommand(CommandContext cc) {
         if (!UserUtil.isBotOwner(cc.getAuthor())) {
             cc.replyWith(ExceptionMessage.PERMISSION_DENIED);

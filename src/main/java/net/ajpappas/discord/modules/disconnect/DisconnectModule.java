@@ -23,7 +23,7 @@ public class DisconnectModule extends CustomModule implements IModule {
 
     @BotCommand(command = "disconnect", module = "Disconnect Module", aliases = "dis", description = "Disconnect user(s) from their voice channel.", usage = "Disconnect @User1 @User2", permissions = Permissions.VOICE_MOVE_MEMBERS)
     public static void disconnectCommand(CommandContext cc) {
-        List<IUser> mentions = cc.getMentions();
+        List<IUser> mentions = cc.getMessage().getMentions();
         if (mentions.size() < 1) {
             cc.sendUsage();
             return;
