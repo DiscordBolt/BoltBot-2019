@@ -11,6 +11,7 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -200,16 +201,19 @@ public class CustomCommand {
 
         try {
             method.invoke(null, cc);
-        } catch (Exception ex) {
-            Logger.error("Uncaught exception during execution of \"" + CommandManager.getCommandPrefix(cc.getGuild()) + String.join(" ", getCommands()) + "\" command.");
-            Logger.error(ex.getMessage());
-            ex.printStackTrace();
-            Logger.debug(ex);
-            if (ex.getCause() instanceof CommandException) {
-                cc.replyWith(ex.getMessage());
+        } catch (InvocationTargetException ite) {
+            if (ite.getCause() instanceof CommandException) {
+                cc.replyWith(ite.getCause().getMessage());
             } else {
+                Logger.error("Uncaught exception during execution of \"" + CommandManager.getCommandPrefix(cc.getGuild()) + String.join(" ", getCommands()) + "\" command.");
+                Logger.error(ite.getCause().getMessage());
+                Logger.debug(ite.getCause());
                 cc.replyWith(ExceptionMessage.COMMAND_PROCESS_EXCEPTION);
             }
+        } catch (IllegalAccessException ex) {
+            Logger.error(ex.getMessage());
+            Logger.debug(ex);
+            cc.replyWith(ExceptionMessage.COMMAND_PROCESS_EXCEPTION);
         }
 
         if (shouldDeleteMessages()) {

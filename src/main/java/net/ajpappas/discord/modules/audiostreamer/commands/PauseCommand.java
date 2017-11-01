@@ -11,22 +11,12 @@ import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
 public class PauseCommand {
 
     @BotCommand(command = "pause", description = "Pause the currently playing song", usage = "Pause", module = AudioStreamer.MODULE, allowedChannels = "music")
-    public static void pauseCommand(CommandContext cc) {
-        try {
-            AudioStreamer.getVoiceManager().pause(cc.getGuild(), cc.getAuthor());
-        } catch (CommandException e) {
-            cc.replyWith(e.getMessage());
-            return;
-        }
+    public static void pauseCommand(CommandContext cc) throws CommandException {
+        AudioStreamer.getVoiceManager().pause(cc.getGuild(), cc.getAuthor());
     }
 
     @BotCommand(command = "unpause", aliases = "resume", description = "Unpause the currently playing song", usage = "Unpause", module = AudioStreamer.MODULE, allowedChannels = "music")
-    public static void unpauseCommand(CommandContext cc) {
-        try {
-            AudioStreamer.getVoiceManager().unpause(cc.getGuild(), cc.getAuthor());
-        } catch (CommandException e) {
-            cc.replyWith(e.getMessage());
-            return;
-        }
+    public static void unpauseCommand(CommandContext cc) throws CommandException {
+        AudioStreamer.getVoiceManager().unpause(cc.getGuild(), cc.getAuthor());
     }
 }

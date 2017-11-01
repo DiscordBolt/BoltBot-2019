@@ -34,7 +34,7 @@ public class RedditModule extends CustomModule implements IModule {
         registerDailyPosts();
     }
 
-    @BotCommand(command = "reddit", module = "Reddit Module", description = "Post the top post of the last 24 hours from the given subreddit", usage = "Reddit /r/subreddit")
+    @BotCommand(command = "reddit", module = "Reddit Module", description = "Get the What's Hot post", usage = "Reddit [subreddit]", args = 2)
     public static void redditCommand(CommandContext cc) {
         Matcher matcher = SUBREDDIT_PATTERN.matcher(cc.getArgument(1));
 

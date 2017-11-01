@@ -75,7 +75,7 @@ public class CommandManager {
         return prefixes.getOrDefault(guild.getLongID(), DEFAULT_PREFIX);
     }
 
-    @BotCommand(command = "prefix", description = "Change the command prefix", usage = "Prefix [Character]", module = "dev", args = 2, permissions = Permissions.ADMINISTRATOR)
+    @BotCommand(command = "prefix", description = "Change the command prefix", usage = "Prefix [Character]", module = "Administration", args = 2, permissions = Permissions.ADMINISTRATOR)
     public static void setCommandPrefix(CommandContext cc) {
         prefixes.put(cc.getGuild().getLongID(), cc.getArgument(1).charAt(0) + "");
         writePrefixes();

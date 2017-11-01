@@ -11,22 +11,12 @@ import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
 public class JoinCommand {
 
     @BotCommand(command = "join", module = AudioStreamer.MODULE, description = "Have Discord.java join your voice channel", usage = "Join", args = 1, allowedChannels = "music")
-    public static void joinCommand(CommandContext cc) {
-        try {
-            AudioStreamer.getVoiceManager().joinChannel(cc.getGuild(), cc.getAuthor(), cc.getAuthor().getVoiceStateForGuild(cc.getGuild()).getChannel());
-        } catch (CommandException e) {
-            cc.replyWith(e.getMessage());
-            return;
-        }
+    public static void joinCommand(CommandContext cc) throws CommandException {
+        AudioStreamer.getVoiceManager().joinChannel(cc.getGuild(), cc.getAuthor(), cc.getAuthor().getVoiceStateForGuild(cc.getGuild()).getChannel());
     }
 
     @BotCommand(command = "leave", module = AudioStreamer.MODULE, description = "Force Discord.java to leave the voice channel", usage = "Leave", args = 1, allowedChannels = "music")
-    public static void leaveCommand(CommandContext cc) {
-        try {
-            AudioStreamer.getVoiceManager().leaveChannel(cc.getGuild(), cc.getAuthor());
-        } catch (CommandException e) {
-            cc.replyWith(e.getMessage());
-            return;
-        }
+    public static void leaveCommand(CommandContext cc) throws CommandException {
+        AudioStreamer.getVoiceManager().leaveChannel(cc.getGuild(), cc.getAuthor());
     }
 }

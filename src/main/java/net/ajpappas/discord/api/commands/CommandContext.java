@@ -1,6 +1,6 @@
 package net.ajpappas.discord.api.commands;
 
-import net.ajpappas.discord.api.list.ArgList;
+import net.ajpappas.discord.api.commands.list.ArgList;
 import net.ajpappas.discord.utils.ChannelUtil;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.obj.PrivateChannel;

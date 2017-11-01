@@ -1,4 +1,4 @@
-package net.ajpappas.discord.api.list;
+package net.ajpappas.discord.api.commands.list;
 
 import java.util.ArrayList;
 import java.util.Arrays;

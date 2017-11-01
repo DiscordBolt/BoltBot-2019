@@ -2,6 +2,7 @@ package net.ajpappas.discord.modules.audiostreamer.commands;
 
 import net.ajpappas.discord.api.commands.BotCommand;
 import net.ajpappas.discord.api.commands.CommandContext;
+import net.ajpappas.discord.api.commands.exceptions.CommandArgumentException;
 import net.ajpappas.discord.api.commands.exceptions.CommandException;
 import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
 
@@ -10,16 +11,16 @@ import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
  */
 public class VolumeCommand {
 
-    @BotCommand(command = "volume", module = "Audio Streamer Module", description = "Change the music volume", usage = "Volume [0-150]", args = 2, allowedChannels = "music")
-    public static void joinCommand(CommandContext cc) {
-        try {
-            AudioStreamer.getVoiceManager().setVolume(cc.getGuild(), cc.getAuthor(), Integer.valueOf(cc.getArgument(1)));
-        } catch (CommandException e) {
-            cc.replyWith(e.getMessage());
-            return;
-        } catch (NumberFormatException e) {
-            cc.replyWith(cc.getArgument(1) + " is not a valid number!");
-            return;
-        }
+    @BotCommand(command = "volume", module = AudioStreamer.MODULE, description = "Set the music volume", usage = "Volume", args = 1, allowedChannels = "music")
+    public static void volumeCommand(CommandContext cc) {
+        cc.replyWith("The volume is set to " + AudioStreamer.getVoiceManager().getVolume(cc.getGuild()));
+    }
+
+    @BotCommand(command = {"volume", "set"}, module = AudioStreamer.MODULE, description = "Set the music volume", usage = "Volume set [0-150]", args = 3, allowedChannels = "music")
+    public static void joinCommand(CommandContext cc) throws CommandException {
+        if (!cc.getArgument(2).matches("^-?\\d+$"))
+            throw new CommandArgumentException("\"" + cc.getArgument(2) + "\" is not a valid number.");
+
+        AudioStreamer.getVoiceManager().setVolume(cc.getGuild(), cc.getAuthor(), Integer.valueOf(cc.getArgument(2)));
     }
 }

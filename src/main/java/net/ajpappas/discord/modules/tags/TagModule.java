@@ -201,7 +201,7 @@ public class TagModule extends CustomModule implements IModule {
         writePrefixes();
     }
 
-    protected static void writePrefixes() {
+    private static void writePrefixes() {
         try {
             prefixFile.createNewFile();
             FileWriter fw = new FileWriter(prefixFile);

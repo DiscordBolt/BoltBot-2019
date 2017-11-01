@@ -94,6 +94,10 @@ public class DJ extends AudioEventAdapter {
         return trackOwners.get(trackOwners.keySet().stream().filter(t -> t.getIdentifier().equalsIgnoreCase(songID)).findAny().orElse(null));
     }
 
+    public int getVolume() {
+        return player.getVolume();
+    }
+
     public void setVolume(int volume) {
         player.setVolume(volume);
     }
