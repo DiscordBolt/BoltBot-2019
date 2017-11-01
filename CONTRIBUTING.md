@@ -1,15 +1,9 @@
 # Branch Naming
-`prefix/description`
-### Prefixes
-- bug: Fixing a bug
-- feat: implementing a feature/enhancement
-- wip: something that is an ongoing work in progress
-- hot: Something super small and quick you need to fix
-### Examples
-- feat/playlistCreator
-- wip/unitTests
-- hot/updateDiscordAPI
+`issue-##-description`
 
+# Commands
+- [desc] for required arguments
+- {desc} for optional arguments
 
 # Code Format
 - Do not wrap long lines of code

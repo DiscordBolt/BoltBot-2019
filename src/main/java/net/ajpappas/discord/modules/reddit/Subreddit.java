@@ -62,7 +62,7 @@ public class Subreddit {
         Logger.debug("Cache miss for subreddit " + subredditName + " with sorting method " + sortMethod.name());
 
         // Cache miss, request the info from Github
-        Request request = new Request.Builder().url("https://www.reddit.com/r/" + subredditName + ".json" + sortMethod).build();
+        Request request = new Request.Builder().url("https://api.reddit.com/r/" + subredditName + sortMethod).build();
 
         Response response = client.newCall(request).execute();
 

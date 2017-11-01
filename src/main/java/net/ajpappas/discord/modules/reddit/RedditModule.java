@@ -60,8 +60,8 @@ public class RedditModule extends CustomModule implements IModule {
     }
 
     private void registerDailyPosts() {
-        scheduleTask("corgi", getClient().getChannelByID(Long.valueOf("110927581070512128")), 9, 0);
-        scheduleTask("programmerhumor", getClient().getChannelByID(Long.valueOf("110927581070512128")), 15, 0);
+        scheduleTask("corgi", getClient().getChannelByID(Long.valueOf("110927581070512128")), 20, 0);
+        scheduleTask("programmerhumor", getClient().getChannelByID(Long.valueOf("110927581070512128")), 12, 0);
     }
 
     private void scheduleTask(String subreddit, IChannel channel, int hour, int minute) {
