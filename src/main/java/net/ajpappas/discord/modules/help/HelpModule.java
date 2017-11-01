@@ -12,6 +12,9 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MentionEvent;
 import sx.blah.discord.modules.IModule;
 import sx.blah.discord.util.EmbedBuilder;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Created by Tony on 12/24/2016.
  */
@@ -23,45 +26,30 @@ public class HelpModule extends CustomModule implements IModule {
 
     @BotCommand(command = "help", aliases = "h", module = "Help Module", description = "View all available commands.", usage = "Help [All]")
     public static void helpCommand(CommandContext cc) {
-        String currentModule = "";
-        boolean first = true;
-        boolean all = false;
-        if (cc.getArgCount() >= 2) {
-            all = cc.getArgument(1).equalsIgnoreCase("all");
-        }
+
+        String commandPrefix = CommandManager.getCommandPrefix(cc.getGuild());
 
         EmbedBuilder embed = new EmbedBuilder();
-        StringBuilder sb = new StringBuilder();
-
         embed.withColor(36, 153, 153);
-        embed.setLenient(true);
 
-        for (CustomCommand command : CommandManager.getCommands()) {
-            // Check if the user has permission for the command.
-            if (!(all || cc.getUser().getPermissionsForGuild(cc.getGuild()).containsAll(command.getPermissions())))
-                continue;
+        List<String> modules = CommandManager.getCommands().stream().map(CustomCommand::getModule).distinct().collect(Collectors.toList());
 
-            if (!currentModule.equalsIgnoreCase(command.getModule())) {
-                if (!currentModule.equals(""))
-                    if (first) {
-                        first = false;
-                        embed.withTitle(currentModule);
-                        embed.withDescription(sb.toString());
-                    } else
-                        embed.appendField(currentModule, sb.toString(), false);
-                sb.setLength(0);
-                currentModule = command.getModule();
+        StringBuilder sb = new StringBuilder();
+        for (String module : modules) {
+            sb.setLength(0);
+
+            for (CustomCommand command : CommandManager.getCommands().stream().filter(c -> c.getModule().equals(module)).collect(Collectors.toList())) {
+                // Check if the user has permission for the command.
+                if (!cc.getAuthor().getPermissionsForGuild(cc.getGuild()).containsAll(command.getPermissions()))
+                    continue;
+                if (command.isSecret())
+                    continue;
+
+                sb.append('`').append(commandPrefix).append(String.join(" ", command.getCommands())).append("` | ").append(command.getDescription()).append('\n');
             }
 
-            if (command.isSecret())
-                continue;
-            if (command.getUsage(cc.getGuild()).length() > 1 && command.getDescription().length() > 0) {
-                sb.append(command.getUsage(cc.getGuild())).append(" | ").append(command.getDescription()).append('\n');
-            } else
-                sb.append(command.getUsage(cc.getGuild()).length() > 1 ? command.getUsage(cc.getGuild()) : "!" + command.getName() + " " + command.getDescription()).append('\n');
+            embed.appendField(module, sb.toString(), false);
         }
-
-        embed.appendField(currentModule, sb.toString(), false);
 
         cc.replyWith(embed.build());
     }

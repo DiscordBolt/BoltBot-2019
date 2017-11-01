@@ -4,7 +4,7 @@ import sx.blah.discord.Discord4J;
 
 public class Logger {
 
-    public static void debug(Exception e) {
+    public static void debug(Throwable e) {
         Discord4J.LOGGER.debug(e.getMessage(), e);
     }
 

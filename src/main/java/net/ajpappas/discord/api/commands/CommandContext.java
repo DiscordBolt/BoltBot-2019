@@ -1,6 +1,6 @@
 package net.ajpappas.discord.api.commands;
 
-import net.ajpappas.discord.api.list.ArgList;
+import net.ajpappas.discord.api.commands.list.ArgList;
 import net.ajpappas.discord.utils.ChannelUtil;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.obj.PrivateChannel;
@@ -9,47 +9,35 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
-import java.util.List;
-
 /**
  * Created by Tony on 2/16/2017.
  */
 public class CommandContext {
 
     private IMessage message;
-    private CustomCommand customCommand;
-    private String command;
     private ArgList arguments;
+    private CustomCommand customCommand;
 
-    public CommandContext(CustomCommand bc, IMessage message) {
+    public CommandContext(IMessage message, CustomCommand customCommand) {
         this.message = message;
-        this.customCommand = bc;
-        command = getContent().substring(1, getContent().contains(" ") ? getContent().indexOf(" ") : getContent().length());
-        arguments = new ArgList(getContent().split(" "));
+        arguments = new ArgList(getMessageContent().substring(1, getMessageContent().length()).split(" "));
+        this.customCommand = customCommand;
     }
 
     public IMessage getMessage() {
         return message;
     }
 
-    public IUser getUser() {
+    public IUser getAuthor() {
         return message.getAuthor();
+    }
+
+    public String getAuthorDisplayName() {
+        return getAuthor().getDisplayName(getGuild());
     }
 
     public IGuild getGuild() {
         return getMessage().getGuild();
-    }
-
-    public String mentionUser() {
-        return getUser().mention();
-    }
-
-    public String getUserDisplayName() {
-        return getUser().getDisplayName(getGuild());
-    }
-
-    public List<IUser> getMentions() {
-        return getMessage().getMentions();
     }
 
     public IChannel getChannel() {
@@ -60,40 +48,37 @@ public class CommandContext {
         return getChannel() instanceof PrivateChannel;
     }
 
-    public String getContent() {
+    public String getMessageContent() {
         return message.getContent();
     }
 
-    public String getCommand() {
-        return command;
-    }
-
-    public String getArgument(int index) {
-        return index == 0 ? command : getContent().split(" ")[index];
-    }
-
-    public int getArgCount() {
-        return getContent().split(" ").length;
+    public String getUserBaseCommand() {
+        return arguments.get(0);
     }
 
     public ArgList getArguments() {
         return arguments;
     }
 
+    public String getArgument(int index) {
+        return arguments.get(index);
+    }
+
+    public int getArgCount() {
+        return getArguments().size();
+    }
+
     public String combineArgs(int lowIndex, int highIndex) {
         StringBuilder sb = new StringBuilder();
-        for (int i = lowIndex; i <= highIndex; i++) {
-            if (i == 0)
-                sb.append(command).append(' ');
-            else
-                sb.append(getArgument(i)).append(' ');
-        }
-        sb.deleteCharAt(sb.length() - 1);
+        sb.append(getArgument(lowIndex));
+        for (int i = lowIndex + 1; i <= highIndex; i++)
+            sb.append(' ').append(getArgument(i));
+
         return sb.toString();
     }
 
-    public void replyWith(String message) {
-        ChannelUtil.sendMessage(getChannel(), message);
+    public IMessage replyWith(String message) {
+        return ChannelUtil.sendMessage(getChannel(), message);
     }
 
     public IMessage replyWith(EmbedObject embedObject) {
@@ -101,6 +86,6 @@ public class CommandContext {
     }
 
     public void sendUsage() {
-        customCommand.sendUsage(this, false);
+        replyWith(customCommand.getUsage(getGuild()));
     }
 }

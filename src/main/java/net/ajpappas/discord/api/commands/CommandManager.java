@@ -56,13 +56,9 @@ public class CommandManager {
         for (Method command : commandMethods) {
             BotCommand a = command.getAnnotation(BotCommand.class);
             if (!Modifier.isStatic(command.getModifiers())) {
-                Logger.error("Command \"" + a.command().toUpperCase() + "\" is not a static method!");
+                Logger.error("Command \"" + String.join(" ", a.command()) + "\" is not a static method!");
                 continue;
             }
-            //          if (modules.stream().filter(x -> x.getName().equalsIgnoreCase(a.module())).findAny().isPresent()){
-            //              Logger.severe("Command \"" + a.command().toUpperCase() + "\" does not have a valid module!");
-            //              continue;
-            //          } Modules load in some order, Commands may be loaded before
             commands.add(new CustomCommand(command));
         }
 
@@ -79,7 +75,7 @@ public class CommandManager {
         return prefixes.getOrDefault(guild.getLongID(), DEFAULT_PREFIX);
     }
 
-    @BotCommand(command = "prefix", description = "Change the command prefix", usage = "Prefix [Character]", module = "dev", args = 2, permissions = Permissions.ADMINISTRATOR)
+    @BotCommand(command = "prefix", description = "Change the command prefix", usage = "Prefix [Character]", module = "Administration", args = 2, permissions = Permissions.ADMINISTRATOR)
     public static void setCommandPrefix(CommandContext cc) {
         prefixes.put(cc.getGuild().getLongID(), cc.getArgument(1).charAt(0) + "");
         writePrefixes();

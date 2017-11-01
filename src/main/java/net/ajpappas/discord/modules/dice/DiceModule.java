@@ -36,7 +36,7 @@ public class DiceModule extends CustomModule implements IModule {
         super(client, "Dice Module", "1.1");
     }
 
-    @BotCommand(command = "roll", module = "Dice Module", description = "Roll a die!", usage = "Roll #d##", args = 2)
+    @BotCommand(command = "roll", module = "Dice Module", description = "Roll a die!", usage = "Roll [#d##]", args = 2)
     public static void rollCommand(CommandContext cc) throws CommandArgumentException {
         Matcher m = DIE_PATTERN.matcher(cc.getArgument(1));
 
