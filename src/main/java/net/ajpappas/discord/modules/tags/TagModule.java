@@ -4,8 +4,9 @@ import com.google.gson.reflect.TypeToken;
 import net.ajpappas.discord.api.CustomModule;
 import net.ajpappas.discord.api.commands.BotCommand;
 import net.ajpappas.discord.api.commands.CommandContext;
-import net.ajpappas.discord.api.commands.CommandManager;
 import net.ajpappas.discord.api.commands.exceptions.CommandException;
+import net.ajpappas.discord.api.commands.exceptions.CommandPermissionException;
+import net.ajpappas.discord.api.commands.exceptions.CommandStateException;
 import net.ajpappas.discord.utils.ChannelUtil;
 import net.ajpappas.discord.utils.Logger;
 import sx.blah.discord.api.IDiscordClient;
@@ -53,103 +54,48 @@ public class TagModule extends CustomModule implements IModule {
             Logger.debug(e);
         }
     }
+    
+    @BotCommand(command = {"tag", "add"}, description = "Adds a Tag", usage = "Tag add [tag]", module = "Tag Module", minArgs = 4, maxArgs = 100)
+    public static void tagAddCommand(CommandContext cc) throws CommandException {
+        String tag = cc.getArgument(2);
 
-    @BotCommand(command = "tag", description = "Add/Edit/Delete Tags", usage = "Tag [add/edit/delete] [tag]", module = "Tag Module")
-    public static void tagCommand(CommandContext cc) {
-        if (cc.getArgCount() < 2) {
-            cc.sendUsage();
-            return;
-        }
+        if (findTag(cc.getGuild(), tag).isPresent())
+            throw new CommandStateException("That tag already exists! Please choose a different tag");
 
-        String instruction = cc.getArgument(1).toLowerCase();
+        tags.add(new Tag(cc.getAuthor(), cc.getGuild(), tag, cc.combineArgs(3, cc.getArgCount() - 1)));
+        cc.replyWith("Successfully registered your new tag. Use `" + getTagPrefix(cc.getGuild()) + tag + "` to view it.");
+    }
 
-        if (instruction.equals("add")) { //!Tag Add [tag] [content]
-            if (cc.getArgCount() < 4) {
-                cc.replyWith("Incorrect number of arguments. Usage: " + CommandManager.getCommandPrefix(cc.getGuild()) + "Tag Add [tag] [content]");
-                return;
-            }
+    @BotCommand(command = {"tag", "edit"}, description = "Edits a Tag", usage = "Tag edit [tag]", module = "Tag Module", minArgs = 4, maxArgs = 100)
+    public static void tagEditCommand(CommandContext cc) throws CommandException {
+        Optional<Tag> tag = findTag(cc.getGuild(), cc.getArgument(2));
 
-            String tag = cc.getArgument(2);
+        if (!tag.isPresent())
+            throw new CommandStateException("That tag does not exist!");
+        if (!tag.get().getCreatorID().equals(cc.getAuthor().getLongID()))
+            throw new CommandPermissionException("You do not have permission to edit this tag!");
 
-            if (findTag(cc.getGuild(), tag).isPresent()) {
-                cc.replyWith("That tag already exists! Please choose a different tag");
-                return;
-            }
+        // Delete the old tag
+        TagFileIO.deleteFile(tag.get());
+        tags.remove(tag.get());
 
-            try {
-                tags.add(new Tag(cc.getAuthor(), cc.getGuild(), tag, cc.combineArgs(3, cc.getArgCount() - 1)));
-                cc.replyWith("Successfully registered your new tag. Use `" + getTagPrefix(cc.getGuild()) + tag + "` to view it.");
-                return;
-            } catch (CommandException e) {
-                cc.replyWith(e.getMessage());
-                return;
-            }
-        } else if (instruction.equals("edit")) { //!Tag Edit [tag] [newContent]
-            if (cc.getArgCount() < 4) {
-                cc.replyWith("Incorrect number of arguments. Usage: " + CommandManager.getCommandPrefix(cc.getGuild()) + "Tag Edit [tag] [content]");
-                return;
-            }
+        tags.add(new Tag(cc.getAuthor(), cc.getGuild(), tag.get().getTag(), cc.combineArgs(3, cc.getArgCount() - 1)));
+        cc.replyWith("Successfully updated your tag. Use `" + getTagPrefix(cc.getGuild()) + tag.get().getTag() + "` to view it.");
+    }
 
-            Optional<Tag> tag = findTag(cc.getGuild(), cc.getArgument(2));
+    @BotCommand(command = {"tag", "delete"}, description = "Deletes a Tag", usage = "Tag delete [tag]", module = "Tag Module", args = 3)
+    public static void tagDeleteCommand(CommandContext cc) throws CommandException {
+        Optional<Tag> tag = findTag(cc.getGuild(), cc.getArgument(2));
 
-            if (!tag.isPresent()) {
-                cc.replyWith("That tag does not exist!");
-                return;
-            }
+        if (!tag.isPresent())
+            throw new CommandStateException("That tag does not exist!");
+        if (!tag.get().getCreatorID().equals(cc.getAuthor().getLongID()))
+            throw new CommandPermissionException("You do not have permission to delete this tag!");
 
-            if (!tag.get().getCreatorID().equals(cc.getAuthor().getLongID())) {
-                cc.replyWith("You do not have permission to edit this tag!");
-                return;
-            }
-
-            // Delete the old tag
-            try {
-                TagFileIO.deleteFile(tag.get());
-                tags.remove(tag.get());
-            } catch (CommandException e) {
-                cc.replyWith(e.getMessage());
-                return;
-            }
-
-            try {
-                tags.add(new Tag(cc.getAuthor(), cc.getGuild(), tag.get().getTag(), cc.combineArgs(3, cc.getArgCount() - 1)));
-                cc.replyWith("Successfully updated your tag. Use `" + getTagPrefix(cc.getGuild()) + tag.get().getTag() + "` to view it.");
-                return;
-            } catch (CommandException e) {
-                cc.replyWith(e.getMessage());
-                return;
-            }
-        } else if (instruction.equals("delete")) { // !Tag Delete [tag]
-            if (cc.getArgCount() < 3) {
-                cc.replyWith("Incorrect number of arguments. Usage: " + CommandManager.getCommandPrefix(cc.getGuild()) + "Tag Edit [tag] [content]");
-                return;
-            }
-
-            Optional<Tag> tag = findTag(cc.getGuild(), cc.getArgument(2));
-
-            if (!tag.isPresent()) {
-                cc.replyWith("That tag does not exist!");
-                return;
-            }
-
-            if (!tag.get().getCreatorID().equals(cc.getAuthor().getLongID())) {
-                cc.replyWith("You do not have permission to delete this tag!");
-                return;
-            }
-
-            // Delete the old tag
-            try {
-                TagFileIO.deleteFile(tag.get());
-                tags.remove(tag.get());
-                cc.replyWith("Successfully deleted your tag.");
-            } catch (CommandException e) {
-                cc.replyWith(e.getMessage());
-                return;
-            }
-        } else {
-            cc.sendUsage();
-            return;
-        }
+        // Delete the old tag
+        TagFileIO.deleteFile(tag.get());
+        tags.remove(tag.get());
+        cc.replyWith("Successfully deleted your tag.");
     }
 
     @BotCommand(command = "TagPrefix", description = "Set prefix options for Tag Module", usage = "TagPrefix [prefix]", module = "Tag Module", permissions = Permissions.ADMINISTRATOR)
