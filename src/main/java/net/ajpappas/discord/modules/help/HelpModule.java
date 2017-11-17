@@ -47,6 +47,11 @@ public class HelpModule extends CustomModule implements IModule {
 
                 sb.append('`').append(commandPrefix).append(String.join(" ", command.getCommands())).append("` | ").append(command.getDescription()).append('\n');
             }
+            if (sb.length() > 1024)
+                sb.setLength(1024);
+
+            if (embed.getTotalVisibleCharacters() + sb.length() + module.length() >= 6000)
+                continue;
 
             embed.appendField(module, sb.toString(), false);
         }

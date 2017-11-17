@@ -84,7 +84,7 @@ public class CommandManager {
 
     static class CommandComparator implements Comparator<CustomCommand> {
         public int compare(CustomCommand c1, CustomCommand c2) {
-            return c1.getModule().compareTo(c2.getModule());
+            return (c1.getModule() + " " + String.join(" ", c1.getCommands())).compareTo(c2.getModule() + " " + String.join(" ", c2.getCommands()));
         }
     }
 
