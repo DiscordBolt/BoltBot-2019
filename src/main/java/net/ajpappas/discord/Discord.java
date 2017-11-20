@@ -14,7 +14,6 @@ import net.ajpappas.discord.modules.seen.SeenModule;
 import net.ajpappas.discord.modules.status.StatusModule;
 import net.ajpappas.discord.modules.streamannouncer.StreamAnnouncer;
 import net.ajpappas.discord.modules.tags.TagModule;
-import net.ajpappas.discord.modules.tempchannels.TempChannelModule;
 import net.ajpappas.discord.utils.Logger;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
@@ -64,7 +63,6 @@ public class Discord {
         client.getModuleLoader().loadModule(new StatusModule(client));
         client.getModuleLoader().loadModule(new StreamAnnouncer(client));
         client.getModuleLoader().loadModule(new TagModule(client));
-        client.getModuleLoader().loadModule(new TempChannelModule(client));
 
         // Dependent Modules
         client.getModuleLoader().loadModule(new HelpModule(client));
