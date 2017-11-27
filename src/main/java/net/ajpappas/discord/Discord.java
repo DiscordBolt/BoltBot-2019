@@ -8,7 +8,6 @@ import net.ajpappas.discord.modules.gametracker.GameTrackerModule;
 import net.ajpappas.discord.modules.help.HelpModule;
 import net.ajpappas.discord.modules.log.LogModule;
 import net.ajpappas.discord.modules.misc.CuntModule;
-import net.ajpappas.discord.modules.misc.DadJokeModule;
 import net.ajpappas.discord.modules.misc.TableFixerModule;
 import net.ajpappas.discord.modules.reddit.RedditModule;
 import net.ajpappas.discord.modules.seen.SeenModule;
@@ -55,7 +54,6 @@ public class Discord {
         // Feature Modules
         client.getModuleLoader().loadModule(new AudioStreamer(client));
         client.getModuleLoader().loadModule(new CuntModule(client));
-        client.getModuleLoader().loadModule(new DadJokeModule(client));
         client.getModuleLoader().loadModule(new DiceModule(client));
         client.getModuleLoader().loadModule(new DisconnectModule(client));
         client.getModuleLoader().loadModule(new GameTrackerModule(client));
