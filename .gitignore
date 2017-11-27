@@ -2,7 +2,8 @@
 CommandPrefixes.json
 database.properties
 TagPrefixes.json
-#modules/
+server.log
+logging.xml
 playlists/
 logs/
 statuses/
