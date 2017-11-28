@@ -24,15 +24,25 @@ public class HelpModule extends CustomModule implements IModule {
         super(client, "Help Module", "1.1");
     }
 
-    @BotCommand(command = "help", aliases = "h", module = "Help Module", description = "View all available commands.", usage = "Help [All]")
+    @BotCommand(command = "help", aliases = "h", module = "Help Module", description = "View all available commands.", usage = "Help [Module]")
     public static void helpCommand(CommandContext cc) {
+
+        List<String> modules = CommandManager.getCommands().stream().map(CustomCommand::getModule).distinct().collect(Collectors.toList());
+
+        String requestedModule = "";
+        if (cc.getArgCount() > 1) {
+            String userRequestedModule = cc.combineArgs(1, cc.getArgCount() - 1);
+            modules = modules.stream().filter(s -> s.equalsIgnoreCase(userRequestedModule)).collect(Collectors.toList());
+            if (modules.size() < 1) {
+                cc.replyWith("No modules found matching \"" + userRequestedModule + "\".");
+                return;
+            }
+        }
 
         String commandPrefix = CommandManager.getCommandPrefix(cc.getGuild());
 
         EmbedBuilder embed = new EmbedBuilder();
         embed.withColor(36, 153, 153);
-
-        List<String> modules = CommandManager.getCommands().stream().map(CustomCommand::getModule).distinct().collect(Collectors.toList());
 
         StringBuilder sb = new StringBuilder();
         for (String module : modules) {
