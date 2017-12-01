@@ -185,7 +185,7 @@ public class CustomCommand {
     }
 
     public boolean matches(String userCommand) {
-        String userBaseCommand = userCommand.substring(1, userCommand.indexOf(" "));
+        String userBaseCommand = userCommand.substring(1, userCommand.indexOf(" ") > 0 ? userCommand.indexOf(" ") : userCommand.length());
 
         for (int i = 0; i < getCommands().length; i++) {
             if (i == 0) {  // Checking the base command

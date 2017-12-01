@@ -63,6 +63,8 @@ public class CommandManager {
         }
 
         commands.sort(new CommandComparator());
+
+        new CommandListener();
     }
 
     public static List<CustomCommand> getCommands() {

@@ -5,8 +5,6 @@ import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IUser;
 
-import java.util.Optional;
-
 public class CommandListener {
 
     public CommandListener() {
@@ -34,12 +32,13 @@ public class CommandListener {
         }
 
         int userArgCount = message.split(" ").length;
-
-        Optional<CustomCommand> customCommand = CommandManager.getCommands().stream().filter(command -> command.getCommands().length <= userArgCount).filter(command -> command.matches(message)).findFirst();
+        CustomCommand customCommand = CommandManager.getCommands().stream().filter(command -> command.getCommands().length <= userArgCount).filter(command -> command.matches(message)).reduce((first, second) -> second).orElse(null);
 
         long count = CommandManager.getCommands().stream().filter(command -> command.getCommands().length <= userArgCount && command.matches(message)).count();
         Logger.warning("Number of matching commands found: " + count);
 
-        customCommand.ifPresent(command -> command.onMesageEvent(e));
+        if (customCommand != null) {
+            customCommand.preexec(e.getMessage(), user);
+        }
     }
 }
