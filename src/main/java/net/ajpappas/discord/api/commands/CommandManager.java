@@ -56,21 +56,19 @@ public class CommandManager {
         for (Method command : commandMethods) {
             BotCommand a = command.getAnnotation(BotCommand.class);
             if (!Modifier.isStatic(command.getModifiers())) {
-                Logger.error("Command \"" + a.command().toUpperCase() + "\" is not a static method!");
+                Logger.error("Command \"" + String.join(" ", a.command()) + "\" is not a static method!");
                 continue;
             }
-            //          if (modules.stream().filter(x -> x.getName().equalsIgnoreCase(a.module())).findAny().isPresent()){
-            //              Logger.severe("Command \"" + a.command().toUpperCase() + "\" does not have a valid module!");
-            //              continue;
-            //          } Modules load in some order, Commands may be loaded before
             commands.add(new CustomCommand(command));
         }
 
         commands.sort(new CommandComparator());
+
+        new CommandListener();
     }
 
     public static List<CustomCommand> getCommands() {
-        return commands;
+        return Collections.unmodifiableList(commands);
     }
 
     public static String getCommandPrefix(IGuild guild) {
@@ -79,7 +77,7 @@ public class CommandManager {
         return prefixes.getOrDefault(guild.getLongID(), DEFAULT_PREFIX);
     }
 
-    @BotCommand(command = "prefix", description = "Change the command prefix", usage = "Prefix [Character]", module = "dev", args = 2, permissions = Permissions.ADMINISTRATOR)
+    @BotCommand(command = "prefix", description = "Change the command prefix", usage = "Prefix [Character]", module = "Administration", args = 2, permissions = Permissions.ADMINISTRATOR)
     public static void setCommandPrefix(CommandContext cc) {
         prefixes.put(cc.getGuild().getLongID(), cc.getArgument(1).charAt(0) + "");
         writePrefixes();
@@ -88,7 +86,7 @@ public class CommandManager {
 
     static class CommandComparator implements Comparator<CustomCommand> {
         public int compare(CustomCommand c1, CustomCommand c2) {
-            return c1.getModule().compareTo(c2.getModule());
+            return (c1.getModule() + " " + String.join(" ", c1.getCommands())).compareTo(c2.getModule() + " " + String.join(" ", c2.getCommands()));
         }
     }
 

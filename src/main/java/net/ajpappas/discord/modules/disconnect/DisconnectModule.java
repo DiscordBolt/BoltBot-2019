@@ -21,9 +21,9 @@ public class DisconnectModule extends CustomModule implements IModule {
         super(client, "Disconnect Module", "1.1");
     }
 
-    @BotCommand(command = "disconnect", module = "Disconnect Module", aliases = "dis", description = "Disconnect user(s) from their voice channel.", usage = "Disconnect @User1 @User2", permissions = Permissions.VOICE_MOVE_MEMBERS)
+    @BotCommand(command = "disconnect", module = "Disconnect Module", description = "Disconnect user(s) from their voice channel.", usage = "Disconnect [@User1] {@User2} ...", permissions = Permissions.VOICE_MOVE_MEMBERS)
     public static void disconnectCommand(CommandContext cc) {
-        List<IUser> mentions = cc.getMentions();
+        List<IUser> mentions = cc.getMessage().getMentions();
         if (mentions.size() < 1) {
             cc.sendUsage();
             return;
@@ -36,7 +36,7 @@ public class DisconnectModule extends CustomModule implements IModule {
             }
         }
         if (!createChannel) {
-            cc.replyWith(cc.getUserDisplayName() + ", none of the users specified are connected to a voice channel.");
+            cc.replyWith(cc.getAuthorDisplayName() + ", none of the users specified are connected to a voice channel.");
             return;
         }
 
@@ -47,12 +47,12 @@ public class DisconnectModule extends CustomModule implements IModule {
             u.moveToVoiceChannel(temp);
         }
         temp.delete();
-        cc.replyWith(cc.getUserDisplayName() + ", successfully removed users from voice channels.");
+        cc.replyWith(cc.getAuthorDisplayName() + ", successfully removed users from voice channels.");
         StringBuilder sb = new StringBuilder();
 
         sb.append(mentions.get(0).getName());
         for (int i = 1; i < mentions.size(); i++)
             sb.append(", " + mentions.get(i).getName());
-        LogModule.logMessage(cc.getGuild(), cc.getUser() + " just disconnected: " + sb.toString());
+        LogModule.logMessage(cc.getGuild(), cc.getAuthor() + " just disconnected: " + sb.toString());
     }
 }

@@ -1,33 +1,28 @@
 package net.ajpappas.discord.api.commands;
 
 import net.ajpappas.discord.api.commands.exceptions.CommandException;
-import net.ajpappas.discord.utils.ChannelUtil;
 import net.ajpappas.discord.utils.ExceptionMessage;
 import net.ajpappas.discord.utils.Logger;
 import net.ajpappas.discord.utils.UserUtil;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.obj.PrivateChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Tony on 2/15/2017.
  */
 public class CustomCommand {
 
-    private String name;
-    private Method execute;
+    private String[] command;
+    private Method method;
     private String module;
-    private String description = "";
-    private String usage = "";
+    private String description;
+    private String usage;
     private Set<String> aliases = new HashSet<>();
     private Set<String> allowedChannels = new HashSet<>();
     private EnumSet<Permissions> permissions = EnumSet.noneOf(Permissions.class);
@@ -36,111 +31,55 @@ public class CustomCommand {
     private boolean allowPM = false;
     private boolean delete = false;
 
-    public CustomCommand(Method method) {
+    protected CustomCommand(Method method) {
         CommandModule.getClient().getDispatcher().registerListener(this);
 
         BotCommand annotation = method.getAnnotation(BotCommand.class);
-        setCommand(annotation.command());
-        setMethod(method);
-        setModule(annotation.module());
-        setDescription(annotation.description());
-        setUsage(annotation.usage());
-        setAliases(annotation.aliases());
-        setAllowedChannels(annotation.allowedChannels());
-        setPermissions(annotation.permissions());
+
+        this.command = Arrays.stream(annotation.command()).map(String::toLowerCase).toArray(String[]::new);
+        this.method = method;
+        this.module = annotation.module();
+        this.description = annotation.description();
+        this.usage = annotation.usage();
+        this.aliases.addAll(Arrays.asList(annotation.aliases()));
+        this.allowedChannels.addAll(Arrays.asList(annotation.allowedChannels()));
+        this.permissions.addAll(Arrays.asList(annotation.permissions()));
+
         if (annotation.args() != -1)
             setArguments(annotation.args());
         if (annotation.minArgs() != -1 && annotation.maxArgs() != -1)
             setArguments(annotation.minArgs(), annotation.maxArgs());
-        setSecret(annotation.secret());
-        setAllowPM(annotation.allowPM());
-        setDelete(annotation.deleteMessages());
+
+        this.secret = annotation.secret();
+        this.allowPM = annotation.allowPM();
+        this.delete = annotation.deleteMessages();
     }
 
-    public CustomCommand setCommand(String command) {
-        this.name = command.toLowerCase();
-        return this;
-    }
-
-    public CustomCommand setMethod(Method method) {
-        this.execute = method;
-        return this;
-    }
-
-    public CustomCommand setModule(String module) {
-        this.module = module;
-        return this;
-    }
-
-    public CustomCommand setDescription(String description) {
-        this.description = description;
-        return this;
-    }
-
-    public CustomCommand setUsage(String usage) {
-        this.usage = usage;
-        return this;
-    }
-
-    public CustomCommand setAliases(Set<String> aliases) {
-        this.aliases = aliases;
-        return this;
-    }
-
-    public CustomCommand setAliases(String... aliases) {
-        Collections.addAll(this.aliases, aliases);
-        return this;
-    }
-
-    public CustomCommand setAllowedChannels(String... allowedChannels) {
-        Collections.addAll(this.allowedChannels, allowedChannels);
-        return this;
-    }
-
-    public CustomCommand setPermissions(EnumSet<Permissions> permissions) {
-        this.permissions = permissions;
-        return this;
-    }
-
-    public CustomCommand setPermissions(Permissions... permissions) {
-        Collections.addAll(this.permissions, permissions);
-        return this;
-    }
-
-    public CustomCommand setArguments(int arguments) {
+    private void setArguments(int arguments) {
         if (arguments < 0)
             throw new IllegalArgumentException("Arguments must be > 0");
         args = arguments;
-        return this;
     }
 
-    public CustomCommand setArguments(int minArgs, int maxArgs) {
+    private void setArguments(int minArgs, int maxArgs) {
         if (minArgs < 0 || maxArgs < 0)
             throw new IllegalArgumentException("Arguments must be > 0");
         if (maxArgs - minArgs < 0)
             throw new IllegalArgumentException("maxArgs must be larger than minArgs");
         this.minArgs = minArgs;
         this.maxArgs = maxArgs;
-        return this;
     }
 
-    public CustomCommand setSecret(boolean secret) {
-        this.secret = secret;
-        return this;
+    public String getBaseCommand() {
+        return command[0];
     }
 
-    public CustomCommand setAllowPM(boolean allowPM) {
-        this.allowPM = allowPM;
-        return this;
+    public String[] getCommands() {
+        return command;
     }
 
-    public CustomCommand setDelete(boolean deleteMessages) {
-        this.delete = deleteMessages;
-        return this;
-    }
-
-    public String getName() {
-        return name;
+    public String getCommand(int index) {
+        return command[index];
     }
 
     public String getModule() {
@@ -155,16 +94,16 @@ public class CustomCommand {
         return CommandManager.getCommandPrefix(guild) + usage;
     }
 
-    public Set<String> getAliases() {
-        return aliases;
+    public List<String> getAliases() {
+        return new ArrayList<>(aliases);
     }
 
-    public Set<String> getAllowedChannels() {
-        return allowedChannels;
+    public List<String> getAllowedChannels() {
+        return new ArrayList<>(allowedChannels);
     }
 
     public EnumSet<Permissions> getPermissions() {
-        return permissions;
+        return EnumSet.copyOf(permissions);
     }
 
     public boolean isSecret() {
@@ -179,92 +118,84 @@ public class CustomCommand {
         return delete;
     }
 
-    public void sendUsage(CommandContext cc, boolean mentionUser) {
-        ChannelUtil.sendMessage(cc.getChannel(), (mentionUser ? cc.mentionUser() : "") + " " + getUsage(cc.getGuild()));
-    }
+    public void preexec(IMessage message, IUser user) {
 
-    @EventSubscriber
-    public void onMesageEvent(MessageReceivedEvent e) {
-        String message = e.getMessage().getContent();
-        IUser user = e.getAuthor();
+        CommandContext cc = new CommandContext(message, this);
 
-        if (user.isBot()){ // Ignore bots
+        // Check if the command should respond to PMs
+        if (!isAllowPM() && cc.isPrivateMessage()) {
             return;
         }
-
-        // Do not respond to PMs right now
-        if (!isAllowPM() && e.getChannel() instanceof PrivateChannel) {
-            return;
-        }
-
-        if (message.length() <= 1) // Message is just a single prefix.
-            return;
-
-        // Check if message typed was a command
-        if (!message.startsWith(CommandManager.getCommandPrefix(e.getGuild())))
-            return;
-
-        // Check if command was this command
-        CommandContext cc = new CommandContext(this, e.getMessage());
-
-        if (!(cc.getCommand().equalsIgnoreCase(getName()) || (getAliases().size() > 0 && getAliases().stream().filter(a -> a.equalsIgnoreCase(cc.getCommand())).findAny().isPresent())))
-            return;
 
         if (!(cc.isPrivateMessage() && isAllowPM()) && getAllowedChannels().size() > 0 && !getAllowedChannels().contains(cc.getChannel().getName())) {
-            cc.replyWith(cc.getCommand() + " can not be executed in " + cc.getChannel().mention());
+            cc.replyWith(cc.getUserBaseCommand() + " can not be executed in " + cc.getChannel().mention());
             return;
         }
 
         // Argument count check
         if (args != -1) {
             if (cc.getArgCount() != args) {
-                cc.replyWith("Incorrect Argument Count." + (getUsage(e.getGuild()).length() > 0 ? " Usage: " + getUsage(e.getGuild()) : ""));
+                cc.replyWith("Incorrect Argument Count." + (getUsage(message.getGuild()).length() > 0 ? " Usage: " + getUsage(message.getGuild()) : ""));
                 return;
             }
         }
 
         if (minArgs != -1 && maxArgs != -1) {
             if (cc.getArgCount() < minArgs || cc.getArgCount() > maxArgs) {
-                cc.replyWith("Incorrect Argument Count." + (getUsage(e.getGuild()).length() > 1 ? " Usage: " + getUsage(e.getGuild()) : ""));
+                cc.replyWith("Incorrect Argument Count." + (getUsage(message.getGuild()).length() > 1 ? " Usage: " + getUsage(message.getGuild()) : ""));
                 return;
             }
         }
 
         // Permission check
-        if (e.getChannel() instanceof PrivateChannel && getPermissions().size() != 0) {
-            cc.replyWith("This command requires permissions which can not be checked in a PM. Please execute this command in a guild.");
-            return;
-        }
+        if (!UserUtil.isBotOwner(cc.getAuthor())) {
+            if (message.getChannel().isPrivate() && getPermissions().size() != 0) {
+                cc.replyWith(ExceptionMessage.EXECUTE_IN_GUILD);
+                return;
+            }
 
-        if (UserUtil.isBotOwner(cc.getUser())) {
-            // Do not check permissions
-        } else {
             for (Permissions p : getPermissions()) {
-                if (!user.getPermissionsForGuild(e.getGuild()).contains(p)) {
-                    cc.replyWith(cc.mentionUser() + " " + ExceptionMessage.PERMISSION_DENIED);
+                if (!user.getPermissionsForGuild(message.getGuild()).contains(p)) {
+                    cc.replyWith(cc.getAuthor().mention() + " " + ExceptionMessage.PERMISSION_DENIED);
                     return;
                 }
             }
         }
 
         try {
-            execute.invoke(null, cc);
-        } catch (Exception ex) {
-            Logger.error("Internal error occurred while running " + getName() + " command.");
-            Logger.error(ex.getMessage());
-            ex.printStackTrace();
-            Logger.debug(ex);
-            if (ex.getCause() instanceof CommandException) {
-                cc.replyWith(ex.getMessage());
+            method.invoke(null, cc);
+        } catch (InvocationTargetException ite) {
+            if (ite.getCause() instanceof CommandException) {
+                cc.replyWith(ite.getCause().getMessage());
             } else {
+                Logger.error("Uncaught exception during execution of \"" + CommandManager.getCommandPrefix(cc.getGuild()) + String.join(" ", getCommands()) + "\" command.");
+                Logger.error(ite.getCause().getMessage());
+                Logger.debug(ite.getCause());
                 cc.replyWith(ExceptionMessage.COMMAND_PROCESS_EXCEPTION);
             }
-
-            return;
+        } catch (IllegalAccessException ex) {
+            Logger.error(ex.getMessage());
+            Logger.debug(ex);
+            cc.replyWith(ExceptionMessage.COMMAND_PROCESS_EXCEPTION);
         }
 
         if (shouldDeleteMessages()) {
-            e.getMessage().delete();
+            message.delete();
         }
+    }
+
+    public boolean matches(String userCommand) {
+        String userBaseCommand = userCommand.substring(1, userCommand.indexOf(" ") > 0 ? userCommand.indexOf(" ") : userCommand.length());
+
+        for (int i = 0; i < getCommands().length; i++) {
+            if (i == 0) {  // Checking the base command
+                if (!(getBaseCommand().equalsIgnoreCase(userBaseCommand) || (getAliases().size() > 0 && getAliases().stream().anyMatch(a -> a.equalsIgnoreCase(userBaseCommand)))))
+                    return false;
+            } else {  // Check the sub commands
+                if (!getCommand(i).equalsIgnoreCase(userCommand.split(" ")[i]))
+                    return false;
+            }
+        }
+        return true;
     }
 }

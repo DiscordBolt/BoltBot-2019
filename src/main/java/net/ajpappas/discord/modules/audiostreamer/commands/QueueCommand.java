@@ -3,98 +3,42 @@ package net.ajpappas.discord.modules.audiostreamer.commands;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.ajpappas.discord.api.commands.BotCommand;
 import net.ajpappas.discord.api.commands.CommandContext;
-import net.ajpappas.discord.api.commands.CommandManager;
+import net.ajpappas.discord.api.commands.exceptions.CommandArgumentException;
 import net.ajpappas.discord.api.commands.exceptions.CommandException;
+import net.ajpappas.discord.api.commands.exceptions.CommandStateException;
 import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
+import net.ajpappas.discord.utils.TimeUtil;
 import sx.blah.discord.util.EmbedBuilder;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Tony on 4/22/2017.
  */
 public class QueueCommand {
 
-    public static final String QUEUE_REMOVE_USAGE = "Usage: %sQueue remove #";
-
-    @BotCommand(command = "queue", module = "Audio Streamer Module", description = "Print out the list of currently queued songs.", usage = "Queue", allowedChannels = "music")
-    public static void queueCommand(CommandContext cc) {
-
-        if (cc.getArgCount() > 1 && cc.getArgument(1).equalsIgnoreCase("clear")) {
-            try {
-                AudioStreamer.getVoiceManager().clearQueue(cc.getGuild(), cc.getUser());
-                return;
-            } catch (CommandException e) {
-                cc.replyWith(e.getMessage());
-                return;
-            }
-        }
-
+    @BotCommand(command = "queue", module = AudioStreamer.MODULE, description = "Show the currently queued songs", usage = "Queue", allowedChannels = "music", args = 1)
+    public static void queueCommand(CommandContext cc) throws CommandException {
         List<AudioTrack> queue = AudioStreamer.getVoiceManager().getQueue(cc.getGuild());
         AudioTrack nowPlaying = AudioStreamer.getVoiceManager().getNowPlaying(cc.getGuild());
-
-        //!queue remove <index>
-        if (cc.getArgCount() > 1 && cc.getArgument(1).equalsIgnoreCase("remove")) {
-            //user must have DJ permissions
-            if (!AudioStreamer.hasDJPermissions(cc.getUser(), cc.getGuild())) {
-                cc.replyWith("You do not have permissions to use this command.");
-                return;
-            }
-            //check argument count
-            if (cc.getArgCount() != 3) {
-                cc.replyWith(String.format(QUEUE_REMOVE_USAGE, CommandManager.getCommandPrefix(cc.getGuild())));
-                return;
-            }
-            int songIndex;
-            //checks bounds
-            try {
-                songIndex = Integer.parseInt(cc.getArgument(2));
-            } catch (NumberFormatException e) {
-                cc.replyWith("\"" + cc.getArgument(2) + "\" is not a valid song index.");
-                return;
-            }
-            if (songIndex < 1 || songIndex > queue.size() + 1) {
-                cc.replyWith("\"" + cc.getArgument(2) + "\" is not a valid song index.");
-                return;
-            }
-            //deletes song
-            try {
-                if (songIndex == 1) { //just skip
-                    AudioStreamer.getVoiceManager().skip(cc.getGuild(), cc.getUser(), true, 1);
-                    cc.replyWith("Song #1: " + nowPlaying.getInfo().title + " has been removed from the queue.");
-                } else {
-                    AudioStreamer.getVoiceManager().dequeue(cc.getGuild(), cc.getUser(), queue.get(songIndex - 2).getInfo().identifier);
-                    cc.replyWith("Song #" + (songIndex) + ": " + queue.get(songIndex - 2).getInfo().title + " has been removed from the queue.");
-                }
-            } catch (CommandException e) {
-                cc.replyWith(e.getMessage());
-            }
-            return;
-        }
-
-        if (nowPlaying == null) {
-            cc.replyWith("The queue is empty! Play something with !Play");
-            return;
-        }
+        if (nowPlaying == null)
+            throw new CommandStateException("The queue is empty! Play something with !Play");
 
         final long totalTime = AudioStreamer.getVoiceManager().getQueue(cc.getGuild()).stream().map(AudioTrack::getDuration).reduce(0L, (x, y) -> x + y) + AudioStreamer.getVoiceManager().getNowPlaying(cc.getGuild()).getDuration();
 
         EmbedBuilder embed = new EmbedBuilder();
-
         embed.withTitle(":clock1030: Queue Length");
-        embed.withDescription(getFormattedTime(totalTime));
+        embed.withDescription(TimeUtil.getFormattedTime(totalTime));
         embed.withColor(AudioStreamer.EMBED_COLOR);
 
         StringBuilder songs = new StringBuilder();
-
         int i = 2;
-        songs.append("***1. " + nowPlaying.getInfo().title + "***").append('\n');
+        songs.append("***1. ").append(nowPlaying.getInfo().title).append("***").append('\n');
 
         for (AudioTrack audioTrack : queue) {
             if ((songs.length() + audioTrack.getInfo().title.length()) >= 975 && (i - 1) < queue.size()) {
                 songs.append("\n");
-                songs.append("    ***... and " + (queue.size() - (i - 1)) + " more***");
+                songs.append("    ***... and ").append(queue.size() - (i - 1)).append(" more***");
                 break;
             }
             songs.append(i++).append(". ").append(audioTrack.getInfo().title).append('\n');
@@ -104,41 +48,25 @@ public class QueueCommand {
         cc.replyWith(embed.build());
     }
 
-    public static String getFormattedTime(long timestamp) {
+    @BotCommand(command = {"queue", "clear"}, module = AudioStreamer.MODULE, description = "Remove all songs from the queue", usage = "Queue clear", allowedChannels = "music", args = 2)
+    public static void queueClearCommand(CommandContext cc) throws CommandException {
+        AudioStreamer.getVoiceManager().clearQueue(cc.getGuild(), cc.getAuthor());
+    }
 
-        final long totalSeconds = timestamp / 1000;
-        final String[] strings = new String[]{"days", "hours", "minutes", "seconds"};
-        final long[] data = new long[4];
-        data[0] = TimeUnit.SECONDS.toDays(totalSeconds);
-        data[1] = TimeUnit.SECONDS.toHours(totalSeconds) - (data[0] * 24);
-        data[2] = TimeUnit.SECONDS.toMinutes(totalSeconds) - (TimeUnit.SECONDS.toHours(totalSeconds) * 60);
-        data[3] = TimeUnit.SECONDS.toSeconds(totalSeconds) - (TimeUnit.SECONDS.toMinutes(totalSeconds) * 60);
+    @BotCommand(command = {"queue", "remove"}, module = AudioStreamer.MODULE, description = "Remove a song from the queue", usage = "Queue remove [number]", allowedChannels = "music", args = 3)
+    public static void queueRemoveCommand(CommandContext cc) throws CommandException {
+        if (!cc.getArgument(2).matches("^-?\\d+$"))
+            throw new CommandArgumentException("\"" + cc.getArgument(2) + "\" is not a valid song number.");
+        int songIndex = Integer.parseInt(cc.getArgument(2));
+        if (songIndex < 1 || songIndex > AudioStreamer.getVoiceManager().getQueue(cc.getGuild()).size() + 1)
+            throw new CommandArgumentException("\"" + cc.getArgument(2) + "\" is not a valid song number.");
 
-        StringBuilder stringBuilder = new StringBuilder();
-
-        for (int i = 0; i < data.length; i++) {
-            long time = data[i];
-
-            if (time > 0) {
-                stringBuilder.append(time + " " + (time == 1 ? strings[i].substring(0, strings[i].length() - 1) : strings[i]));
-
-                if (i != data.length - 1) {
-                    if (!(i + 2 > (data.length - 1))) {
-                        if (data[i + 2] <= 0) {
-                            stringBuilder.append(" and ");
-                        } else {
-                            stringBuilder.append(", ");
-                        }
-                    } else {
-                        if (i == data.length - 2) {
-                            stringBuilder.append(" and ");
-                        } else {
-                            stringBuilder.append(", ");
-                        }
-                    }
-                }
-            }
+        if (songIndex == 1) { //just skip
+            AudioStreamer.getVoiceManager().skip(cc.getGuild(), cc.getAuthor(), true, 1);
+            cc.replyWith("Song #1: \"" + AudioStreamer.getVoiceManager().getNowPlaying(cc.getGuild()).getInfo().title + "\" has been removed from the queue.");
+        } else {
+            AudioStreamer.getVoiceManager().dequeue(cc.getGuild(), cc.getAuthor(), AudioStreamer.getVoiceManager().getQueue(cc.getGuild()).get(songIndex - 2).getInfo().identifier);
+            cc.replyWith("Song #" + (songIndex) + ": \"" + AudioStreamer.getVoiceManager().getQueue(cc.getGuild()).get(songIndex - 2).getInfo().title + "\" has been removed from the queue.");
         }
-        return stringBuilder.toString();
     }
 }

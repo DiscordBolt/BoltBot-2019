@@ -240,6 +240,10 @@ public class VoiceManager {
         getDJ(guild).setVolume(volume);
     }
 
+    public int getVolume(IGuild guild) {
+        return getDJ(guild).getVolume();
+    }
+
     public IUser getTrackRequester(IGuild guild, AudioTrack track) {
         return getDJ(guild).getTrackRequester(track);
     }

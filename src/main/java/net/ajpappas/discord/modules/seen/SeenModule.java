@@ -3,6 +3,9 @@ package net.ajpappas.discord.modules.seen;
 import net.ajpappas.discord.api.CustomModule;
 import net.ajpappas.discord.api.commands.BotCommand;
 import net.ajpappas.discord.api.commands.CommandContext;
+import net.ajpappas.discord.api.commands.exceptions.CommandArgumentException;
+import net.ajpappas.discord.api.commands.exceptions.CommandException;
+import net.ajpappas.discord.api.commands.exceptions.CommandRuntimeException;
 import net.ajpappas.discord.utils.UserUtil;
 import org.ocpsoft.prettytime.PrettyTime;
 import sx.blah.discord.api.IDiscordClient;
@@ -28,31 +31,21 @@ public class SeenModule extends CustomModule implements IModule {
         statuses = StatusFileIO.loadStatuses();
     }
 
-    @BotCommand(command = "seen", module = "Seen Module", description = "See when the user was last online.", usage = "Seen @User", minArgs = 2, maxArgs = 100)
-    public static void seenCommand(CommandContext cc) {
+    @BotCommand(command = "seen", module = "Seen Module", description = "See when the user was last online.", usage = "Seen [User]", minArgs = 2, maxArgs = 100)
+    public static void seenCommand(CommandContext cc) throws CommandException {
 
-        IUser searchUser = UserUtil.findUser(cc.getMessage(), cc.getContent().indexOf(' ') + 1);
-        String name = cc.getContent().substring(cc.getContent().indexOf(' ') + 1, cc.getContent().length());
+        IUser searchUser = UserUtil.findUser(cc.getMessage(), cc.getMessageContent().indexOf(' ') + 1);
+        String name = cc.getMessageContent().substring(cc.getMessageContent().indexOf(' ') + 1, cc.getMessageContent().length());
 
-        if (searchUser == null) {
-            cc.replyWith("Sorry, I could not find \"" + name + "\".");
-            return;
-        }
+        if (searchUser == null)
+            throw new CommandArgumentException("Sorry, I could not find \"" + name + "\".");
 
         UserStatus status = statuses.get(searchUser.getLongID());
-        if (status == null) {
-            cc.replyWith("Sorry, I could not find \"" + name + "\".");
-            return;
-        }
+        if (status == null)
+            throw new CommandRuntimeException("Sorry, I could not find \"" + name + "\".");
 
         cc.replyWith(searchUser.getName() + " has been " + status.getStatus().name().replace("dnd", "do not disturb") + " since " + format(status.getLastUpdate()) + '.');
     }
-
-    // This has been taken to GuildCreateEvent
-    //@EventSubscriber
-    //public void onReady(ReadyEvent e) {
-    //updateAllUsers(client.getGuilds());
-    //}
 
     @EventSubscriber
     public void onStatusChange(PresenceUpdateEvent e) {
