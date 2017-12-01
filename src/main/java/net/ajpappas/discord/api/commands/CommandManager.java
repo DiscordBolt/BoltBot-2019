@@ -66,7 +66,7 @@ public class CommandManager {
     }
 
     public static List<CustomCommand> getCommands() {
-        return commands;
+        return Collections.unmodifiableList(commands);
     }
 
     public static String getCommandPrefix(IGuild guild) {

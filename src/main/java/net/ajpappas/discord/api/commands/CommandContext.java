@@ -3,7 +3,6 @@ package net.ajpappas.discord.api.commands;
 import net.ajpappas.discord.api.commands.list.ArgList;
 import net.ajpappas.discord.utils.ChannelUtil;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.impl.obj.PrivateChannel;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IMessage;
@@ -45,7 +44,7 @@ public class CommandContext {
     }
 
     public boolean isPrivateMessage() {
-        return getChannel() instanceof PrivateChannel;
+        return getChannel().isPrivate();
     }
 
     public String getMessageContent() {

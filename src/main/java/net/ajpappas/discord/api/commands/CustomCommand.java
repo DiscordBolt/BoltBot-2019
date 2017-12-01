@@ -4,10 +4,8 @@ import net.ajpappas.discord.api.commands.exceptions.CommandException;
 import net.ajpappas.discord.utils.ExceptionMessage;
 import net.ajpappas.discord.utils.Logger;
 import net.ajpappas.discord.utils.UserUtil;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.obj.PrivateChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Permissions;
 
@@ -120,49 +118,14 @@ public class CustomCommand {
         return delete;
     }
 
-    @EventSubscriber
-    public void onMesageEvent(MessageReceivedEvent e) {
-        String message = e.getMessage().getContent();
-        IUser user = e.getAuthor();
+    public void preexec(IMessage message, IUser user) {
 
-        // Ignore bots
-        if (user.isBot()) {
-            return;
-        }
+        CommandContext cc = new CommandContext(message, this);
 
         // Check if the command should respond to PMs
-        if (!isAllowPM() && e.getChannel() instanceof PrivateChannel) {
+        if (!isAllowPM() && cc.isPrivateMessage()) {
             return;
         }
-
-        // Message is just a single prefix.
-        if (message.length() <= 1)
-            return;
-
-        // Check if message typed was a command
-        if (!message.startsWith(CommandManager.getCommandPrefix(e.getGuild())))
-            return;
-
-        // Check if command was this command
-        CommandContext cc = new CommandContext(e.getMessage(), this);
-
-        // Check if there are enough arguments
-        if (getCommands().length > cc.getArgCount())
-            return;
-
-        // Check if all the arguments match the expected commands
-        for (int i = 0; i < getCommands().length; i++) {
-            if (i == 0) {  // Checking the base command
-                if (!(getBaseCommand().equalsIgnoreCase(cc.getUserBaseCommand()) || (getAliases().size() > 0 && getAliases().stream().anyMatch(a -> a.equalsIgnoreCase(cc.getUserBaseCommand())))))
-                    return;
-            } else {  // Check the sub commands
-                if (!getCommand(i).equalsIgnoreCase(cc.getArgument(i)))
-                    return;
-            }
-        }
-
-        // User command matches THIS custom command
-        Logger.debug("User command \"" + cc.getMessageContent() + "\" matches expected command \"" + CommandManager.getCommandPrefix(cc.getGuild()) + String.join(" ", getCommands()) + "\"");
 
         if (!(cc.isPrivateMessage() && isAllowPM()) && getAllowedChannels().size() > 0 && !getAllowedChannels().contains(cc.getChannel().getName())) {
             cc.replyWith(cc.getUserBaseCommand() + " can not be executed in " + cc.getChannel().mention());
@@ -172,27 +135,27 @@ public class CustomCommand {
         // Argument count check
         if (args != -1) {
             if (cc.getArgCount() != args) {
-                cc.replyWith("Incorrect Argument Count." + (getUsage(e.getGuild()).length() > 0 ? " Usage: " + getUsage(e.getGuild()) : ""));
+                cc.replyWith("Incorrect Argument Count." + (getUsage(message.getGuild()).length() > 0 ? " Usage: " + getUsage(message.getGuild()) : ""));
                 return;
             }
         }
 
         if (minArgs != -1 && maxArgs != -1) {
             if (cc.getArgCount() < minArgs || cc.getArgCount() > maxArgs) {
-                cc.replyWith("Incorrect Argument Count." + (getUsage(e.getGuild()).length() > 1 ? " Usage: " + getUsage(e.getGuild()) : ""));
+                cc.replyWith("Incorrect Argument Count." + (getUsage(message.getGuild()).length() > 1 ? " Usage: " + getUsage(message.getGuild()) : ""));
                 return;
             }
         }
 
         // Permission check
         if (!UserUtil.isBotOwner(cc.getAuthor())) {
-            if (e.getChannel() instanceof PrivateChannel && getPermissions().size() != 0) {
+            if (message.getChannel().isPrivate() && getPermissions().size() != 0) {
                 cc.replyWith(ExceptionMessage.EXECUTE_IN_GUILD);
                 return;
             }
 
             for (Permissions p : getPermissions()) {
-                if (!user.getPermissionsForGuild(e.getGuild()).contains(p)) {
+                if (!user.getPermissionsForGuild(message.getGuild()).contains(p)) {
                     cc.replyWith(cc.getAuthor().mention() + " " + ExceptionMessage.PERMISSION_DENIED);
                     return;
                 }
@@ -217,7 +180,22 @@ public class CustomCommand {
         }
 
         if (shouldDeleteMessages()) {
-            e.getMessage().delete();
+            message.delete();
         }
+    }
+
+    public boolean matches(String userCommand) {
+        String userBaseCommand = userCommand.substring(1, userCommand.indexOf(" "));
+
+        for (int i = 0; i < getCommands().length; i++) {
+            if (i == 0) {  // Checking the base command
+                if (!(getBaseCommand().equalsIgnoreCase(userBaseCommand) || (getAliases().size() > 0 && getAliases().stream().anyMatch(a -> a.equalsIgnoreCase(userBaseCommand)))))
+                    return false;
+            } else {  // Check the sub commands
+                if (!getCommand(i).equalsIgnoreCase(userCommand.split(" ")[i]))
+                    return false;
+            }
+        }
+        return true;
     }
 }
