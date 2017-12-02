@@ -4,6 +4,10 @@ import sx.blah.discord.Discord4J;
 
 public class Logger {
 
+    public static void trace(String s) {
+        Discord4J.LOGGER.trace(s);
+    }
+
     public static void debug(Throwable e) {
         Discord4J.LOGGER.debug(e.getMessage(), e);
     }

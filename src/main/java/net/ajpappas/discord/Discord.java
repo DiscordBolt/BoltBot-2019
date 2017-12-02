@@ -1,6 +1,7 @@
 package net.ajpappas.discord;
 
 import net.ajpappas.discord.api.commands.CommandModule;
+import net.ajpappas.discord.api.mysql.DataSync;
 import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
 import net.ajpappas.discord.modules.dice.DiceModule;
 import net.ajpappas.discord.modules.disconnect.DisconnectModule;
@@ -45,6 +46,7 @@ public class Discord {
 
     private static void registerModules(IDiscordClient client) {
         // API Modules
+        client.getDispatcher().registerListener(new DataSync(client));
         client.getModuleLoader().loadModule(new CommandModule(client));
         client.getModuleLoader().loadModule(new LogModule(client));
 

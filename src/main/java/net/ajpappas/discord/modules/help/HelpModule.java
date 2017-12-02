@@ -40,6 +40,7 @@ public class HelpModule extends CustomModule implements IModule {
 
         String commandPrefix = CommandManager.getCommandPrefix(cc.getGuild());
 
+        boolean send = false;
         EmbedBuilder embed = new EmbedBuilder();
         embed.withColor(36, 153, 153);
 
@@ -62,10 +63,17 @@ public class HelpModule extends CustomModule implements IModule {
             if (embed.getTotalVisibleCharacters() + sb.length() + module.length() >= 6000)
                 continue;
 
+            if (module.length() == 0 || sb.length() == 0) {
+                continue;
+            }
+
+            send = true;
             embed.appendField(module, sb.toString(), false);
         }
-
-        cc.replyWith(embed.build());
+        if (send)
+            cc.replyWith(embed.build());
+        else
+            cc.replyWith("No available commands.");
     }
 
     @EventSubscriber

@@ -1,6 +1,5 @@
 package net.ajpappas.discord.api.commands;
 
-import net.ajpappas.discord.utils.Logger;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IUser;
@@ -33,9 +32,6 @@ public class CommandListener {
 
         int userArgCount = message.split(" ").length;
         CustomCommand customCommand = CommandManager.getCommands().stream().filter(command -> command.getCommands().length <= userArgCount).filter(command -> command.matches(message)).reduce((first, second) -> second).orElse(null);
-
-        long count = CommandManager.getCommands().stream().filter(command -> command.getCommands().length <= userArgCount && command.matches(message)).count();
-        Logger.warning("Number of matching commands found: " + count);
 
         if (customCommand != null) {
             customCommand.preexec(e.getMessage(), user);
