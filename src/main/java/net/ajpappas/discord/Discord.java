@@ -1,7 +1,7 @@
 package net.ajpappas.discord;
 
 import net.ajpappas.discord.api.commands.CommandModule;
-import net.ajpappas.discord.api.mysql.DataSync;
+import net.ajpappas.discord.api.mysql.data.DataSync;
 import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
 import net.ajpappas.discord.modules.dice.DiceModule;
 import net.ajpappas.discord.modules.disconnect.DisconnectModule;
