@@ -25,13 +25,11 @@ import java.util.regex.Pattern;
 
 public class RedditModule extends CustomModule implements IModule {
 
-    //private static Pattern SUBREDDIT_PATTERN = Pattern.compile("(?:(?:https?:\\/\\/)?(?:www\\.)?(?:reddit\\.com)?\\/?r\\/)?([^\\s/]+)");
     private static Pattern SUBREDDIT_PATTERN = Pattern.compile("^(?:(?:https?:\\/\\/)?(?:www\\.)?reddit\\.com)?(?:\\/?r\\/)?(\\w+)$");
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public RedditModule(IDiscordClient client) {
         super(client, "Reddit Module", "0.1");
-        registerDailyPosts();
     }
 
     @BotCommand(command = "reddit", module = "Reddit Module", description = "Get the What's Hot post", usage = "Reddit [subreddit]", args = 2)
@@ -43,31 +41,25 @@ public class RedditModule extends CustomModule implements IModule {
                 cc.replyWith(Subreddit.getPosts(matcher.group(1), SortMethod.HOT).filter(false, PostType.IMAGE, PostType.SELF).getTopPost().toEmbed());
             } catch (IndexOutOfBoundsException e) {
                 cc.replyWith("Sorry, no posts were able to be found.");
-                return;
             } catch (HttpResponseException e) {
                 cc.replyWith("That subreddit doesn't exist!");
-                return;
             } catch (IOException e) {
                 Logger.error(e.getMessage());
                 Logger.debug(e);
                 cc.replyWith(ExceptionMessage.COMMAND_PROCESS_EXCEPTION);
-                return;
             }
         } else {
             cc.sendUsage();
-            return;
         }
     }
 
-    private void registerDailyPosts() {
-        scheduleTask("corgi", getClient().getChannelByID(Long.valueOf("110927581070512128")), 20, 0);
-        scheduleTask("programmerhumor", getClient().getChannelByID(Long.valueOf("110927581070512128")), 12, 0);
+    @BotCommand(command = {"reddit", "subscribe"}, description = "Subscribe to get daily top posts in your DMs.", usage = "Reddit Subscribe [subreddit] [time]", module = "Reddit Module")
+    public static void redditSubscribeCommand(CommandContext cc) {
+
     }
 
     private void scheduleTask(String subreddit, IChannel channel, int hour, int minute) {
-        LocalDateTime localNow = LocalDateTime.now();
-        ZoneId currentZone = ZoneId.of("America/New_York");
-        ZonedDateTime zonedNow = ZonedDateTime.of(localNow, currentZone);
+        ZonedDateTime zonedNow = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/New_York"));
         ZonedDateTime zonedNextTime;
         zonedNextTime = zonedNow.withHour(hour).withMinute(minute).withSecond(0);
         if (zonedNow.compareTo(zonedNextTime) > 0)
