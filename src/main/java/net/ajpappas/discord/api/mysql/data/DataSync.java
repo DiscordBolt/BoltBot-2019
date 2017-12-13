@@ -1,6 +1,7 @@
 package net.ajpappas.discord.api.mysql.data;
 
 import net.ajpappas.discord.api.mysql.data.persistent.GuildData;
+import net.ajpappas.discord.api.mysql.data.persistent.TagData;
 import net.ajpappas.discord.api.mysql.data.persistent.UserData;
 import net.ajpappas.discord.utils.Logger;
 import sx.blah.discord.api.IDiscordClient;
@@ -20,6 +21,7 @@ public class DataSync {
         Logger.info("Fetching/updating database, this may take some time.");
         UserData.fetch();
         GuildData.fetch();
+        TagData.fetch();
         client.getGuilds().forEach(g -> GuildJoinEvent(new GuildCreateEvent(g)));
         Logger.info("Done with database!");
     }
@@ -29,7 +31,7 @@ public class DataSync {
         // Process each user that should be added to the database
         e.getGuild().getUsers().forEach(u -> UserJoinEvent(new UserJoinEvent(e.getGuild(), u, LocalDateTime.now())));
 
-        GuildData.create(e.getGuild());
+        GuildData.getOrCreate(e.getGuild());
     }
 
     @EventSubscriber
@@ -55,7 +57,7 @@ public class DataSync {
             return;
         }
 
-        UserData.create(e.getUser());
+        UserData.getOrCreate(e.getUser());
     }
 
     @EventSubscriber

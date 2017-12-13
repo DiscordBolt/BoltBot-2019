@@ -5,7 +5,7 @@ import net.ajpappas.discord.api.commands.BotCommand;
 import net.ajpappas.discord.api.commands.CommandContext;
 import net.ajpappas.discord.api.commands.exceptions.CommandArgumentException;
 import net.ajpappas.discord.api.commands.exceptions.CommandException;
-import net.ajpappas.discord.api.commands.exceptions.CommandRuntimeException;
+import net.ajpappas.discord.api.mysql.data.persistent.UserData;
 import net.ajpappas.discord.utils.UserUtil;
 import org.ocpsoft.prettytime.PrettyTime;
 import sx.blah.discord.api.IDiscordClient;
@@ -17,46 +17,42 @@ import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.modules.IModule;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
+import java.time.Instant;
+import java.util.Optional;
 
 /**
  * Created by Tony on 4/3/2017.
  */
 public class SeenModule extends CustomModule implements IModule {
 
-    private static HashMap<Long, UserStatus> statuses;
-
     public SeenModule(IDiscordClient client) {
-        super(client, "Seen Module", "1.1");
-        statuses = StatusFileIO.loadStatuses();
+        super(client, "Seen Module", "1.2");
+        client.getGuilds().forEach(g -> g.getUsers().forEach(this::updateUser));
     }
 
     @BotCommand(command = "seen", module = "Seen Module", description = "See when the user was last online.", usage = "Seen [User]", minArgs = 2, maxArgs = 100)
     public static void seenCommand(CommandContext cc) throws CommandException {
-
         IUser searchUser = UserUtil.findUser(cc.getMessage(), cc.getMessageContent().indexOf(' ') + 1);
         String name = cc.getMessageContent().substring(cc.getMessageContent().indexOf(' ') + 1, cc.getMessageContent().length());
 
         if (searchUser == null)
+            throw new CommandArgumentException("Sorry, I could not find '" + name + "'.");
+
+        Optional<UserData> userData = UserData.getById(searchUser.getLongID());
+        if (!userData.isPresent() || userData.get().getLastStatusChange() == null)
             throw new CommandArgumentException("Sorry, I could not find \"" + name + "\".");
 
-        UserStatus status = statuses.get(searchUser.getLongID());
-        if (status == null)
-            throw new CommandRuntimeException("Sorry, I could not find \"" + name + "\".");
-
-        cc.replyWith(searchUser.getName() + " has been " + status.getStatus().name().replace("dnd", "do not disturb") + " since " + format(status.getLastUpdate()) + '.');
+        cc.replyWith(searchUser.getName() + " has been " + userData.get().getStatus().name().replace("dnd", "do not disturb").toLowerCase() + " since " + format(userData.get().getLastStatusChange()) + '.');
     }
 
     @EventSubscriber
     public void onStatusChange(PresenceUpdateEvent e) {
-        if (!statuses.containsKey(e.getUser().getLongID()) || e.getNewPresence().getStatus() != statuses.get(e.getUser().getLongID()).getStatus()) {
-            updateUser(e.getUser());
-        }
+        updateUser(e.getUser());
     }
 
     @EventSubscriber
     public void onJoinGuild(GuildCreateEvent e) {
-        e.getGuild().getUsers().forEach(u -> updateUser(u));
+        e.getGuild().getUsers().forEach(this::updateUser);
     }
 
     @EventSubscriber
@@ -64,22 +60,15 @@ public class SeenModule extends CustomModule implements IModule {
         updateUser(e.getUser());
     }
 
-    private static String format(Timestamp time) {
-        PrettyTime p = new PrettyTime();
-        return p.format(time);
+    private static String format(Instant time) {
+        return new PrettyTime().format(Timestamp.from(time));
     }
 
     private void updateUser(IUser user) {
-        if (statuses.containsKey(user.getLongID())) {
-            UserStatus status = statuses.get(user.getLongID());
-            if (status.getStatus() != user.getPresence().getStatus()) {
-                status.updateStatus(user.getPresence().getStatus());
-                StatusFileIO.saveStatus(status);
-            }
-        } else {
-            UserStatus status = new UserStatus(user);
-            statuses.put(user.getLongID(), status);
-            StatusFileIO.saveStatus(status);
-        }
+        if (user.isBot())
+            return;
+        if (user.getPresence().getStatus() == UserData.getById(user.getLongID()).map(UserData::getStatus).orElse(null))
+            return;
+        UserData.getById(user.getLongID()).ifPresent(ud -> ud.setStatus(user.getPresence().getStatus()));
     }
 }

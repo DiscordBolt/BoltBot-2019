@@ -1,14 +1,9 @@
 # Server Files
-CommandPrefixes.json
 database.properties
-TagPrefixes.json
 server.log
 logging.xml
 playlists/
 logs/
-statuses/
-tags/
-
 
 *.class
 

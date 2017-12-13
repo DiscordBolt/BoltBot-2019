@@ -19,19 +19,6 @@ public class GuildData implements Savable {
     private String command_prefix;
     private String tag_prefix;
 
-    /**
-     * Used when creating new instances
-     */
-    private GuildData(long guildId, String name) {
-        this.guild_id = guildId;
-        this.name = name;
-        save();
-        guilds.put(getId(), this);
-    }
-
-    /**
-     * Constructor used to initialize object from database
-     */
     private GuildData(long guildId, String name, String commandPrefix, String tagPrefix) {
         this.guild_id = guildId;
         this.name = name;
@@ -139,15 +126,19 @@ public class GuildData implements Savable {
         }
     }
 
-    public static GuildData create(IGuild guild) {
+    public static GuildData getOrCreate(IGuild guild) {
         Optional<GuildData> ogd = getById(guild.getLongID());
-
-
-        if (getById(guild.getLongID()).isPresent()) {
-            return getById(guild.getLongID()).get();
+        if (ogd.isPresent()) {
+            GuildData gd = ogd.get();
+            if (!guild.getName().equals(gd.getName())) {
+                gd.setName(guild.getName());
+            }
+            return gd;
         }
 
-        return new GuildData(guild.getLongID(), guild.getName());
+        GuildData guildData = new GuildData(guild.getLongID(), guild.getName(), null, null);
+        guildData.save();
+        return guildData;
     }
 
     public static Optional<GuildData> getById(long guildId) {

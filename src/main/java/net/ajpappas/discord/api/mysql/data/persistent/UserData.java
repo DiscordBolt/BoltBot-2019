@@ -23,20 +23,6 @@ public class UserData implements Savable {
     private StatusType status;
     private Instant last_status_change;
 
-    /**
-     * Used when creating new instances
-     */
-    private UserData(long userId, String username, String discriminator) {
-        this.user_id = userId;
-        this.username = username;
-        this.discriminator = discriminator;
-        save();
-        users.put(getId(), this);
-    }
-
-    /**
-     * Constructor used to initialize object from database
-     */
     private UserData(long userId, String username, String discriminator, String status, long lastStatusChange) {
         this.user_id = userId;
         this.username = username;
@@ -131,7 +117,8 @@ public class UserData implements Savable {
 
             try {
                 while (rs.next()) {
-                    new UserData(rs.getLong("user_id"), rs.getString("username"), rs.getString("discriminator"), rs.getString("status"), rs.getLong("last_status_change"));
+                    long longTime = rs.getTimestamp("last_status_change") != null ? rs.getTimestamp("last_status_change").getTime() : 0L;
+                    new UserData(rs.getLong("user_id"), rs.getString("username"), rs.getString("discriminator"), rs.getString("status"), longTime);
                 }
             } finally {
                 ps.close();
@@ -146,7 +133,7 @@ public class UserData implements Savable {
         }
     }
 
-    public static UserData create(IUser user) {
+    public static UserData getOrCreate(IUser user) {
         Optional<UserData> oud = getById(user.getLongID());
         if (oud.isPresent()) {
             UserData ud = oud.get();
@@ -156,7 +143,9 @@ public class UserData implements Savable {
             return ud;
         }
 
-        return new UserData(user.getLongID(), user.getName(), user.getDiscriminator());
+        UserData userData = new UserData(user.getLongID(), user.getName(), user.getDiscriminator(), null, 0L);
+        userData.save();
+        return userData;
     }
 
     public static Optional<UserData> getById(long userId) {

@@ -1,6 +1,7 @@
 package net.ajpappas.discord;
 
 import net.ajpappas.discord.api.commands.CommandModule;
+import net.ajpappas.discord.api.mysql.MySQL;
 import net.ajpappas.discord.api.mysql.data.DataSync;
 import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
 import net.ajpappas.discord.modules.dice.DiceModule;
@@ -21,6 +22,8 @@ import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.modules.Configuration;
 
+import java.sql.SQLException;
+
 /**
  * Created by Tony on 6/13/2017.
  */
@@ -30,6 +33,18 @@ public class Discord {
         if (args.length < 1) {
             Logger.error("No Bot Token specified.");
             return;
+        }
+
+        try {
+            MySQL.getDataSource().getConnection();
+        } catch (SQLException e) {
+            Logger.error("Can not connect to MySQL database. Configure database.properties");
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e1) {
+
+            }
+            System.exit(1);
         }
 
         Configuration.AUTOMATICALLY_ENABLE_MODULES = false;
@@ -46,13 +61,14 @@ public class Discord {
 
     private static void registerModules(IDiscordClient client) {
         // API Modules
+        Logger.trace("Loading API modules.");
         client.getDispatcher().registerListener(new DataSync(client));
         client.getModuleLoader().loadModule(new CommandModule(client));
         client.getModuleLoader().loadModule(new LogModule(client));
-
-        Logger.debug("API MODULES LOADED");
+        Logger.trace("Finished loading API modules");
 
         // Feature Modules
+        Logger.trace("Loading feature modules.");
         client.getModuleLoader().loadModule(new AudioStreamer(client));
         client.getModuleLoader().loadModule(new CuntModule(client));
         client.getModuleLoader().loadModule(new DiceModule(client));
@@ -63,8 +79,11 @@ public class Discord {
         client.getModuleLoader().loadModule(new StatusModule(client));
         client.getModuleLoader().loadModule(new StreamAnnouncer(client));
         client.getModuleLoader().loadModule(new TagModule(client));
+        Logger.trace("Finished loading feature modules.");
 
         // Dependent Modules
+        Logger.trace("Loading dependent modules.");
         client.getModuleLoader().loadModule(new HelpModule(client));
+        Logger.trace("Finished loading dependent modules.");
     }
 }
