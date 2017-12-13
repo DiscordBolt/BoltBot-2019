@@ -6,7 +6,6 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.user.PresenceUpdateEvent;
 import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.StatusType;
 import sx.blah.discord.modules.IModule;
 
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public class StreamAnnouncer extends CustomModule implements IModule {
 
     @EventSubscriber
     public void onUserGameUpdate(PresenceUpdateEvent e) {
-        if (e.getNewPresence().getStatus() == StatusType.STREAMING) {
+        if (e.getNewPresence().getStreamingUrl().isPresent()) {
             for (Streamer s : streamers) {
                 if (s.getStreamer().equals(e.getUser())) {
                     if (s.isTimePassed(2, TimeUnit.HOURS) || s.isTimeAfterElapsed(1, TimeUnit.HOURS)) {
@@ -47,7 +46,7 @@ public class StreamAnnouncer extends CustomModule implements IModule {
             if (!guild.getUsers().contains(e.getUser()))
                 continue;
 
-            ChannelUtil.sendMessage(guild.getGeneralChannel(), e.getUser().mention() + " just started streaming " + e.getNewPresence().getPlayingText().orElse("") + "\nCome join in on the fun! <" + e.getNewPresence().getStreamingUrl().orElse("") + ">");
+            ChannelUtil.sendMessage(guild.getDefaultChannel(), e.getUser().mention() + " just started streaming " + e.getNewPresence().getPlayingText().orElse("") + "\nCome join in on the fun! <" + e.getNewPresence().getStreamingUrl().orElse("") + ">");
         }
     }
 }
