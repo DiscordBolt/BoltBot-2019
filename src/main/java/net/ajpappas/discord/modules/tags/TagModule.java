@@ -1,12 +1,12 @@
 package net.ajpappas.discord.modules.tags;
 
+import com.discordbolt.api.command.BotCommand;
+import com.discordbolt.api.command.CommandContext;
+import com.discordbolt.api.command.exceptions.CommandArgumentException;
+import com.discordbolt.api.command.exceptions.CommandException;
+import com.discordbolt.api.command.exceptions.CommandPermissionException;
+import com.discordbolt.api.command.exceptions.CommandStateException;
 import net.ajpappas.discord.api.CustomModule;
-import net.ajpappas.discord.api.commands.BotCommand;
-import net.ajpappas.discord.api.commands.CommandContext;
-import net.ajpappas.discord.api.commands.exceptions.CommandArgumentException;
-import net.ajpappas.discord.api.commands.exceptions.CommandException;
-import net.ajpappas.discord.api.commands.exceptions.CommandPermissionException;
-import net.ajpappas.discord.api.commands.exceptions.CommandStateException;
 import net.ajpappas.discord.api.mysql.data.persistent.GuildData;
 import net.ajpappas.discord.api.mysql.data.persistent.TagData;
 import net.ajpappas.discord.utils.ChannelUtil;

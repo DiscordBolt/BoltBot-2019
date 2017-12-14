@@ -1,9 +1,9 @@
 package net.ajpappas.discord.modules.dev;
 
-import net.ajpappas.discord.api.commands.BotCommand;
-import net.ajpappas.discord.api.commands.CommandContext;
-import net.ajpappas.discord.api.commands.exceptions.CommandException;
-import net.ajpappas.discord.api.commands.exceptions.CommandPermissionException;
+import com.discordbolt.api.command.BotCommand;
+import com.discordbolt.api.command.CommandContext;
+import com.discordbolt.api.command.exceptions.CommandException;
+import com.discordbolt.api.command.exceptions.CommandPermissionException;
 import net.ajpappas.discord.utils.ExceptionMessage;
 import net.ajpappas.discord.utils.UserUtil;
 import sx.blah.discord.handle.obj.Permissions;

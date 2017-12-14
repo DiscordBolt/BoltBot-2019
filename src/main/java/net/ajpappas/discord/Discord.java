@@ -1,12 +1,12 @@
 package net.ajpappas.discord;
 
-import net.ajpappas.discord.api.commands.CommandModule;
+import com.discordbolt.api.command.CommandManager;
 import net.ajpappas.discord.api.mysql.MySQL;
 import net.ajpappas.discord.api.mysql.data.DataSync;
+import net.ajpappas.discord.api.mysql.data.persistent.GuildData;
 import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
 import net.ajpappas.discord.modules.dice.DiceModule;
 import net.ajpappas.discord.modules.disconnect.DisconnectModule;
-import net.ajpappas.discord.modules.help.HelpModule;
 import net.ajpappas.discord.modules.log.LogModule;
 import net.ajpappas.discord.modules.misc.CuntModule;
 import net.ajpappas.discord.modules.misc.TableFixerModule;
@@ -28,6 +28,8 @@ import java.sql.SQLException;
  * Created by Tony on 6/13/2017.
  */
 public class Discord {
+
+    private static CommandManager commandManager;
 
     public static void main(String[] args) {
         if (args.length < 1) {
@@ -63,7 +65,10 @@ public class Discord {
         // API Modules
         Logger.trace("Loading API modules.");
         client.getDispatcher().registerListener(new DataSync(client));
-        client.getModuleLoader().loadModule(new CommandModule(client));
+
+        commandManager = new CommandManager(client, "net.ajpappas.discord");
+        client.getGuilds().stream().map(g -> GuildData.getById(g.getLongID())).filter(gd -> gd.isPresent()).filter(gd -> gd.get().getCommandPrefix() != null).forEach(gd -> commandManager.setCommandPrefix(client.getGuildByID(gd.get().getGuildId()), gd.get().getCommandPrefix().charAt(0)));
+
         client.getModuleLoader().loadModule(new LogModule(client));
         Logger.trace("Finished loading API modules");
 
@@ -80,10 +85,9 @@ public class Discord {
         client.getModuleLoader().loadModule(new StreamAnnouncer(client));
         client.getModuleLoader().loadModule(new TagModule(client));
         Logger.trace("Finished loading feature modules.");
+    }
 
-        // Dependent Modules
-        Logger.trace("Loading dependent modules.");
-        client.getModuleLoader().loadModule(new HelpModule(client));
-        Logger.trace("Finished loading dependent modules.");
+    public static CommandManager getCommandManager() {
+        return commandManager;
     }
 }

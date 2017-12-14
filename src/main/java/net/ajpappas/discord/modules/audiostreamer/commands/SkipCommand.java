@@ -1,9 +1,9 @@
 package net.ajpappas.discord.modules.audiostreamer.commands;
 
-import net.ajpappas.discord.api.commands.BotCommand;
-import net.ajpappas.discord.api.commands.CommandContext;
-import net.ajpappas.discord.api.commands.exceptions.CommandArgumentException;
-import net.ajpappas.discord.api.commands.exceptions.CommandException;
+import com.discordbolt.api.command.BotCommand;
+import com.discordbolt.api.command.CommandContext;
+import com.discordbolt.api.command.exceptions.CommandArgumentException;
+import com.discordbolt.api.command.exceptions.CommandException;
 import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
 
 /**

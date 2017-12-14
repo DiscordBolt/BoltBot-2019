@@ -1,8 +1,8 @@
 package net.ajpappas.discord.modules.disconnect;
 
+import com.discordbolt.api.command.BotCommand;
+import com.discordbolt.api.command.CommandContext;
 import net.ajpappas.discord.api.CustomModule;
-import net.ajpappas.discord.api.commands.BotCommand;
-import net.ajpappas.discord.api.commands.CommandContext;
 import net.ajpappas.discord.modules.log.LogModule;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IUser;

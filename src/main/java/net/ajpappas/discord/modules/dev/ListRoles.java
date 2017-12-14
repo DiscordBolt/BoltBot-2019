@@ -1,7 +1,7 @@
 package net.ajpappas.discord.modules.dev;
 
-import net.ajpappas.discord.api.commands.BotCommand;
-import net.ajpappas.discord.api.commands.CommandContext;
+import com.discordbolt.api.command.BotCommand;
+import com.discordbolt.api.command.CommandContext;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.EmbedBuilder;

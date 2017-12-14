@@ -1,8 +1,8 @@
 package net.ajpappas.discord.modules.reddit;
 
+import com.discordbolt.api.command.BotCommand;
+import com.discordbolt.api.command.CommandContext;
 import net.ajpappas.discord.api.CustomModule;
-import net.ajpappas.discord.api.commands.BotCommand;
-import net.ajpappas.discord.api.commands.CommandContext;
 import net.ajpappas.discord.modules.reddit.enums.PostType;
 import net.ajpappas.discord.modules.reddit.enums.SortMethod;
 import net.ajpappas.discord.utils.ExceptionMessage;

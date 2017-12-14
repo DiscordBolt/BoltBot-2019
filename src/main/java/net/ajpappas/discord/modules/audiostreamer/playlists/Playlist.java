@@ -1,8 +1,8 @@
 package net.ajpappas.discord.modules.audiostreamer.playlists;
 
+import com.discordbolt.api.command.exceptions.CommandPermissionException;
+import com.discordbolt.api.command.exceptions.CommandStateException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import net.ajpappas.discord.api.commands.exceptions.CommandPermissionException;
-import net.ajpappas.discord.api.commands.exceptions.CommandStateException;
 import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IGuild;

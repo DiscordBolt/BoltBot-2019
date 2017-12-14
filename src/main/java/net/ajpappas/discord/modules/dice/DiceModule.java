@@ -1,9 +1,9 @@
 package net.ajpappas.discord.modules.dice;
 
+import com.discordbolt.api.command.BotCommand;
+import com.discordbolt.api.command.CommandContext;
+import com.discordbolt.api.command.exceptions.CommandArgumentException;
 import net.ajpappas.discord.api.CustomModule;
-import net.ajpappas.discord.api.commands.BotCommand;
-import net.ajpappas.discord.api.commands.CommandContext;
-import net.ajpappas.discord.api.commands.exceptions.CommandArgumentException;
 import net.ajpappas.discord.utils.ChannelUtil;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
