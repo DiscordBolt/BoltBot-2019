@@ -1,10 +1,10 @@
 package net.ajpappas.discord.modules.audiostreamer.commands;
 
-import net.ajpappas.discord.api.commands.BotCommand;
-import net.ajpappas.discord.api.commands.CommandContext;
-import net.ajpappas.discord.api.commands.exceptions.CommandArgumentException;
-import net.ajpappas.discord.api.commands.exceptions.CommandException;
-import net.ajpappas.discord.api.commands.exceptions.CommandStateException;
+import com.discordbolt.api.command.BotCommand;
+import com.discordbolt.api.command.CommandContext;
+import com.discordbolt.api.command.exceptions.CommandArgumentException;
+import com.discordbolt.api.command.exceptions.CommandException;
+import com.discordbolt.api.command.exceptions.CommandStateException;
 import net.ajpappas.discord.modules.audiostreamer.AudioStreamer;
 import net.ajpappas.discord.modules.audiostreamer.playlists.Playlist;
 import sx.blah.discord.handle.obj.IUser;
