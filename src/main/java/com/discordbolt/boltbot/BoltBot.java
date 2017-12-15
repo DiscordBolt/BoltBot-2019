@@ -66,7 +66,7 @@ public class BoltBot {
         Logger.trace("Loading API modules.");
         client.getDispatcher().registerListener(new DataSync(client));
 
-        commandManager = new CommandManager(client, "net.ajpappas.discord");
+        commandManager = new CommandManager(client, "com.discordbolt.boltbot");
         client.getGuilds().stream().map(g -> GuildData.getById(g.getLongID())).filter(gd -> gd.isPresent()).filter(gd -> gd.get().getCommandPrefix() != null).forEach(gd -> commandManager.setCommandPrefix(client.getGuildByID(gd.get().getGuildId()), gd.get().getCommandPrefix().charAt(0)));
 
         client.getModuleLoader().loadModule(new LogModule(client));
