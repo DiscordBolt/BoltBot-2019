@@ -10,18 +10,18 @@
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.testTarget>1.8</maven.compiler.testTarget>
-        <maven.compiler.testSource>1.8</maven.compiler.testSource>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <repositories>
+        <!-- Repository for D4J and Bolt API -->
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
 
+        <!-- Repository for lavaplayer -->
         <repository>
             <id>jcenter.bintray.com</id>
             <url>https://jcenter.bintray.com</url>
@@ -32,32 +32,20 @@
         <dependency>
             <groupId>com.github.austinv11</groupId>
             <artifactId>Discord4j</artifactId>
-            <version>2.9.2</version>
-            <scope>compile</scope>
+            <version>2.9.3</version>
         </dependency>
 
-        <!-- DISCORD BOLT DEPENDENCIES -->
         <dependency>
             <groupId>com.github.DiscordBolt</groupId>
             <artifactId>CommandAPI</artifactId>
             <version>1.0</version>
         </dependency>
 
-
         <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java-->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>6.0.5</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
-        <dependency>
-            <groupId>com.google.protobuf</groupId>
-            <artifactId>protobuf-java</artifactId>
-            <version>3.1.0</version>
-            <scope>compile</scope>
         </dependency>
 
         <!-- Used for !Seen Command -->
@@ -72,13 +60,6 @@
             <groupId>com.sedmelluq</groupId>
             <artifactId>lavaplayer</artifactId>
             <version>1.2.45</version>
-            <scope>compile</scope>
-            <!--<exclusions>
-                <exclusion>   Exclude Jackson so D4J can use their version
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-            </exclusions>-->
         </dependency>
 
         <!-- Used for saving playlists to file -->
@@ -95,14 +76,23 @@
             <artifactId>logback-classic</artifactId>
             <version>1.1.7</version>
         </dependency>
-
-        <!-- HTTP Request Library -->
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>3.9.0</version>
-        </dependency>
     </dependencies>
+
+    <!-- Fix D4J and Lavaplayer dependency error -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.9.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>2.9.2</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
