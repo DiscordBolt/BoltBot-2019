@@ -40,7 +40,7 @@
         <dependency>
             <groupId>com.github.DiscordBolt</groupId>
             <artifactId>CommandAPI</artifactId>
-            <version>f88a990f2c</version>
+            <version>1.0</version>
         </dependency>
 
 
