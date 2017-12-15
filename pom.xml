@@ -120,7 +120,7 @@
                     <outputDirectory>artifacts</outputDirectory>
                     <archive>
                         <manifest>
-                            <mainClass>net.ajpappas.discord.Discord</mainClass>
+                            <mainClass>com.discordbolt.boltbot.BoltBot</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
