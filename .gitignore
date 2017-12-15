@@ -2,7 +2,7 @@
 database.properties
 server.log
 logging.xml
-playlists/
+/playlists/
 logs/
 
 *.class
