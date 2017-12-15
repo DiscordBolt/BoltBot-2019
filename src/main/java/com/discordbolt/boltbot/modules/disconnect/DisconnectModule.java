@@ -2,8 +2,8 @@ package com.discordbolt.boltbot.modules.disconnect;
 
 import com.discordbolt.api.command.BotCommand;
 import com.discordbolt.api.command.CommandContext;
-import com.discordbolt.boltbot.api.CustomModule;
-import com.discordbolt.boltbot.modules.log.LogModule;
+import com.discordbolt.boltbot.system.CustomModule;
+import com.discordbolt.boltbot.system.log.LogModule;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IVoiceChannel;

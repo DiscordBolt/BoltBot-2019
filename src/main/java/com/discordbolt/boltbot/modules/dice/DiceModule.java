@@ -3,7 +3,7 @@ package com.discordbolt.boltbot.modules.dice;
 import com.discordbolt.api.command.BotCommand;
 import com.discordbolt.api.command.CommandContext;
 import com.discordbolt.api.command.exceptions.CommandArgumentException;
-import com.discordbolt.boltbot.api.CustomModule;
+import com.discordbolt.boltbot.system.CustomModule;
 import com.discordbolt.boltbot.utils.ChannelUtil;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;

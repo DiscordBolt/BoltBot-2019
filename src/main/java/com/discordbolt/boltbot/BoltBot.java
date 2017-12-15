@@ -1,18 +1,18 @@
 package com.discordbolt.boltbot;
 
 import com.discordbolt.api.command.CommandManager;
-import com.discordbolt.boltbot.api.mysql.MySQL;
-import com.discordbolt.boltbot.api.mysql.data.DataSync;
-import com.discordbolt.boltbot.api.mysql.data.persistent.GuildData;
-import com.discordbolt.boltbot.modules.audiostreamer.AudioStreamer;
+import com.discordbolt.boltbot.system.mysql.MySQL;
+import com.discordbolt.boltbot.system.mysql.data.DataSync;
+import com.discordbolt.boltbot.system.mysql.data.persistent.GuildData;
+import com.discordbolt.boltbot.modules.music.MusicModule;
 import com.discordbolt.boltbot.modules.dice.DiceModule;
 import com.discordbolt.boltbot.modules.disconnect.DisconnectModule;
-import com.discordbolt.boltbot.modules.log.LogModule;
+import com.discordbolt.boltbot.system.log.LogModule;
 import com.discordbolt.boltbot.modules.misc.CuntModule;
 import com.discordbolt.boltbot.modules.misc.TableFixerModule;
 import com.discordbolt.boltbot.modules.reddit.RedditModule;
 import com.discordbolt.boltbot.modules.seen.SeenModule;
-import com.discordbolt.boltbot.modules.status.StatusModule;
+import com.discordbolt.boltbot.system.status.StatusModule;
 import com.discordbolt.boltbot.modules.streamannouncer.StreamAnnouncer;
 import com.discordbolt.boltbot.modules.tags.TagModule;
 import com.discordbolt.boltbot.utils.Logger;
@@ -74,7 +74,7 @@ public class BoltBot {
 
         // Feature Modules
         Logger.trace("Loading feature modules.");
-        client.getModuleLoader().loadModule(new AudioStreamer(client));
+        client.getModuleLoader().loadModule(new MusicModule(client));
         client.getModuleLoader().loadModule(new CuntModule(client));
         client.getModuleLoader().loadModule(new DiceModule(client));
         client.getModuleLoader().loadModule(new DisconnectModule(client));

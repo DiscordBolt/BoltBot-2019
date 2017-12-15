@@ -2,7 +2,7 @@ package com.discordbolt.boltbot.modules.reddit;
 
 import com.discordbolt.api.command.BotCommand;
 import com.discordbolt.api.command.CommandContext;
-import com.discordbolt.boltbot.api.CustomModule;
+import com.discordbolt.boltbot.system.CustomModule;
 import com.discordbolt.boltbot.modules.reddit.enums.PostType;
 import com.discordbolt.boltbot.modules.reddit.enums.SortMethod;
 import com.discordbolt.boltbot.utils.ExceptionMessage;

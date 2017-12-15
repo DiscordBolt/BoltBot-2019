@@ -3,7 +3,7 @@ package com.discordbolt.boltbot.modules.administration;
 import com.discordbolt.api.command.BotCommand;
 import com.discordbolt.api.command.CommandContext;
 import com.discordbolt.boltbot.BoltBot;
-import com.discordbolt.boltbot.api.mysql.data.persistent.GuildData;
+import com.discordbolt.boltbot.system.mysql.data.persistent.GuildData;
 import sx.blah.discord.handle.obj.Permissions;
 
 public class CommandPrefix {

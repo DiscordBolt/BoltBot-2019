@@ -1,6 +1,6 @@
 package com.discordbolt.boltbot.modules.streamannouncer;
 
-import com.discordbolt.boltbot.api.CustomModule;
+import com.discordbolt.boltbot.system.CustomModule;
 import com.discordbolt.boltbot.utils.ChannelUtil;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
