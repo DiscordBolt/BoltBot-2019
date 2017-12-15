@@ -25,7 +25,7 @@ hs_err_pid*
 
 #IntelliJ IDEA
 /.idea
-Discord.java.iml
+BolotBot.iml
 /target
 
 # Project Special Files
