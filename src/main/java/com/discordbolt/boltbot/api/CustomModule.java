@@ -17,7 +17,7 @@ public abstract class CustomModule {
     public CustomModule(IDiscordClient client, String moduleName, String moduleVersion) {
         this.moduleName = moduleName;
         this.moduleVersion = moduleVersion;
-        Logger.info("[Discord.java] " + getName() + " version " + getVersion() + " is initializing.");
+        Logger.info("[BoltBot] " + getName() + " version " + getVersion() + " is initializing.");
         enable(client);
     }
 
@@ -28,7 +28,7 @@ public abstract class CustomModule {
     }
 
     public void disable() {
-        Logger.info("[Discord.java] " + getName() + " version " + getVersion() + " is disabled.");
+        Logger.info("[BoltBot] " + getName() + " version " + getVersion() + " is disabled.");
     }
 
     public boolean enable(IDiscordClient client) {

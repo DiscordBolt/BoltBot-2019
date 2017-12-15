@@ -28,8 +28,8 @@ public class MySQL {
                 prop.setProperty("USERNAME", "root");
                 prop.setProperty("PASSWORD", "password");
                 prop.setProperty("HOST", "localhost");
-                prop.setProperty("DATABASE", "Discord.java");
-                prop.store(output, "Discord.java MySQL Configuration");
+                prop.setProperty("DATABASE", "BoltBot");
+                prop.store(output, "BoltBot MySQL Configuration");
             }
         } catch (IOException e){
             Logger.error(e.getMessage());
