@@ -15,7 +15,7 @@ public class UserUtil {
     private static IUser botOwner = null;
 
     public static IUser findUser(IMessage msg, int startIndex) {
-        if (msg.getMentions().size() != 0) {
+        if (msg.getMentions().size() > 0) {
             return msg.getMentions().get(0);
         }
 

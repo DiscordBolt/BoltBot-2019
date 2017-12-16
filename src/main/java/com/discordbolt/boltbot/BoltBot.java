@@ -21,6 +21,7 @@ import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Created by Tony on 6/13/2017.
@@ -61,7 +62,7 @@ public class BoltBot {
         client.getDispatcher().registerListener(new DataSync(client));
 
         commandManager = new CommandManager(client, "com.discordbolt.boltbot");
-        client.getGuilds().stream().map(g -> GuildData.getById(g.getLongID())).filter(gd -> gd.isPresent()).filter(gd -> gd.get().getCommandPrefix() != null).forEach(gd -> commandManager.setCommandPrefix(client.getGuildByID(gd.get().getGuildId()), gd.get().getCommandPrefix().charAt(0)));
+        client.getGuilds().stream().map(g -> GuildData.getById(g.getLongID())).filter(Optional::isPresent).filter(gd -> gd.get().getCommandPrefix() != null).forEach(gd -> commandManager.setCommandPrefix(client.getGuildByID(gd.get().getGuildId()), gd.get().getCommandPrefix().charAt(0)));
         Logger.trace("Finished loading API modules");
 
         // Feature Modules
