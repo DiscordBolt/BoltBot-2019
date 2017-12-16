@@ -14,6 +14,7 @@ public class SkipCommand {
     @BotCommand(command = "skip", module = MusicModule.MODULE, description = "Vote to skip the current song", usage = "Skip", args = 1, allowedChannels = "music")
     public static void skipCommand(CommandContext cc) throws CommandException {
         MusicModule.getVoiceManager().skip(cc.getGuild(), cc.getAuthor(), false, 1);
+        cc.replyWith(cc.getAuthorDisplayName() + " has voted to skip this track.");
     }
 
     @BotCommand(command = {"skip", "force"}, module = MusicModule.MODULE, description = "Force skip a number of songs", usage = "Skip force {number}", minArgs = 2, maxArgs = 3, allowedChannels = "music")

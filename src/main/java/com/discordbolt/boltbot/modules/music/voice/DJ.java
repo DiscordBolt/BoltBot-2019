@@ -265,7 +265,7 @@ public class DJ extends AudioEventAdapter {
 
         Playlist playlist = MusicModule.getPlaylistManager().getSelectedPlaylist(user.getLongID());
         if (playlist == null)
-            throw new CommandStateException("You must have a selected playlist to star a song!");
+            throw new CommandStateException("You must have a selected playlist to save a song!");
 
         playlist.addSong(user, track.getInfo().uri);
     }
@@ -277,14 +277,15 @@ public class DJ extends AudioEventAdapter {
         AudioTrack track = trackMessages.get(message);
         Playlist playlist = MusicModule.getPlaylistManager().getSelectedPlaylist(user.getLongID());
         if (playlist == null)
-            throw new CommandStateException("You must have a selected playlist to star a song!");
+            throw new CommandStateException("You must have a selected playlist to unsave a song!");
 
         playlist.removeSong(user, track);
     }
 
     public boolean skip(IUser requester) throws CommandStateException {
-        if (!votesToSkip.add(requester))
+        if (votesToSkip.contains(requester))
             throw new CommandStateException("You have already voted to skip the current song!");
+        votesToSkip.add(requester);
         // Filter out users who have voted but are no longer connected to the voice channel
         votesToSkip.removeIf(u -> u.getVoiceStateForGuild(guild).getChannel() != getVoiceChannel());
         if ((double) votesToSkip.size() / (double) (getVoiceChannel().getConnectedUsers().size() - 1) >= MusicModule.VOTE_SKIP_PERCENT) {
