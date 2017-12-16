@@ -1,26 +1,24 @@
 package com.discordbolt.boltbot;
 
 import com.discordbolt.api.command.CommandManager;
+import com.discordbolt.boltbot.modules.dice.DiceModule;
+import com.discordbolt.boltbot.modules.disconnect.DisconnectModule;
+import com.discordbolt.boltbot.modules.misc.CuntModule;
+import com.discordbolt.boltbot.modules.misc.TableFixerModule;
+import com.discordbolt.boltbot.modules.music.MusicModule;
+import com.discordbolt.boltbot.modules.reddit.RedditModule;
+import com.discordbolt.boltbot.modules.seen.SeenModule;
+import com.discordbolt.boltbot.modules.streamannouncer.StreamAnnouncer;
+import com.discordbolt.boltbot.modules.tags.TagModule;
 import com.discordbolt.boltbot.system.mysql.MySQL;
 import com.discordbolt.boltbot.system.mysql.data.DataSync;
 import com.discordbolt.boltbot.system.mysql.data.persistent.GuildData;
-import com.discordbolt.boltbot.modules.music.MusicModule;
-import com.discordbolt.boltbot.modules.dice.DiceModule;
-import com.discordbolt.boltbot.modules.disconnect.DisconnectModule;
-import com.discordbolt.boltbot.system.log.LogModule;
-import com.discordbolt.boltbot.modules.misc.CuntModule;
-import com.discordbolt.boltbot.modules.misc.TableFixerModule;
-import com.discordbolt.boltbot.modules.reddit.RedditModule;
-import com.discordbolt.boltbot.modules.seen.SeenModule;
 import com.discordbolt.boltbot.system.status.StatusModule;
-import com.discordbolt.boltbot.modules.streamannouncer.StreamAnnouncer;
-import com.discordbolt.boltbot.modules.tags.TagModule;
 import com.discordbolt.boltbot.utils.Logger;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
-import sx.blah.discord.modules.Configuration;
 
 import java.sql.SQLException;
 
@@ -49,11 +47,7 @@ public class BoltBot {
             System.exit(1);
         }
 
-        Configuration.AUTOMATICALLY_ENABLE_MODULES = false;
-        Configuration.LOAD_EXTERNAL_MODULES = false;
-
-        ClientBuilder builder = new ClientBuilder();
-        IDiscordClient client = builder.withToken(args[0]).login();
+        IDiscordClient client = new ClientBuilder().withToken(args[0]).login();
 
         client.getDispatcher().registerListener((IListener<ReadyEvent>) (ReadyEvent e) -> {
             Logger.info("Logged in as " + e.getClient().getOurUser().getName());
@@ -68,8 +62,6 @@ public class BoltBot {
 
         commandManager = new CommandManager(client, "com.discordbolt.boltbot");
         client.getGuilds().stream().map(g -> GuildData.getById(g.getLongID())).filter(gd -> gd.isPresent()).filter(gd -> gd.get().getCommandPrefix() != null).forEach(gd -> commandManager.setCommandPrefix(client.getGuildByID(gd.get().getGuildId()), gd.get().getCommandPrefix().charAt(0)));
-
-        client.getModuleLoader().loadModule(new LogModule(client));
         Logger.trace("Finished loading API modules");
 
         // Feature Modules
