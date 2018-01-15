@@ -3,7 +3,9 @@ package com.discordbolt.boltbot.system.mysql.data.persistent;
 import com.discordbolt.boltbot.system.mysql.MySQL;
 import com.discordbolt.boltbot.system.mysql.data.Savable;
 import com.discordbolt.boltbot.utils.Logger;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IVoiceChannel;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
@@ -18,12 +20,14 @@ public class GuildData implements Savable {
     private String name;
     private String command_prefix;
     private String tag_prefix;
+    private long stream_announce_channel;
 
-    private GuildData(long guildId, String name, String commandPrefix, String tagPrefix) {
+    private GuildData(long guildId, String name, String commandPrefix, String tagPrefix, long stream_announce_channel) {
         this.guild_id = guildId;
         this.name = name;
         this.command_prefix = commandPrefix;
         this.tag_prefix = tagPrefix;
+        this.stream_announce_channel = stream_announce_channel;
         guilds.put(getId(), this);
     }
 
@@ -42,14 +46,23 @@ public class GuildData implements Savable {
         save();
     }
 
+    public void setStreamAnnounceChannel(IChannel channel) {
+        if (channel instanceof IVoiceChannel) {
+            throw new IllegalArgumentException("Channel " + channel.getName() + " must be a text channel!");
+        }
+        this.stream_announce_channel = channel.getLongID();
+        save();
+    }
+
     @Override
     public boolean save() {
         try {
-            PreparedStatement ps = MySQL.getDataSource().getConnection().prepareStatement("INSERT INTO guilds (guild_id, name, command_prefix, tag_prefix) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), command_prefix=VALUES(command_prefix), tag_prefix=VALUES(tag_prefix);");
+            PreparedStatement ps = MySQL.getDataSource().getConnection().prepareStatement("INSERT INTO guilds (guild_id, name, command_prefix, tag_prefix, stream_announce_channel) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), command_prefix=VALUES(command_prefix), tag_prefix=VALUES(tag_prefix), stream_announce_channel=VALUES(stream_announce_channel);");
             ps.setLong(1, getGuildId());
             ps.setBytes(2, getName().getBytes(StandardCharsets.UTF_16));
             ps.setString(3, getCommandPrefix());
             ps.setString(4, getTagPrefix());
+            ps.setLong(5, getStreamAnnounceChannel());
             ps.executeUpdate();
             Logger.trace("Created/updated GuildData: '" + getName() + "' with ID " + Long.toUnsignedString(getGuildId()) + ".");
             return true;
@@ -97,6 +110,10 @@ public class GuildData implements Savable {
         return tag_prefix;
     }
 
+    public long getStreamAnnounceChannel() {
+        return stream_announce_channel;
+    }
+
     /*
      * Static Methods
      */
@@ -110,7 +127,7 @@ public class GuildData implements Savable {
 
             try {
                 while (rs.next()) {
-                    GuildData gd = new GuildData(rs.getLong("guild_id"), rs.getString("name"), rs.getString("command_prefix"), rs.getString("tag_prefix"));
+                    GuildData gd = new GuildData(rs.getLong("guild_id"), rs.getString("name"), rs.getString("command_prefix"), rs.getString("tag_prefix"), rs.getLong("stream_announce_channel"));
                     guilds.put(gd.getId(), gd);
                 }
             } finally {
@@ -136,7 +153,7 @@ public class GuildData implements Savable {
             return gd;
         }
 
-        GuildData guildData = new GuildData(guild.getLongID(), guild.getName(), null, null);
+        GuildData guildData = new GuildData(guild.getLongID(), guild.getName(), null, null, guild.getDefaultChannel() != null ? guild.getDefaultChannel().getLongID() : 0L);
         guildData.save();
         return guildData;
     }

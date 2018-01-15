@@ -1,6 +1,7 @@
 package com.discordbolt.boltbot.modules.streamannouncer;
 
 import com.discordbolt.boltbot.system.CustomModule;
+import com.discordbolt.boltbot.system.mysql.data.persistent.GuildData;
 import com.discordbolt.boltbot.utils.ChannelUtil;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -27,7 +28,7 @@ public class StreamAnnouncer extends CustomModule implements IModule {
         if (e.getNewPresence().getStreamingUrl().isPresent()) {
             for (Streamer s : streamers) {
                 if (s.getStreamer().equals(e.getUser())) {
-                    if (s.isTimePassed(2, TimeUnit.HOURS) || s.isTimeAfterElapsed(1, TimeUnit.HOURS)) {
+                    if (s.isTimePassed(24, TimeUnit.HOURS) || s.isTimeAfterElapsed(1, TimeUnit.HOURS)) {
                         sendAnnouncement(e);
                         streamers.remove(s);
                         streamers.add(new Streamer(e.getUser()));
@@ -43,10 +44,13 @@ public class StreamAnnouncer extends CustomModule implements IModule {
 
     private void sendAnnouncement(PresenceUpdateEvent e) {
         for (IGuild guild : client.getGuilds()) {
+            long channelID = GuildData.getById(guild.getLongID()).get().getStreamAnnounceChannel();
+            if (channelID == 0L)
+                continue;
             if (!guild.getUsers().contains(e.getUser()))
                 continue;
 
-            ChannelUtil.sendMessage(guild.getDefaultChannel(), e.getUser().mention() + " just started streaming " + e.getNewPresence().getPlayingText().orElse("") + "\nCome join in on the fun! <" + e.getNewPresence().getStreamingUrl().orElse("") + ">");
+            ChannelUtil.sendMessage(guild.getChannelByID(channelID), e.getUser().mention() + " just started streaming " + e.getNewPresence().getPlayingText().orElse("") + "\nCome join in on the fun! <" + e.getNewPresence().getStreamingUrl().orElse("") + ">");
         }
     }
 }
