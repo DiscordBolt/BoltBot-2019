@@ -5,6 +5,7 @@ import com.discordbolt.api.command.CommandContext;
 import com.discordbolt.api.command.exceptions.CommandArgumentException;
 import com.discordbolt.boltbot.system.CustomModule;
 import com.discordbolt.boltbot.utils.ChannelUtil;
+import com.discordbolt.boltbot.utils.EmbedUtil;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
@@ -12,10 +13,13 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 import sx.blah.discord.modules.IModule;
 import sx.blah.discord.util.EmbedBuilder;
 
+import java.awt.*;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Created by Tony on 4/7/2017.
@@ -23,14 +27,7 @@ import java.util.regex.Pattern;
 public class DiceModule extends CustomModule implements IModule {
 
     private static final Pattern DIE_PATTERN = Pattern.compile("(?:([0-9]+)?[dD])?([0-9]+)");
-    private static final String HEADS_URL = "http://i.imgur.com/i68ZFNG.png";
-    private static final String TAILS_URL = "http://i.imgur.com/nml8Sfx.png";
-    private static final String DIE_URL_1 = "http://i.imgur.com/DVVjp7w.png";
-    private static final String DIE_URL_2 = "http://i.imgur.com/VcRv20t.png";
-    private static final String DIE_URL_3 = "http://i.imgur.com/rUdUe5L.png";
-    private static final String DIE_URL_4 = "http://i.imgur.com/1JGHyXF.png";
-    private static final String DIE_URL_5 = "http://i.imgur.com/KYgqzWC.png";
-    private static final String DIE_URL_6 = "http://i.imgur.com/Exx1Pmz.png";
+    private static final Color EMBED_COLOR = new Color(81, 5, 43);
 
     public DiceModule(IDiscordClient client) {
         super(client, "Dice Module", "1.1");
@@ -61,7 +58,7 @@ public class DiceModule extends CustomModule implements IModule {
         if (e.getAuthor().isBot())
             return;
         if (e.getMessage().getContent().toLowerCase().contains("flip a coin")) {
-            ChannelUtil.sendMessage(e.getChannel(), getCoinEmbed());
+            ChannelUtil.sendMessage(e.getChannel(), getDieEmbed(1, 2));
         }
     }
 
@@ -69,47 +66,56 @@ public class DiceModule extends CustomModule implements IModule {
         return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
-    private static EmbedObject getCoinEmbed() {
-        boolean heads = random(1, 2) == 1;
-
-        EmbedBuilder embed = new EmbedBuilder();
-        embed.withColor(255, 235, 59); // Hex #FFEB3B (Yellow)
-        embed.withTitle(heads ? "Heads" : "Tails");
-        embed.withThumbnail(heads ? HEADS_URL : TAILS_URL);
-        return embed.build();
+    private static int[] roll(int numSides, int numDice) {
+        int[] result = new int[numDice];
+        for (int i = 0; i < numDice; i++) {
+            result[i] = random(1, numSides);
+        }
+        return result;
     }
 
     private static EmbedObject getDieEmbed(int numDice, int numSides) {
-        int result = 0;
-
-        for (int i = 0; i < numDice; i++)
-            result += random(1, numSides);
+        int[] results = roll(numSides, numDice);
+        int total = Arrays.stream(results).sum();
 
         EmbedBuilder embed = new EmbedBuilder();
-        embed.withColor(255, 235, 59); // Hex #FFEB3B (Yellow)
+        embed.withColor(EMBED_COLOR);
 
-        embed.withTitle(Integer.toString(result));
-        embed.withDescription(numDice + "d" + numSides);
-        switch (result) {
-            case 1:
-                embed.withThumbnail(DIE_URL_1);
-                break;
-            case 2:
-                embed.withThumbnail(DIE_URL_2);
-                break;
-            case 3:
-                embed.withThumbnail(DIE_URL_3);
-                break;
-            case 4:
-                embed.withThumbnail(DIE_URL_4);
-                break;
-            case 5:
-                embed.withThumbnail(DIE_URL_5);
-                break;
-            default:
-                embed.withThumbnail(DIE_URL_6);
-                break;
+        if (numSides == 2 && numDice == 1) {
+            embed.withTitle(total == 1 ? "Heads" : "Tails");
+        } else {
+            embed.withTitle(Integer.toString(total));
         }
+
+        if (numDice > 1) {
+            embed.withDescription(EmbedUtil.ZERO_WIDTH_SPACE);
+            embed.appendField(numDice + "d" + numSides, Arrays.stream(results).mapToObj(i -> ((Integer) i).toString()).collect(Collectors.joining(" + ")), false);
+        } else {
+            embed.withDescription(numDice + "d" + numSides);
+        }
+        embed.withThumbnail(getDieURL(numSides, total, 250));
         return embed.build();
+    }
+
+
+    /**
+     * Get the URL of a specific die
+     *
+     * @param sides  The number of sides the die has.
+     *               Valid input: 2, 6, 20
+     * @param result The result which should be shown on the die
+     * @param width  The width of the image returned
+     *               Valid input: 250, 500, 1000
+     * @return String URL of the die
+     */
+    private static String getDieURL(int sides, int result, int width) {
+        width = 250; // Temporary while we only support width 250
+        if (width != 250 && width != 500 && width != 1000)
+            return "http://bolt.ajpappas.net/static/dice/defaultx250.png";
+        if (sides != 2 && sides != 6 && sides != 20)
+            return String.format("http://bolt.ajpappas.net/static/dice/defaultx%s.png", width);
+        if (result > sides)
+            return String.format("http://bolt.ajpappas.net/static/dice/d%s/%sx%s.png", sides, sides, width);
+        return String.format("http://bolt.ajpappas.net/static/dice/d%s/%sx%s.png", sides, result, width);
     }
 }
