@@ -1,5 +1,6 @@
 # Server Files
 database.properties
+twitch.properties
 server.log
 logging.xml
 /playlists/
