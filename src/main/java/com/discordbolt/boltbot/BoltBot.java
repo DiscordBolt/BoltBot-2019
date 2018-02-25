@@ -8,8 +8,8 @@ import com.discordbolt.boltbot.modules.misc.TableFixerModule;
 import com.discordbolt.boltbot.modules.music.MusicModule;
 import com.discordbolt.boltbot.modules.reddit.RedditModule;
 import com.discordbolt.boltbot.modules.seen.SeenModule;
-import com.discordbolt.boltbot.modules.streamannouncer.StreamAnnouncer;
 import com.discordbolt.boltbot.modules.tags.TagModule;
+import com.discordbolt.boltbot.modules.twitch.TwitchModule;
 import com.discordbolt.boltbot.system.mysql.MySQL;
 import com.discordbolt.boltbot.system.mysql.data.DataSync;
 import com.discordbolt.boltbot.system.mysql.data.persistent.GuildData;
@@ -75,8 +75,8 @@ public class BoltBot {
         client.getModuleLoader().loadModule(new TableFixerModule(client));
         client.getModuleLoader().loadModule(new SeenModule(client));
         client.getModuleLoader().loadModule(new StatusModule(client));
-        client.getModuleLoader().loadModule(new StreamAnnouncer(client));
         client.getModuleLoader().loadModule(new TagModule(client));
+        client.getModuleLoader().loadModule(new TwitchModule(client));
         Logger.trace("Finished loading feature modules.");
     }
 

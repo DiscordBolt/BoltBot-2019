@@ -1,12 +1,10 @@
 package com.discordbolt.boltbot.system.twitch;
 
-import com.discordbolt.boltbot.system.twitch.objects.TwitchUserDataResponse;
+import com.discordbolt.boltbot.system.twitch.objects.TwitchAccessToken;
 import com.discordbolt.boltbot.utils.Logger;
+import com.discordbolt.boltbot.utils.PropertiesUtil;
 import com.google.gson.Gson;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -19,7 +17,10 @@ import java.util.zip.DataFormatException;
 
 public class TwitchAPI {
 
+    private static TwitchAPI instance;
+
     private String clientID, clientSecret;
+    private String accessToken, refreshToken;
     private final OkHttpClient client;
     private final Gson gson;
     private final TwitchUser user;
@@ -27,13 +28,15 @@ public class TwitchAPI {
 
     private Path propertiesPath = Paths.get(System.getProperty("user.dir"), "twitch.properties");
     private final String TWITCH_TOKEN_URL = "https://api.twitch.tv/kraken/oauth2/token";
+    public static final int UNAUTHORIZED_RESPONSE_CODE = 401;
 
 
     /**
      * Create a new instance of TwitchAPI
+     *
      * @throws DataFormatException Thrown when twitch.properties is not configured
      */
-    public TwitchAPI() throws DataFormatException {
+    TwitchAPI() throws DataFormatException {
         this.client = new OkHttpClient();
         this.gson = new Gson();
         this.clip = new TwitchClip(this);
@@ -41,22 +44,24 @@ public class TwitchAPI {
 
         OutputStream output = null;
         try {
-            if (!propertiesPath.toFile().exists()){
+            if (!propertiesPath.toFile().exists()) {
                 Properties prop = new Properties();
                 output = new FileOutputStream(propertiesPath.toFile());
                 prop.setProperty("CLIENT_ID", "insert_id_here");
                 prop.setProperty("CLIENT_SECRET", "insert_secret_here");
+                prop.setProperty("ACCESS_TOKEN", "create_access_token");
+                prop.setProperty("REFRESH_TOKEN", "create_refresh_token");
                 prop.store(output, "BoltBot Twitch Configuration");
                 throw new DataFormatException("Properties file was not configured, unable to make any requests");
             }
-        } catch (IOException e){
+        } catch (IOException e) {
             Logger.error(e.getMessage());
             Logger.debug(e);
         } finally {
-            if (output != null){
+            if (output != null) {
                 try {
                     output.close();
-                } catch (IOException e){
+                } catch (IOException e) {
                     Logger.error("Could not close Twitch Properties file.");
                     Logger.debug(e);
                 }
@@ -67,25 +72,41 @@ public class TwitchAPI {
             props.load(new FileInputStream(propertiesPath.toFile()));
             clientID = props.getProperty("CLIENT_ID");
             clientSecret = props.getProperty("CLIENT_SECRET");
+            accessToken = props.getProperty("ACCESS_TOKEN");
+            refreshToken = props.getProperty("REFRESH_TOKEN");
         } catch (IOException e) {
             Logger.error(e.getMessage());
             Logger.debug(e);
         }
     }
 
-    public String getOAuthToken() {
+    public static TwitchAPI getInstance() throws DataFormatException {
+        if (instance == null)
+            instance = new TwitchAPI();
 
+        return instance;
     }
 
-    public void refreshOAuthToken(String refreshToken) throws IOException {
+    public void refreshOAuthToken() throws Exception {
+        Logger.warning("Refreshing Twitch OAuth Token");
         HttpUrl tokenURL = HttpUrl.parse(TWITCH_TOKEN_URL).newBuilder()
                 .addQueryParameter("grant_type", "refresh_token")
-                .addQueryParameter("refresh_token", refreshToken)
+                .addQueryParameter("refresh_token", getRefreshToken())
                 .addQueryParameter("client_id", getClientID())
                 .addQueryParameter("client_secret", getClientSecret()).build();
-        Request request = new Request.Builder().url(tokenURL).build();
+        Request request = new Request.Builder().post(RequestBody.create(null, new byte[0])).url(tokenURL).build();
         try (Response response = getClient().newCall(request).execute()) {
+            TwitchAccessToken newTokenData = getGson().fromJson(response.body().string(), TwitchAccessToken.class);
+            if (newTokenData.getAccessToken() == null || newTokenData.getAccessToken().length() < 1)
+                throw new Exception("Unable to refresh Twitch access token"); //TODO make this a better exception
 
+            try {
+                setAccessToken(newTokenData.getAccessToken());
+                setRefreshToken(newTokenData.getRefreshToken());
+            } catch (IOException e) {
+                Logger.error("Unable to update Twitch properties file with new access and refresh token");
+                Logger.debug(e);
+            }
         }
     }
 
@@ -93,12 +114,20 @@ public class TwitchAPI {
         return clientID;
     }
 
-    public String getClientSecret(){
+    public String getClientSecret() {
         return clientSecret;
     }
 
-    public String getAuthHeader(){
-        return "Bearer " + getOAuthToken();
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public String getAuthHeader() {
+        return "Bearer " + getAccessToken();
     }
 
     public OkHttpClient getClient() {
@@ -115,5 +144,15 @@ public class TwitchAPI {
 
     public TwitchClip getClip() {
         return clip;
+    }
+
+    private void setAccessToken(String newAccessToken) throws IOException {
+        this.accessToken = newAccessToken;
+        PropertiesUtil.updateField(propertiesPath, "ACCESS_TOKEN", newAccessToken);
+    }
+
+    private void setRefreshToken(String newRefreshToken) throws IOException {
+        this.refreshToken = newRefreshToken;
+        PropertiesUtil.updateField(propertiesPath, "REFRESH_TOKEN", newRefreshToken);
     }
 }

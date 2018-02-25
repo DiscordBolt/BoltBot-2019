@@ -1,8 +1,10 @@
 package com.discordbolt.boltbot.system.twitch;
 
 
+import com.discordbolt.boltbot.system.twitch.objects.TwitchClipData;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import java.io.IOException;
@@ -18,10 +20,20 @@ public class TwitchClip {
     }
 
     public String generateClip(String username) throws IOException {
-        HttpUrl clipURL = HttpUrl.parse(CLIP_EDIT_URL).newBuilder().addQueryParameter("broadcaster_id", api.getUser().getUserID(username)).build();
-        Request request = new Request.Builder().url(clipURL).addHeader("Authorization", api.getAuthHeader()).build();
+        String userID = api.getUser().getUserId(username);
+        if (userID == null)
+            throw new IllegalArgumentException(username + " does not exist!");
+        HttpUrl clipURL = HttpUrl.parse(CLIP_EDIT_URL).newBuilder().addQueryParameter("broadcaster_id", userID).build();
+        Request request = new Request.Builder().post(RequestBody.create(null, new byte[0])).url(clipURL).addHeader("Authorization", api.getAuthHeader()).build();
         try (Response response = api.getClient().newCall(request).execute()) {
-            return response.body().string();
+            if (response.code() == TwitchAPI.UNAUTHORIZED_RESPONSE_CODE) {
+                try {
+                    api.refreshOAuthToken();
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+            return api.getGson().fromJson(response.body().string(), TwitchClipData.class).getViewURL();
         }
     }
 }

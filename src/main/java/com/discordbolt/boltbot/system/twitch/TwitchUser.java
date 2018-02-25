@@ -2,6 +2,7 @@ package com.discordbolt.boltbot.system.twitch;
 
 import com.discordbolt.boltbot.system.twitch.objects.TwitchUserData;
 import com.discordbolt.boltbot.system.twitch.objects.TwitchUserDataResponse;
+import com.discordbolt.boltbot.utils.Logger;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -32,7 +33,10 @@ public class TwitchUser {
         Optional<TwitchUserData> user = getUserData(username);
         if (user.isPresent()) {
             return user.get().getId();
-        } else
-            return null;
+        }
+        Logger.warning("Could not find user " + username);
+        return null;
+
+
     }
 }
