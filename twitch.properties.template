@@ -2,3 +2,7 @@
 #Sat Feb 24 10:21:36 EDT 2018
 CLIENT_ID=client_id_here
 CLIENT_SECRET=client_secret_here
+
+# Temporary Storage
+ACCESS_TOKEN=create_access_token
+REFRESH_TOKEN=create_refresh_token
