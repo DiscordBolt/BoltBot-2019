@@ -29,6 +29,8 @@ public class TwitchClip {
             if (response.code() == TwitchAPI.UNAUTHORIZED_RESPONSE_CODE) {
                 try {
                     api.refreshOAuthToken();
+                    Response newResponse = api.getClient().newCall(request).execute();
+                    return api.getGson().fromJson(newResponse.body().string(), TwitchClipData.class).getViewURL();
                 } catch (Exception e) {
                     return null;
                 }
