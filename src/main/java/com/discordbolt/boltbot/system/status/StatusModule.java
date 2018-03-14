@@ -10,50 +10,41 @@ import sx.blah.discord.handle.impl.events.guild.member.UserLeaveEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.modules.IModule;
 
+import java.util.List;
+
 /**
  * Created by Tony on 5/12/2017.
  */
 public class StatusModule extends CustomModule implements IModule {
 
-    private int guildCount = 0;
-    private int userCount = 0;
-
     public StatusModule(IDiscordClient client) {
         super(client, "Status Module", "1.0");
-        for (IGuild g : client.getGuilds()) {
-            guildCount++;
-            userCount += g.getUsers().size();
-        }
         updatePlayingText();
     }
 
     @EventSubscriber
     public void onGuildJoin(GuildCreateEvent e) {
-        guildCount++;
-        userCount += e.getGuild().getUsers().size();
         updatePlayingText();
     }
 
     @EventSubscriber
     public void onGuildLeave(GuildLeaveEvent e) {
-        guildCount--;
-        userCount -= e.getGuild().getUsers().size();
         updatePlayingText();
     }
 
     @EventSubscriber
     public void onUserJoin(UserJoinEvent e) {
-        userCount++;
         updatePlayingText();
     }
 
     @EventSubscriber
     public void onUserLeave(UserLeaveEvent e) {
-        userCount--;
         updatePlayingText();
     }
 
     private void updatePlayingText() {
+        int guildCount = client.getGuilds().size();
+        int userCount = client.getGuilds().stream().map(IGuild::getUsers).mapToInt(List::size).sum();
         getClient().changePlayingText(String.format("%d guild%s w/ %d users", guildCount, guildCount > 1 ? "s" : "", userCount));
     }
 }
