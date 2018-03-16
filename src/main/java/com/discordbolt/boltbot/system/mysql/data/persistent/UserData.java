@@ -22,13 +22,15 @@ public class UserData implements Savable {
     private String discriminator;
     private StatusType status;
     private Instant last_status_change;
+    private boolean announce_streaming_status;
 
-    private UserData(long userId, String username, String discriminator, String status, long lastStatusChange) {
+    private UserData(long userId, String username, String discriminator, String status, long lastStatusChange, boolean announce_streaming_status) {
         this.user_id = userId;
         this.username = username;
         this.discriminator = discriminator;
         this.status = status != null ? StatusType.get(status) : null;
         this.last_status_change = lastStatusChange > 0L ? Instant.ofEpochMilli(lastStatusChange) : null;
+        this.announce_streaming_status = announce_streaming_status;
         users.put(getId(), this);
     }
 
@@ -44,15 +46,23 @@ public class UserData implements Savable {
         save();
     }
 
+    public void setAnnounceStreamingStatus(boolean announceStreamingStatus) {
+        this.announce_streaming_status = announceStreamingStatus;
+        save();
+    }
+
     @Override
     public boolean save() {
         try {
-            PreparedStatement ps = MySQL.getDataSource().getConnection().prepareStatement("INSERT INTO users (user_id, username, discriminator, status, last_status_change) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE username=VALUES(username), discriminator=VALUES(discriminator), status=VALUES(status), last_status_change=VALUES(last_status_change);");
+            PreparedStatement ps = MySQL.getDataSource()
+                                        .getConnection()
+                                        .prepareStatement("INSERT INTO users (user_id, username, discriminator, status, last_status_change, announce_streaming_status) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE username=VALUES(username), discriminator=VALUES(discriminator), status=VALUES(status), last_status_change=VALUES(last_status_change), announce_streaming_status=VALUES(announce_streaming_status);");
             ps.setLong(1, getUserId());
             ps.setBytes(2, getUsername().getBytes(StandardCharsets.UTF_16));
             ps.setString(3, getDiscriminator());
             ps.setString(4, getStatus() != null ? getStatus().toString() : null);
             ps.setTimestamp(5, getLastStatusChange() != null ? Timestamp.from(getLastStatusChange()) : null);
+            ps.setBoolean(6, shouldAnnounceStreamerStatus());
             ps.executeUpdate();
             Logger.trace("Created/updated UserData: '" + getUsername() + "' with ID " + Long.toUnsignedString(getUserId()) + ".");
             return true;
@@ -66,7 +76,9 @@ public class UserData implements Savable {
     @Override
     public boolean delete() {
         try {
-            PreparedStatement ps = MySQL.getDataSource().getConnection().prepareStatement("DELETE FROM users WHERE user_id = ? LIMIT 1");
+            PreparedStatement ps = MySQL.getDataSource()
+                                        .getConnection()
+                                        .prepareStatement("DELETE FROM users WHERE user_id = ? LIMIT 1");
             ps.setLong(1, getUserId());
             ps.executeUpdate();
             users.remove(getUserId());
@@ -104,6 +116,10 @@ public class UserData implements Savable {
         return last_status_change;
     }
 
+    public boolean shouldAnnounceStreamerStatus() {
+        return announce_streaming_status;
+    }
+
     /*
      * Static Methods
      */
@@ -117,8 +133,10 @@ public class UserData implements Savable {
 
             try {
                 while (rs.next()) {
-                    long longTime = rs.getTimestamp("last_status_change") != null ? rs.getTimestamp("last_status_change").getTime() : 0L;
-                    new UserData(rs.getLong("user_id"), rs.getString("username"), rs.getString("discriminator"), rs.getString("status"), longTime);
+                    long longTime = rs.getTimestamp("last_status_change") != null ? rs.getTimestamp("last_status_change")
+                                                                                      .getTime() : 0L;
+                    new UserData(rs.getLong("user_id"), rs.getString("username"), rs.getString("discriminator"), rs.getString("status"), longTime, rs
+                            .getBoolean("announce_streaming_status"));
                 }
             } finally {
                 ps.close();
@@ -143,7 +161,7 @@ public class UserData implements Savable {
             return ud;
         }
 
-        UserData userData = new UserData(user.getLongID(), user.getName(), user.getDiscriminator(), null, 0L);
+        UserData userData = new UserData(user.getLongID(), user.getName(), user.getDiscriminator(), null, 0L, true);
         userData.save();
         return userData;
     }
@@ -153,7 +171,11 @@ public class UserData implements Savable {
     }
 
     public static Optional<UserData> getByUsername(String username, boolean caseSensitive) {
-        return users.values().stream().filter(u -> caseSensitive ? u.getUsername().equals(username) : u.getUsername().equalsIgnoreCase(username)).findAny();
+        return users.values()
+                    .stream()
+                    .filter(u -> caseSensitive ? u.getUsername().equals(username) : u.getUsername()
+                                                                                     .equalsIgnoreCase(username))
+                    .findAny();
     }
 
     public static Optional<UserData> getByUsername(String username) {

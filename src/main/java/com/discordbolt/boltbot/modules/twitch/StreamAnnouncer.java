@@ -1,6 +1,11 @@
 package com.discordbolt.boltbot.modules.twitch;
 
+import com.discordbolt.api.command.BotCommand;
+import com.discordbolt.api.command.CommandContext;
+import com.discordbolt.api.command.exceptions.CommandArgumentException;
+import com.discordbolt.api.command.exceptions.CommandException;
 import com.discordbolt.boltbot.system.mysql.data.persistent.GuildData;
+import com.discordbolt.boltbot.system.mysql.data.persistent.UserData;
 import com.discordbolt.boltbot.utils.ChannelUtil;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventSubscriber;
@@ -27,6 +32,8 @@ public class StreamAnnouncer {
     @EventSubscriber
     public void onUserGameUpdate(PresenceUpdateEvent e) {
         if (e.getNewPresence().getStreamingUrl().isPresent()) {
+            if (!UserData.getOrCreate(e.getUser()).shouldAnnounceStreamerStatus())
+                return;
             for (Streamer s : streamers) {
                 if (s.getStreamer().equals(e.getUser())) {
                     if (s.isTimePassed(24, TimeUnit.HOURS) || s.isTimeAfterElapsed(1, TimeUnit.HOURS)) {
@@ -52,6 +59,19 @@ public class StreamAnnouncer {
                 continue;
 
             ChannelUtil.sendMessage(guild.getChannelByID(channelID), e.getUser().mention() + " just started streaming " + e.getNewPresence().getPlayingText().orElse("") + "\nCome join in on the fun! <" + e.getNewPresence().getStreamingUrl().orElse("") + ">");
+        }
+    }
+
+    @BotCommand(command = {"twitch", "announce"}, description = "Enable or disable announcing when you go live.", usage = "Twitch announce true/false", module = "AAAAAAAAAA", args = 3)
+    public static void onCommand(CommandContext cc) throws CommandException {
+        if (cc.getArgument(2).equalsIgnoreCase("true")) {
+            UserData.getOrCreate(cc.getAuthor()).setAnnounceStreamingStatus(true);
+            cc.replyWith("Enabled announcing of your stream!");
+        } else if (cc.getArgument(2).equalsIgnoreCase("false")) {
+            UserData.getOrCreate(cc.getAuthor()).setAnnounceStreamingStatus(false);
+            cc.replyWith("Disabled annoucing your stream.");
+        } else {
+            throw new CommandArgumentException("Third argument must be `true` or `false`");
         }
     }
 
