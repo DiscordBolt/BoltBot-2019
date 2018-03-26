@@ -50,7 +50,12 @@ public class DiceModule extends CustomModule implements IModule {
             return;
         }
 
-        cc.replyWith(getDieEmbed(numDice, numSides));
+        if (cc.getChannel().getTopic().toLowerCase().contains("--print-rolls")) {
+            EmbedObject embed = getDieEmbed(numDice, numSides);
+            cc.replyWith(embed.title);
+            cc.replyWith(embed);
+        } else
+            cc.replyWith(getDieEmbed(numDice, numSides));
     }
 
     @EventSubscriber
