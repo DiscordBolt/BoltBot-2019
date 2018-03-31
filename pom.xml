@@ -59,7 +59,7 @@
         <dependency>
             <groupId>com.sedmelluq</groupId>
             <artifactId>lavaplayer</artifactId>
-            <version>1.2.45</version>
+            <version>1.2.59</version>
         </dependency>
 
         <!-- HTTP Request Library for Reddit -->
