@@ -91,10 +91,4 @@ public class ChannelUtil {
             }
         });
     }
-
-    public static void addReaction(IMessage message, String emoji) {
-        if (message == null || emoji == null || emoji.length() == 0)
-            return;
-        RequestBuffer.request(() -> message.addReaction(emoji));
-    }
 }

@@ -15,11 +15,13 @@ import com.discordbolt.boltbot.system.mysql.data.DataSync;
 import com.discordbolt.boltbot.system.mysql.data.persistent.GuildData;
 import com.discordbolt.boltbot.system.status.StatusModule;
 import com.discordbolt.boltbot.utils.Logger;
+import com.discordbolt.boltbot.utils.PropertiesUtil;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -31,8 +33,11 @@ public class BoltBot {
     private static CommandManager commandManager;
 
     public static void main(String[] args) {
-        if (args.length < 1) {
-            Logger.error("No Bot Token specified.");
+        Optional<String> token = PropertiesUtil.getValue(Paths.get("properties/bolt.properties"), "TOKEN");
+
+        if (!token.isPresent()) {
+            Logger.error("Bot token not found.");
+            System.exit(1);
             return;
         }
 
@@ -41,6 +46,7 @@ public class BoltBot {
         } catch (SQLException e) {
             Logger.error("Can not connect to MySQL database. Configure database.properties");
             try {
+                Logger.info("Retrying in 10 seconds...");
                 Thread.sleep(10000);
             } catch (InterruptedException e1) {
 
@@ -48,10 +54,10 @@ public class BoltBot {
             System.exit(1);
         }
 
-        IDiscordClient client = new ClientBuilder().withToken(args[0]).login();
+        IDiscordClient client = new ClientBuilder().withToken(token.get()).login();
 
         client.getDispatcher().registerListener((IListener<ReadyEvent>) (ReadyEvent e) -> {
-            Logger.info("Logged in as " + e.getClient().getOurUser().getName());
+            Logger.info(e.getClient().getOurUser().getName() + " IS READY!");
             registerModules(client);
         });
     }

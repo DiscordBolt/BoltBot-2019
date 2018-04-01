@@ -7,7 +7,9 @@ import sx.blah.discord.handle.impl.events.guild.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.guild.GuildLeaveEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserLeaveEvent;
+import sx.blah.discord.handle.obj.ActivityType;
 import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.StatusType;
 import sx.blah.discord.modules.IModule;
 
 import java.util.List;
@@ -45,6 +47,6 @@ public class StatusModule extends CustomModule implements IModule {
     private void updatePlayingText() {
         int guildCount = client.getGuilds().size();
         int userCount = client.getGuilds().stream().map(IGuild::getUsers).mapToInt(List::size).sum();
-        getClient().changePlayingText(String.format("%d guild%s w/ %d users", guildCount, guildCount > 1 ? "s" : "", userCount));
+        getClient().changePresence(StatusType.ONLINE, ActivityType.WATCHING, String.format("%d guild%s w/ %d users", guildCount, guildCount > 1 ? "s" : "", userCount));
     }
 }

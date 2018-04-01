@@ -26,7 +26,7 @@ public class TwitchAPI {
     private final TwitchUser user;
     private final TwitchClip clip;
 
-    private Path propertiesPath = Paths.get(System.getProperty("user.dir"), "twitch.properties");
+    private Path propertiesPath = Paths.get(System.getProperty("user.dir"), "properties", "twitch.properties");
     private final String TWITCH_TOKEN_URL = "https://api.twitch.tv/kraken/oauth2/token";
     public static final int UNAUTHORIZED_RESPONSE_CODE = 401;
 

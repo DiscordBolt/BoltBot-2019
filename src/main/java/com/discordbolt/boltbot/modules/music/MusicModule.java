@@ -1,9 +1,9 @@
 package com.discordbolt.boltbot.modules.music;
 
-import com.discordbolt.boltbot.system.CustomModule;
 import com.discordbolt.boltbot.modules.music.playlists.Playlist;
 import com.discordbolt.boltbot.modules.music.playlists.PlaylistManager;
 import com.discordbolt.boltbot.modules.music.voice.VoiceManager;
+import com.discordbolt.boltbot.system.CustomModule;
 import com.discordbolt.boltbot.utils.UserUtil;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import sx.blah.discord.api.IDiscordClient;
@@ -28,6 +28,9 @@ public class MusicModule extends CustomModule implements IModule {
     public static final double VOTE_SKIP_PERCENT = 0.40;
     public static final Color EMBED_COLOR = new Color(255, 215, 0);
     public static final String MODULE = "Music Bot";
+
+    public static final String TRACK_NEXT_EMOJI = "⏭";
+    public static final String STAR_EMOJI = "⭐";
 
     private static PlaylistManager playlistManager;
     private static VoiceManager voiceManager;

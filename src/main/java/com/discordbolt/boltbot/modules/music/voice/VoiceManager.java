@@ -312,8 +312,8 @@ public class VoiceManager {
         if (track == null)
             return;
 
-        switch (e.getReaction().getUnicodeEmoji().getAliases().get(0)) {
-            case "black_right_pointing_double_triangle_with_vertical_bar":
+        switch (e.getReaction().getEmoji().getName()) {
+            case MusicModule.TRACK_NEXT_EMOJI:
                 if (track.getIdentifier().equals(dj.getPlaying().getIdentifier())) {
                     try {
                         skip(e.getGuild(), e.getUser(), false, 1);
@@ -326,7 +326,7 @@ public class VoiceManager {
                     return;
                 }
                 break;
-            case "star":
+            case MusicModule.STAR_EMOJI:
                 try {
                     getDJ(e.getGuild()).starSong(track, e.getUser());
                     ChannelUtil.sendMessage(e.getChannel(), e.getUser().getDisplayName(e.getGuild()) + ", successfully added the song to your selected playlist.");
@@ -342,15 +342,15 @@ public class VoiceManager {
         if (e.getUser().equals(MusicModule.getClient().getOurUser()))
             return;
 
-        switch (e.getReaction().getUnicodeEmoji().getAliases().get(0)) {
-            case "black_right_pointing_double_triangle_with_vertical_bar":
+        switch (e.getReaction().getEmoji().getName()) {
+            case MusicModule.TRACK_NEXT_EMOJI:
                 getDJ(e.getGuild()).unskip(e.getUser());
                 ChannelUtil.sendMessage(e.getChannel(), e.getUser().getDisplayName(e.getGuild()) + " has unregistered their vote to skip this track.");
                 break;
-            case "star":
+            case MusicModule.STAR_EMOJI:
                 try {
                     getDJ(e.getGuild()).removeStar(e.getMessage(), e.getUser());
-                    ChannelUtil.sendMessage(e.getChannel(), e.getUser().getDisplayName(e.getGuild()) + ", succesfully removed the song from your selected playlist.");
+                    ChannelUtil.sendMessage(e.getChannel(), e.getUser().getDisplayName(e.getGuild()) + ", successfully removed the song from your selected playlist.");
                 } catch (CommandException ex) {
                     ChannelUtil.sendMessage(e.getChannel(), ex.getMessage());
                 }

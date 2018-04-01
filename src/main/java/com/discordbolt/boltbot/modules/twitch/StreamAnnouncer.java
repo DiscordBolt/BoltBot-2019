@@ -58,7 +58,7 @@ public class StreamAnnouncer {
             if (!guild.getUsers().contains(e.getUser()))
                 continue;
 
-            ChannelUtil.sendMessage(guild.getChannelByID(channelID), e.getUser().mention() + " just started streaming " + e.getNewPresence().getPlayingText().orElse("") + "\nCome join in on the fun! <" + e.getNewPresence().getStreamingUrl().orElse("") + ">");
+            ChannelUtil.sendMessage(guild.getChannelByID(channelID), e.getUser().mention() + " just started streaming " + e.getNewPresence().getText().orElse("") + "\nCome join in on the fun! <" + e.getNewPresence().getStreamingUrl().orElse("") + ">");
         }
     }
 

@@ -12,34 +12,51 @@ import sx.blah.discord.handle.impl.events.guild.GuildUpdateEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 import sx.blah.discord.handle.impl.events.guild.member.UserLeaveEvent;
 import sx.blah.discord.handle.impl.events.user.UserUpdateEvent;
+import sx.blah.discord.handle.obj.IUser;
 
-import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DataSync {
 
     public DataSync(IDiscordClient client) {
-        Logger.info("Fetching/updating database, this may take some time.");
+        Logger.info("Fetching database, this may take some time.");
         UserData.fetch();
         GuildData.fetch();
         TagData.fetch();
-        client.getGuilds().forEach(g -> GuildJoinEvent(new GuildCreateEvent(g)));
+        Logger.info("Updating database, this may take some time.");
+        client.getGuilds().forEach(GuildData::getOrCreate);
+        client.getGuilds().stream().flatMap(g -> g.getUsers().stream()).forEach(UserData::getOrCreate);
         Logger.info("Done with database!");
     }
 
     @EventSubscriber
     public void GuildJoinEvent(GuildCreateEvent e) {
-        // Process each user that should be added to the database
-        e.getGuild().getUsers().forEach(u -> UserJoinEvent(new UserJoinEvent(e.getGuild(), u, LocalDateTime.now())));
-
+        // Create the guild
         GuildData.getOrCreate(e.getGuild());
+
+        // Update and create all users of this guild (ignoring bots)
+        e.getGuild().getUsers().stream().filter(u -> !u.isBot()).forEach(UserData::getOrCreate);
     }
 
     @EventSubscriber
     public void GuildLeaveEvent(GuildLeaveEvent e) {
-        // Process each user that should be removed from the database
-        e.getGuild().getUsers().forEach(u -> UserLeaveEvent(new UserLeaveEvent(e.getGuild(), u)));
-
+        // Delete the guild
         GuildData.getById(e.getGuild().getLongID()).ifPresent(GuildData::delete);
+
+        // Delete users if they are not in any of the other guilds
+        Set<IUser> currentUsers = e.getClient().getGuilds().stream()    // Get a stream of all guilds
+                .filter(g -> !g.equals(e.getGuild()))                   // Confirm that the guild left is removed from the stream
+                .flatMap(g -> g.getUsers().stream())                    // Convert the stream to IUser
+                .collect(Collectors.toSet());                           // Collect the stream to a set of IUsers
+        e.getGuild().getUsers().stream()                                // Get a stream of users in guild left
+                .filter(u -> !currentUsers.contains(u))                 // Filter out users that are contained in other guilds
+                .map(IUser::getLongID)                                  // Convert to a stream of Long user IDs
+                .map(UserData::getById)                                 // Convert to a stream of Optional<UserData>
+                .filter(Optional::isPresent)                            // Filter to only UserData that is present
+                .map(Optional::get)                                     // Convert to a stream of UserData
+                .forEach(UserData::delete);                             // Delete UserData
     }
 
     @EventSubscriber

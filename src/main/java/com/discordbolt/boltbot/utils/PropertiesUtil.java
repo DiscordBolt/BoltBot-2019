@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.Properties;
 
 public class PropertiesUtil {
@@ -18,5 +19,18 @@ public class PropertiesUtil {
         props.setProperty(key, newValue);
         props.store(out, null);
         out.close();
+    }
+
+    public static Optional<String> getValue(Path propertiesPath, String key) {
+        if (!propertiesPath.toFile().exists())
+            return Optional.empty();
+
+        try {
+            Properties properties = new Properties();
+            properties.load(new FileInputStream(propertiesPath.toFile()));
+            return Optional.ofNullable(properties.getProperty(key));
+        } catch (IOException e) {
+            return Optional.empty();
+        }
     }
 }

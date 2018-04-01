@@ -17,7 +17,7 @@ import java.util.Properties;
 public class MySQL {
 
     private static MysqlDataSource dataSource = null;
-    private static Path propertiesPath = Paths.get(System.getProperty("user.dir"), "database.properties");
+    private static Path propertiesPath = Paths.get(System.getProperty("user.dir"), "properties", "database.properties");
 
     private static void init() {
         OutputStream output = null;
