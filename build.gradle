@@ -1,0 +1,56 @@
+group 'DiscordBolt'
+version '3.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+sourceCompatibility = 10
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+    }
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.discordbolt.boltbot.BoltBot'
+    }
+}
+
+shadowJar {
+    destinationDir = file('artifacts')
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    // Discord 4J
+    compile "com.discord4j:Discord4J:2.10.1"
+    // Throwing Lambdas
+    compile group: "com.github.fge", name: "throwing-lambdas", version: "0.5.0"
+
+    // JUnit
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+task defineVersion(dependsOn: processResources) {
+    doLast {
+        file("$buildDir/resources/main/BoltBot.properties").withWriter { w ->
+            Properties p = new Properties()
+            p.load(new FileInputStream(new File('src/main/resources/BoltBot.properties')))
+            p['VERSION'] = project.version.toString()
+            p.store w, null
+        }
+    }
+}
+
+classes {
+    dependsOn defineVersion
+}
