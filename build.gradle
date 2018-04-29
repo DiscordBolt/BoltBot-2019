@@ -28,16 +28,28 @@ shadowJar {
 repositories {
     mavenCentral()
     jcenter()
+    maven {
+        // Used for DiscordBolt dependencies and dev versions of Discord4J
+        url  'https://jitpack.io'
+    }
 }
 
 dependencies {
     // Discord 4J
-    compile "com.discord4j:Discord4J:2.10.1"
+    implementation 'com.github.Discord4J.Discord4J:Discord4J-core:v3-SNAPSHOT'
+    // Logback
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    // Command API
+    //implementation group: 'com.github.DiscordBolt', name:'CommandAPI', version: 'v2-SNAPSHOT'
+    // Hibernate
+    implementation group:'org.hibernate', name:'hibernate-core', version: '5.2.17.Final'
     // Throwing Lambdas
-    compile group: "com.github.fge", name: "throwing-lambdas", version: "0.5.0"
+    implementation group: 'com.github.fge', name: 'throwing-lambdas', version: '0.5.0'
 
     // JUnit
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    // Mockcord
+    //testImplementation group: 'com.github.DiscordBolt', name:'Mockcord', version:'master-SNAPSHOT'
 }
 
 task defineVersion(dependsOn: processResources) {

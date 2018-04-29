@@ -1,12 +1,11 @@
 package com.discordbolt.boltbot;
 
 import com.discordbolt.boltbot.util.PropertiesUtil;
+import discord4j.core.ClientBuilder;
+import discord4j.core.DiscordClient;
+import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sx.blah.discord.api.ClientBuilder;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.events.IListener;
-import sx.blah.discord.handle.impl.events.ReadyEvent;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -20,30 +19,35 @@ public class BoltBot {
             TWITCH_PROPERTIES = Paths.get("Twitch.properties");
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BoltBot.class);
-    private static IDiscordClient client;
+
+    private static DiscordClient client;
 
     public static void main(String[] args) {
-        LOGGER.info("Starting BoltBot v{}", getVersion());
+        LOGGER.info("Starting BoltBot");
 
         try {
             PropertiesUtil.loadPropertiesFile(BOLTBOT_PROPERTIES, DATABASE_PROPERTIES, TWITCH_PROPERTIES);
         } catch (IOException e) {
-            LOGGER.error("Unable to load properties file.", e);
+            LOGGER.error("Unable to load properties files.", e);
             System.exit(1);
         }
 
+        LOGGER.info("Version: {}", getVersion());
+
+        //TODO check hibernate?
+
         Optional<String> token = PropertiesUtil.getValue(BOLTBOT_PROPERTIES, "TOKEN");
         if (token.isPresent()) {
-            client = new ClientBuilder().withToken(token.get()).build();
+            client = new ClientBuilder(token.get()).build();
+            //TODO Switch this to registering in client builder (When D4J adds it)
+            getClient().getEventDispatcher().on(ReadyEvent.class).subscribe(BoltBot::registerModules);
+            getClient().login().block();
         } else {
             LOGGER.error("Token not present in BoltBot.properties");
             System.exit(1);
         }
 
-        client.getDispatcher().registerListener((IListener<ReadyEvent>) (ReadyEvent e) -> {
-            LOGGER.info("Client is READY!");
-            registerModules();
-        });
+        LOGGER.warn("Disconnected from Discord. No further reconnect attempts will be made.");
     }
 
 
@@ -51,11 +55,11 @@ public class BoltBot {
         return PropertiesUtil.getValue(BOLTBOT_PROPERTIES, "VERSION").orElse("DEVELOPMENT");
     }
 
-    public static IDiscordClient getClient() {
+    public static DiscordClient getClient() {
         return client;
     }
 
-    private static void registerModules() {
+    private static void registerModules(ReadyEvent event) {
 
     }
 }

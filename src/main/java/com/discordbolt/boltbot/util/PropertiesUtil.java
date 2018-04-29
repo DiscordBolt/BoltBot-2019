@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Optional;
@@ -37,6 +39,16 @@ public class PropertiesUtil {
     }
 
     private static Properties getPropertiesFile(Path propertiesPath) throws IOException {
+        // Check if the file exists, and if not copy it from the jar if it exists
+        if (!Files.exists(propertiesPath)) {
+            LOGGER.warn("Creating default properties file '{}'", propertiesPath.toString());
+            InputStream stream = PropertiesUtil.class.getResourceAsStream("/" + propertiesPath.toString());
+            if (stream != null) {
+                Files.copy(stream, propertiesPath);
+            } else
+                LOGGER.warn("Unable to find default properties file for {}.", propertiesPath.toString());
+        }
+
         Properties p = new Properties();
         p.load(new FileInputStream(propertiesPath.toFile()));
         return p;
