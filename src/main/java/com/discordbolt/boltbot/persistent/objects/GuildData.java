@@ -1,68 +1,40 @@
 package com.discordbolt.boltbot.persistent.objects;
 
-import com.discordbolt.boltbot.persistent.Hibernate;
-import com.discordbolt.boltbot.persistent.PersistentObject;
-import org.hibernate.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.HashMap;
 
 @Entity
 @Table(name = "guilds")
-public class GuildData extends PersistentObject {
-
-    private static Logger LOGGER = LoggerFactory.getLogger(GuildData.class);
-    private static HashMap<Long, GuildData> cache = new HashMap<>();
-
+public class GuildData {
 
     @Id
-    private long guildId;
-
-    @Column(nullable = false)
+    private long id;
     private String name;
-
     private String commandPrefix;
-
     private String tagPrefix;
-
     private long streamAnnounceChannel;
 
+    protected GuildData() {
+    }
 
-    @Override
-    public void save() {
-        LOGGER.trace("Saving GuildData '{}'", getId());
-        Session session = Hibernate.getSessionFactory().openSession();
-        session.beginTransaction();
-        session.saveOrUpdate(this);
-        session.getTransaction().commit();
-        session.close();
-
-        cache.put(this.getId(), this);
+    public GuildData(long id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     @Override
-    public void delete() {
-        LOGGER.trace("Deleting GuildData '{}'", getId());
-        final Session session = Hibernate.getSessionFactory().openSession();
-        session.beginTransaction();
-        session.delete(this);
-        session.getTransaction().commit();
-        session.close();
-        cache.remove(this.getId());
+    public String toString() {
+        return String.format("GuildData[id=%d, name='%s']", getId(), getName());
     }
 
     @Override
+    public boolean equals(Object other) {
+        return (other instanceof GuildData && ((GuildData) other).getId() == this.getId());
+    }
+
     public long getId() {
-        return getGuildId();
-    }
-
-    public long getGuildId() {
-        return guildId;
+        return id;
     }
 
     public String getName() {
@@ -71,7 +43,6 @@ public class GuildData extends PersistentObject {
 
     public void setName(String name) {
         this.name = name;
-        save();
     }
 
     public String getCommandPrefix() {
@@ -80,7 +51,6 @@ public class GuildData extends PersistentObject {
 
     public void setCommandPrefix(String commandPrefix) {
         this.commandPrefix = commandPrefix;
-        save();
     }
 
     public String getTagPrefix() {
@@ -89,7 +59,6 @@ public class GuildData extends PersistentObject {
 
     public void setTagPrefix(String tagPrefix) {
         this.tagPrefix = tagPrefix;
-        save();
     }
 
     public long getStreamAnnounceChannel() {
@@ -98,6 +67,5 @@ public class GuildData extends PersistentObject {
 
     public void setStreamAnnounceChannel(long streamAnnounceChannel) {
         this.streamAnnounceChannel = streamAnnounceChannel;
-        save();
     }
 }
