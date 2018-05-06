@@ -1,5 +1,6 @@
 package com.discordbolt.boltbot;
 
+import com.discordbolt.boltbot.persistent.repositories.GuildDataRepository;
 import com.discordbolt.boltbot.util.PropertiesUtil;
 import discord4j.core.ClientBuilder;
 import discord4j.core.DiscordClient;
@@ -33,8 +34,7 @@ public class BoltBot {
         }
 
         LOGGER.info("Version: {}", getVersion());
-
-        //TODO check hibernate?
+        LOGGER.info("Logging into {} guilds.", );
 
         Optional<String> token = PropertiesUtil.getValue(BOLTBOT_PROPERTIES, "TOKEN");
         if (token.isPresent()) {
