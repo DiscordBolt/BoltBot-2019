@@ -1,0 +1,37 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs
+hs_err_pid*
+
+# Artifacts directory
+artifacts/
+
+# Intellij
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Gradle Directory
+.gradle/
+
+# Build folder
+build/
+
+
+
+
+
