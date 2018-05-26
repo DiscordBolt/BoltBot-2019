@@ -1,14 +1,36 @@
 group 'com.discordbolt'
 version '3.0-SNAPSHOT'
 
-apply plugin: 'java'
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.2.RELEASE")
+    }
+}
 
-sourceCompatibility = 1.8
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+bootJar {
+    baseName = 'boltbot'
+    version =  '3.0-SNAPSHOT'
+}
+
+sourceCompatibility = 10
+targetCompatibility = 10
+
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile("org.springframework.boot:spring-boot-starter-test")
 }
