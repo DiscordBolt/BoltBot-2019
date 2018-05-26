@@ -1,86 +1,14 @@
-group 'DiscordBolt'
+group 'com.discordbolt'
 version '3.0-SNAPSHOT'
 
 apply plugin: 'java'
-apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'idea'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
 
-sourceCompatibility = 10
-targetCompatibility = 10
+sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
-    jcenter()
-    maven {
-        // Discord4J snapshots and DiscordBolt APIs
-        url  'https://jitpack.io'
-    }
-    maven {
-        // Spring Data
-        url "https://repository.jboss.org/nexus/content/repositories/releases"
-    }
 }
 
 dependencies {
-    // Discord 4J
-    implementation 'com.github.Discord4J.Discord4J:Discord4J-core:v3-SNAPSHOT'
-    // Logback
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
-    // Spring Data
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'com.h2database:h2'
-    // Command API
-    //implementation group: 'com.github.DiscordBolt', name:'CommandAPI', version: 'v2-SNAPSHOT'
-    // Throwing Lambdas
-    implementation group: 'com.github.fge', name: 'throwing-lambdas', version: '0.5.0'
-
-    // JUnit
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
-    // Mockcord
-    //testImplementation group: 'com.github.DiscordBolt', name:'Mockcord', version:'master-SNAPSHOT'
-}
-
-buildscript {
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        // Shadow Jar
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
-        // Spring Data
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.0.1.RELEASE"
-    }
-}
-
-jar {
-    manifest {
-        attributes 'Main-Class': 'com.discordbolt.boltbot.BoltBot'
-    }
-}
-
-shadowJar {
-    destinationDir = file('artifacts')
-}
-
-bootJar {
-    baseName = 'gs-accessing-data-jpa'
-    version =  '0.1.0'
-}
-
-task defineVersion(dependsOn: processResources) {
-    doLast {
-        file("$buildDir/resources/main/BoltBot.properties").withWriter { w ->
-            Properties p = new Properties()
-            p.load(new FileInputStream(new File('src/main/resources/BoltBot.properties')))
-            p['VERSION'] = project.version.toString()
-            p.store w, null
-        }
-    }
-}
-
-classes {
-    dependsOn defineVersion
+    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
