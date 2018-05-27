@@ -31,7 +31,5 @@ out/
 # Build folder
 build/
 
-
-
-
-
+# Config file
+src/main/resources/application.properties
