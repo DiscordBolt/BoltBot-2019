@@ -34,12 +34,23 @@ targetCompatibility = 10
 repositories {
     mavenCentral()
     maven {
+        // Discord 4J & Command API
         url  "https://jitpack.io"
+    }
+    maven {
+        // Spring Data
+        url "https://repository.jboss.org/nexus/content/repositories/releases"
     }
 }
 
 dependencies {
-    compile group:'org.springframework.boot', name:'spring-boot-starter-web'
+    // Spring Boot
+    implementation group:'org.springframework.boot', name:'spring-boot-starter-web'
+    // Spring Data
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'mysql:mysql-connector-java'
+    implementation 'javax.xml.bind:jaxb-api:2.2.11'
+    // Discord4J
     implementation "com.discord4j.discord4j:discord4j-core:$discord4jVersion"
     implementation "com.github.discord4j.stores:stores-jdk:$storeVersion"
 
