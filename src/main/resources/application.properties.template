@@ -1,0 +1,6 @@
+discord.token=
+
+spring.jpa.hibernate.ddl-auto=update
+spring.datasource.url=jdbc:mysql://localhost:3306/Database
+spring.datasource.username=
+spring.datasource.password=
