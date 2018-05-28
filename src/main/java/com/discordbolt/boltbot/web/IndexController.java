@@ -1,4 +1,4 @@
-package com.discordbolt.boltbot.web.controllers;
+package com.discordbolt.boltbot.web;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
