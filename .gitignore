@@ -18,12 +18,18 @@ hs_err_pid*
 # Artifacts directory
 artifacts/
 
-# Intellij Project Files
+# Intellij
 .idea/
+*.iws
 *.iml
+*.ipr
+out/
 
 # Gradle Directory
 .gradle/
 
 # Build folder
 build/
+
+# Config file
+src/main/resources/application.properties

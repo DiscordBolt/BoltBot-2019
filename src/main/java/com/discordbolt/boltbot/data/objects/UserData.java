@@ -1,4 +1,6 @@
-package com.discordbolt.boltbot.persistent.objects;
+package com.discordbolt.boltbot.data.objects;
+
+import discord4j.core.object.entity.User;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -16,10 +18,22 @@ public class UserData {
     protected UserData() {
     }
 
-    public UserData(long id, String name, int discriminator) {
+    public UserData(long id, String name, String discriminator) {
         this.id = id;
         this.name = name;
-        this.discriminator = discriminator;
+        this.discriminator = Integer.valueOf(discriminator);
+    }
+
+    public UserData(User user) {
+        this.id = user.getId().asLong();
+        this.name = user.getUsername();
+        this.discriminator = Integer.valueOf(user.getDiscriminator());
+    }
+
+    public UserData update(User user) {
+        setName(user.getUsername());
+        setDiscriminator(user.getDiscriminator());
+        return this;
     }
 
     @Override
@@ -48,7 +62,7 @@ public class UserData {
         return discriminator;
     }
 
-    public void setDiscriminator(int discriminator) {
-        this.discriminator = discriminator;
+    public void setDiscriminator(String discriminator) {
+        this.discriminator = Integer.valueOf(discriminator);
     }
 }

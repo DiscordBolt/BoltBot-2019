@@ -1,4 +1,6 @@
-package com.discordbolt.boltbot.persistent.objects;
+package com.discordbolt.boltbot.data.objects;
+
+import discord4j.core.object.entity.Guild;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -10,6 +12,7 @@ public class GuildData {
 
     @Id
     private long id;
+
     private String name;
     private String commandPrefix;
     private String tagPrefix;
@@ -21,6 +24,16 @@ public class GuildData {
     public GuildData(long id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public GuildData(Guild guild) {
+        this.id = guild.getId().asLong();
+        this.name = guild.getName();
+    }
+
+    public GuildData update(Guild guild) {
+        this.setName(guild.getName());
+        return this;
     }
 
     @Override
