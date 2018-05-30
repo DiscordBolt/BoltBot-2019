@@ -1,8 +1,8 @@
 package com.discordbolt.boltbot.discord.system.sync;
 
-import com.discordbolt.boltbot.data.objects.UserData;
-import com.discordbolt.boltbot.data.repositories.UserRepository;
 import com.discordbolt.boltbot.discord.EventListener;
+import com.discordbolt.boltbot.repository.UserRepository;
+import com.discordbolt.boltbot.repository.entity.UserData;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;

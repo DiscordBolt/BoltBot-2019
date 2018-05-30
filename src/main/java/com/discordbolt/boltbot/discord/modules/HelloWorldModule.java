@@ -1,7 +1,7 @@
 package com.discordbolt.boltbot.discord.modules;
 
-import com.discordbolt.boltbot.data.repositories.GuildRepository;
 import com.discordbolt.boltbot.discord.EventListener;
+import com.discordbolt.boltbot.repository.GuildRepository;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

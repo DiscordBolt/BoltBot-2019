@@ -1,6 +1,6 @@
-package com.discordbolt.boltbot.data.repositories;
+package com.discordbolt.boltbot.repository;
 
-import com.discordbolt.boltbot.data.objects.GuildData;
+import com.discordbolt.boltbot.repository.entity.GuildData;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.discordbolt.boltbot.data.objects;
+package com.discordbolt.boltbot.repository.entity;
 
 import discord4j.core.object.entity.Guild;
 

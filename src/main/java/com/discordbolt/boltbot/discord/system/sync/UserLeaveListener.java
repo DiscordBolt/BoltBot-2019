@@ -1,7 +1,7 @@
 package com.discordbolt.boltbot.discord.system.sync;
 
-import com.discordbolt.boltbot.data.repositories.UserRepository;
 import com.discordbolt.boltbot.discord.EventListener;
+import com.discordbolt.boltbot.repository.UserRepository;
 import discord4j.core.event.domain.guild.MemberLeaveEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
