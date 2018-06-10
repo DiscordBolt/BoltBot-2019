@@ -12,6 +12,7 @@
     <logger name="reactor" level="WARN"/>
     <logger name="javax" level="WARRN"/>
     <logger name="io.netty" level="WARN"/>
+    <logger name="org.reflections" level="WARN"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
