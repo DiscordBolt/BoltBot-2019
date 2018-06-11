@@ -1,25 +1,16 @@
 <configuration>
-    <property scope="context" name="LOG_FORMAT" value="%d{HH:mm:ss.SSS} %-5level %logger - %msg%n"/>
-    <property scope="context" name="FILE_LEVEL" value="DEBUG"/>
-    <property scope="context" name="CONSOLE_LEVEL" value="DEBUG"/>
+    <property scope="context" name="LOG_FORMAT"
+              value="%d{yyyy.MM.dd HH:mm:ss.SSS} %-5level [%-12thread] [%-50logger{50}] - %msg%n"/>
 
     <logger name="discord4j" level="INFO"/>
-
-    <logger name="org.apache" level="WARN"/>
-    <logger name="org.springframework" level="WARN"/>
-    <logger name="org.hibernate" level="WARN"/>
-    <logger name="com.zaxxer.hikari" level="WARN"/>
-    <logger name="reactor" level="WARN"/>
-    <logger name="javax" level="WARRN"/>
-    <logger name="io.netty" level="WARN"/>
-    <logger name="org.reflections" level="WARN"/>
+    <logger name="com.discordbolt" level="INFO"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>${LOG_FORMAT}</pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>${FILE_LEVEL}</level>
+            <level>TRACE</level>
         </filter>
     </appender>
 
@@ -38,7 +29,7 @@
             <Pattern>${LOG_FORMAT}</Pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>${FILE_LEVEL}</level>
+            <level>TRACE</level>
         </filter>
     </appender>
 
@@ -47,7 +38,7 @@
         <appender-ref ref="FILE"/>
     </appender>
 
-    <root level="TRACE">
+    <root level="WARN">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="ASYNC"/>
     </root>

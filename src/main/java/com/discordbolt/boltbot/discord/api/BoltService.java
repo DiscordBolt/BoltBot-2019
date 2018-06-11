@@ -36,14 +36,13 @@ public class BoltService {
 
         botModules = new Reflections("com.discordbolt.boltbot").getSubTypesOf(BotModule.class).stream().map(c -> {
             try {
-                return c.getDeclaredConstructor().newInstance();
+                BotModule m = c.getDeclaredConstructor().newInstance();
+                m.initialize(client);
+                return m;
             } catch (Exception e) {
                 LOGGER.error("Unable to initialize BotModule '" + c.getName() + "'", e);
                 return null;
             }
         }).filter(Objects::nonNull).collect(Collectors.toList());
-
-        // Initialize all modules
-        botModules.forEach(botModule -> botModule.initialize(client));
     }
 }

@@ -37,7 +37,7 @@ public class StatusMessage implements BotModule {
         guildCount.zipWith(userCount).flatMap(t -> setStatusMessage(t.getT1(), t.getT2())).subscribe();
     }
 
-    private Mono<Void> setStatusMessage(Long guildCount, Integer memberCount) {
+    private Mono<Void> setStatusMessage(long guildCount, int memberCount) {
         return client.updatePresence(Presence.online(Activity.playing(String.format("%d guild%s w/ %d users", guildCount, guildCount > 1 ? "s" : "", memberCount))));
     }
 }

@@ -16,6 +16,14 @@ public class HelloWorldModule implements BotModule {
 
     private void registerEvents() {
         client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(this::accept);
+        // Can also do the filtering here
+        /*
+        client.getEventDispatcher().on(MessageCreateEvent.class)
+            .map(MessageCreateEvent::getMessage)
+            .filter(m -> m.getContent().isPresent())
+            .filter(m -> m.getContent().get().toLowerCase().equals("!hello"))
+            .subscribe(this::accept);
+         */
     }
 
     private void accept(MessageCreateEvent event) {
