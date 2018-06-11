@@ -49,7 +49,7 @@ public class UserControllerIT {
     private ObjectMapper objectMapper;
 
     @Before
-    public void setup() throws Exception {
+    public void setUp() throws Exception {
         this.base = new URL("http://localhost:" + port + "/users");
         userRepository.saveAll(Arrays.asList(user1, user2, user3));
 

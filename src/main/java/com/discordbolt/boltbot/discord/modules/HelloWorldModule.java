@@ -27,7 +27,7 @@ public class HelloWorldModule implements BotModule {
     }
 
     private void accept(MessageCreateEvent event) {
-        if (event.getMessage().getContent().isPresent() && event.getMessage().getContent().get().toLowerCase().equals("!hello")) {
+        if (event.getMessage().getContent().isPresent() && event.getMessage().getContent().get().equalsIgnoreCase("!hello")) {
             event.getMessage().getChannel().flatMap(channel -> channel.createMessage(spec -> spec.setContent("Hello World!"))).subscribe();
         }
     }

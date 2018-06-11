@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -44,5 +45,9 @@ public class BoltService {
                 return null;
             }
         }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    public List<BotModule> getBotModules() {
+        return Collections.unmodifiableList(botModules);
     }
 }

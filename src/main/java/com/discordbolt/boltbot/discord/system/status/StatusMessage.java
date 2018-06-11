@@ -31,8 +31,8 @@ public class StatusMessage implements BotModule {
     }
 
     private void updateStatusMessage(Event event) {
-        Mono<Long> guildCount = client.getGuilds().count();
-        Mono<Integer> userCount = client.getGuilds().map(guild -> guild.getMemberCount().orElse(0)).reduce(0, (a, b) -> a + b);
+        Mono<Long> guildCount = event.getClient().getGuilds().count();
+        Mono<Integer> userCount = event.getClient().getGuilds().map(guild -> guild.getMemberCount().orElse(0)).reduce(0, (a, b) -> a + b);
 
         guildCount.zipWith(userCount).flatMap(t -> setStatusMessage(t.getT1(), t.getT2())).subscribe();
     }
