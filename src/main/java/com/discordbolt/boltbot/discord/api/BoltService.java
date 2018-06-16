@@ -1,5 +1,8 @@
 package com.discordbolt.boltbot.discord.api;
 
+import com.discordbolt.api.commands.CommandManager;
+import com.discordbolt.boltbot.discord.util.BeanUtil;
+import com.discordbolt.boltbot.repository.GuildRepository;
 import discord4j.core.DiscordClient;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -12,8 +15,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @Profile("prod")
@@ -21,6 +25,7 @@ import java.util.stream.Collectors;
 public class BoltService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BoltService.class);
+    private static final String PACKAGE_PREFIX = "com.discordbolt.boltbot";
 
     private DiscordClient client;
     private List<BotModule> botModules;
@@ -35,16 +40,19 @@ public class BoltService {
     private void initModules() {
         LOGGER.info("Registering Bolt Modules");
 
-        botModules = new Reflections("com.discordbolt.boltbot").getSubTypesOf(BotModule.class).stream().map(c -> {
+        botModules = new Reflections(PACKAGE_PREFIX).getSubTypesOf(BotModule.class).stream().map(c -> {
             try {
                 BotModule m = c.getDeclaredConstructor().newInstance();
                 m.initialize(client);
-                return m;
+                return Optional.of(m);
             } catch (Exception e) {
-                LOGGER.error("Unable to initialize BotModule '" + c.getName() + "'", e);
-                return null;
+                LOGGER.error("Unable to initialize module '" + c.getName() + "'", e);
+                return Optional.<BotModule>empty();
             }
-        }).filter(Objects::nonNull).collect(Collectors.toList());
+        }).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+
+        CommandManager commandManager = new CommandManager(client, PACKAGE_PREFIX);
+        StreamSupport.stream(BeanUtil.getBean(GuildRepository.class).findAll().spliterator(), false).forEach(data -> commandManager.setCommandPrefix(data.getId(), data.getCommandPrefix()));
     }
 
     public List<BotModule> getBotModules() {

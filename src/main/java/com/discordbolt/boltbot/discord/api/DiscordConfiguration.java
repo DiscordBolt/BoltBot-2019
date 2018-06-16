@@ -21,7 +21,7 @@ public class DiscordConfiguration {
         LOGGER.info("Starting configuration of Discord Client");
         DiscordClient client = new ClientBuilder(token).build();
         LOGGER.info("Logging into Discord...");
-        client.login().subscribe();
+        client.login().subscribe(); // In most cases .block() should be used to keep the thread alive. (Spring keeps non-daemon threads running)
         return client;
     }
 }

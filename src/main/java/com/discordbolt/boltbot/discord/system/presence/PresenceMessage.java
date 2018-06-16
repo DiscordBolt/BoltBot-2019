@@ -1,4 +1,4 @@
-package com.discordbolt.boltbot.discord.system.status;
+package com.discordbolt.boltbot.discord.system.presence;
 
 import com.discordbolt.boltbot.discord.api.BotModule;
 import discord4j.core.DiscordClient;
@@ -7,12 +7,11 @@ import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.guild.MemberJoinEvent;
 import discord4j.core.event.domain.guild.MemberLeaveEvent;
-import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 import reactor.core.publisher.Mono;
 
-public class StatusMessage implements BotModule {
+public class PresenceMessage implements BotModule {
 
     private DiscordClient client;
 
@@ -23,7 +22,6 @@ public class StatusMessage implements BotModule {
     }
 
     private void registerEvents() {
-        client.getEventDispatcher().on(ReadyEvent.class).subscribe(this::updateStatusMessage);
         client.getEventDispatcher().on(GuildCreateEvent.class).subscribe(this::updateStatusMessage);
         client.getEventDispatcher().on(GuildDeleteEvent.class).subscribe(this::updateStatusMessage);
         client.getEventDispatcher().on(MemberJoinEvent.class).subscribe(this::updateStatusMessage);

@@ -7,6 +7,7 @@ buildscript {
 
         discord4jVersion = "v3-SNAPSHOT"
         storeVersion = "master-SNAPSHOT"
+        commandVersion = "v2-SNAPSHOT"
     }
     repositories {
         mavenCentral()
@@ -53,6 +54,8 @@ dependencies {
     // Discord4J
     implementation "com.discord4j.discord4j:discord4j-core:$discord4jVersion"
     implementation "com.github.discord4j.stores:stores-jdk:$storeVersion"
+    // Command API
+    implementation group: 'com.github.DiscordBolt', name: 'CommandAPI', version: "$commandVersion"
     // Reflections (For BotModules)
     implementation group: 'org.reflections', name: 'reflections', version: '0.9.11'
 
