@@ -1,10 +1,8 @@
-group 'com.discordbolt'
-version '3.0-SNAPSHOT'
-
 buildscript {
     ext {
-        springBootVersion = "2.0.2.RELEASE"
+        boltBotVersion = "3.0-SNAPSHOT"
 
+        springBootVersion = "2.0.3.RELEASE"
         discord4jVersion = "v3-SNAPSHOT"
         storeVersion = "master-SNAPSHOT"
         commandVersion = "v2-SNAPSHOT"
@@ -23,20 +21,22 @@ apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
-bootJar {
-    baseName = 'boltbot'
-    version =  '3.0-SNAPSHOT'
-}
+group 'com.discordbolt'
+version "$boltBotVersion"
 
 sourceCompatibility = 10
 targetCompatibility = 10
 
+bootJar {
+    baseName = 'boltbot'
+    version = "$boltBotVersion"
+}
 
 repositories {
     mavenCentral()
     maven {
         // Discord 4J & Command API
-        url  "https://jitpack.io"
+        url "https://jitpack.io"
     }
     maven {
         // Spring Data
@@ -46,21 +46,21 @@ repositories {
 
 dependencies {
     // Spring Boot
-    implementation group:'org.springframework.boot', name:'spring-boot-starter-web'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "$springBootVersion"
     // Spring Data
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'mysql:mysql-connector-java'
-    implementation 'javax.xml.bind:jaxb-api:2.2.11'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: "$springBootVersion"
+    implementation group: 'mysql', name: 'mysql-connector-java'
+    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.11'
     // Discord4J
-    implementation "com.discord4j.discord4j:discord4j-core:$discord4jVersion"
-    implementation "com.github.discord4j.stores:stores-jdk:$storeVersion"
+    implementation group: 'com.discord4j.discord4j', name: 'discord4j-core', version: "$discord4jVersion"
+    implementation group: 'com.github.discord4j.stores', name: 'stores-jdk', version: "$storeVersion"
     // Command API
     implementation group: 'com.github.DiscordBolt', name: 'CommandAPI', version: "$commandVersion"
     // Reflections (For BotModules)
     implementation group: 'org.reflections', name: 'reflections', version: '0.9.11'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'org.springframework.boot', name:'spring-boot-starter-test'
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "$springBootVersion"
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.18.3'
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
 }

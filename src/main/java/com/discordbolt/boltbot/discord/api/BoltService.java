@@ -1,5 +1,7 @@
 package com.discordbolt.boltbot.discord.api;
 
+import com.discordbolt.api.commands.BotCommand;
+import com.discordbolt.api.commands.CommandContext;
 import com.discordbolt.api.commands.CommandManager;
 import com.discordbolt.boltbot.discord.util.BeanUtil;
 import com.discordbolt.boltbot.repository.GuildRepository;
@@ -35,6 +37,7 @@ public class BoltService {
         this.client = client;
         this.botModules = new ArrayList<>();
         initModules();
+        initCommands();
     }
 
     private void initModules() {
@@ -50,12 +53,33 @@ public class BoltService {
                 return Optional.<BotModule>empty();
             }
         }).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+    }
 
+    private void initCommands() {
+        // Initialize command manager (scans and registers commands with @BotCommand)
         CommandManager commandManager = new CommandManager(client, PACKAGE_PREFIX);
-        StreamSupport.stream(BeanUtil.getBean(GuildRepository.class).findAll().spliterator(), false).forEach(data -> commandManager.setCommandPrefix(data.getId(), data.getCommandPrefix()));
+        // Restore saved per-guild command prefixes
+        StreamSupport.stream(BeanUtil.getBean(GuildRepository.class)
+                                     .findAll()
+                                     .spliterator(), false)
+                     .filter(data -> data.getCommandPrefix() != null)
+                     .forEach(data -> commandManager.setCommandPrefix(data.getId(), data.getCommandPrefix()));
+
+        commandManager.onCommandExecution(context -> {
+            // TODO store stats about each command execution.
+            // Neo4J https://projects.spring.io/spring-data-neo4j/
+            //
+            // https://medium.com/@joeclever/using-multiple-datasources-with-spring-boot-and-spring-data-6430b00c02e7
+            // http://www.baeldung.com/spring-data-jpa-multiple-databases
+        });
     }
 
     public List<BotModule> getBotModules() {
         return Collections.unmodifiableList(botModules);
+    }
+
+    @BotCommand(command = "ping", description = "ping", usage = "ping", module = "misc")
+    public static void ping(CommandContext context) {
+        context.replyWith("Pong!").subscribe();
     }
 }
