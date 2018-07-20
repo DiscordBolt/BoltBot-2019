@@ -6,6 +6,11 @@ import com.discordbolt.api.commands.CommandManager;
 import com.discordbolt.boltbot.discord.util.BeanUtil;
 import com.discordbolt.boltbot.repository.GuildRepository;
 import discord4j.core.DiscordClient;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,13 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @Profile("prod")
@@ -35,7 +33,6 @@ public class BoltService {
     @Autowired
     public BoltService(DiscordClient client) {
         this.client = client;
-        this.botModules = new ArrayList<>();
         initModules();
         initCommands();
     }
@@ -60,10 +57,10 @@ public class BoltService {
         CommandManager commandManager = new CommandManager(client, PACKAGE_PREFIX);
         // Restore saved per-guild command prefixes
         StreamSupport.stream(BeanUtil.getBean(GuildRepository.class)
-                                     .findAll()
-                                     .spliterator(), false)
-                     .filter(data -> data.getCommandPrefix() != null)
-                     .forEach(data -> commandManager.setCommandPrefix(data.getId(), data.getCommandPrefix()));
+                .findAll()
+                .spliterator(), false)
+                .filter(data -> data.getCommandPrefix() != null)
+                .forEach(data -> commandManager.setCommandPrefix(data.getId(), data.getCommandPrefix()));
 
         commandManager.onCommandExecution(context -> {
             // TODO store stats about each command execution.

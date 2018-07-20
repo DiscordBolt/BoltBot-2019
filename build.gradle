@@ -15,9 +15,13 @@ buildscript {
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
+plugins {
+    id 'java'
+    id 'idea'
+    id 'eclipse'
+    id 'com.google.cloud.tools.jib' version '0.9.7'
+}
+
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
@@ -65,18 +69,39 @@ dependencies {
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
 }
 
-task defineVersion(dependsOn: processResources) {
+task defineProperties(dependsOn: processResources) {
     doLast {
         file("$buildDir/resources/main/application.properties").withWriter { w ->
             Properties p = new Properties()
             p.load(new FileInputStream(new File('src/main/resources/application.properties')))
             p['boltbot.version'] = project.version.toString()
+            p['discord.token'] = project.findProperty("DiscordToken")
             p.store w, null
         }
     }
 }
 
-classes {
-    dependsOn defineVersion
+def getCommitHash() {
+    'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
 
+classes {
+    dependsOn defineProperties
+}
+
+jib {
+    from {
+        image = 'openjdk:10-jre'
+    }
+    to {
+        image = "techtony96/boltbot:$boltBotVersion-" + getCommitHash()
+        auth {
+            username = 'techtony96'
+            password = project.findProperty("DockerPassword")
+        }
+    }
+    container {
+        jvmFlags = ['-Xms512m', '-Xmx512m']
+        mainClass = 'com.discordbolt.boltbot.BoltBot'
+    }
+}
