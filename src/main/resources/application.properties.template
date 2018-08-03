@@ -1,8 +1,0 @@
-spring.profiles.active=prod
-
-discord.token=
-
-spring.jpa.hibernate.ddl-auto=update
-spring.datasource.url=jdbc:mysql://localhost:3306/BoltBot?useSSL=false
-spring.datasource.username=
-spring.datasource.password=
