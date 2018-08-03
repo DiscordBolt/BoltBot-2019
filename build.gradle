@@ -53,7 +53,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "$springBootVersion"
     // Spring Data
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: "$springBootVersion"
-    implementation group: 'mysql', name: 'mysql-connector-java'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: "$springBootVersion"
     implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.11'
     // Discord4J
     implementation group: 'com.discord4j.discord4j', name: 'discord4j-core', version: "$discord4jVersion"
