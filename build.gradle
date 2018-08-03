@@ -94,7 +94,11 @@ jib {
         image = 'openjdk:10-jre'
     }
     to {
-        image = "techtony96/boltbot:$boltBotVersion-" + getCommitHash()
+        if (project.hasProperty("DockerTag")) {
+            image = "techtony96/boltbot:" + project.findProperty("DockerTag")
+        } else {
+            image = "techtony96/boltbot:$boltBotVersion-" + getCommitHash()
+        }
         auth {
             username = 'techtony96'
             password = project.findProperty("DockerPassword")

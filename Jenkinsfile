@@ -87,6 +87,7 @@ pipeline {
             }
             steps {
                 withCredentials([string(credentialsId: 'dockerPassword', variable: 'password')]) {
+                    sh "gradle jib -PDockerPassword=${password} -PDockerTag=latest"
                     sh "gradle jib -PDockerPassword=${password}"
                 }
             }
