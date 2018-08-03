@@ -1,13 +1,10 @@
 package com.discordbolt.boltbot.repository.entity;
 
 import discord4j.core.object.entity.Guild;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-@Entity
-@Table(name = "guilds")
+@Document(collection = "guilds")
 public class GuildData {
 
     @Id
