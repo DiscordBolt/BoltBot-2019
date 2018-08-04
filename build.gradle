@@ -105,5 +105,6 @@ jib {
     container {
         jvmFlags = ['-Xms512m', '-Xmx512m']
         mainClass = 'com.discordbolt.boltbot.BoltBot'
+        args = ['--spring.config.location=/app/resources/application.properties']
     }
 }
