@@ -5,7 +5,7 @@ buildscript {
         springBootVersion = "2.0.3.RELEASE"
         discord4jVersion = "v3-SNAPSHOT"
         storeVersion = "master-SNAPSHOT"
-        commandVersion = "2.1"
+        commandVersion = "v2.1.1"
     }
     repositories {
         mavenCentral()
@@ -16,7 +16,7 @@ buildscript {
 }
 
 plugins {
-    id 'java'
+    id 'java-library'
     id 'idea'
     id 'eclipse'
     id 'com.google.cloud.tools.jib' version '0.9.7'
@@ -107,4 +107,9 @@ jib {
         mainClass = 'com.discordbolt.boltbot.BoltBot'
         args = ['--spring.config.location=/app/resources/application.properties']
     }
+}
+
+wrapper {
+    gradleVersion = '4.9'
+    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }

@@ -56,13 +56,14 @@ pipeline {
                 DISCORD_TOKEN = credentials('discordToken');
             }
             steps {
-                sh 'gradle build -x test'
+                sh 'chmod +x gradlew'
+                sh './gradlew build -x test'
                 archiveArtifacts artifacts: 'build/libs/**/*.jar', fingerprint: true
             }
         }
         stage('Test') {
             steps {
-                sh 'gradle test'
+                sh './gradlew test'
                 junit 'build/test-results/**/*.xml'
             }
         }
@@ -87,8 +88,8 @@ pipeline {
             }
             steps {
                 withCredentials([string(credentialsId: 'dockerPassword', variable: 'password')]) {
-                    sh "gradle jib -PDockerPassword=${password}"
-                    sh "gradle jib -PDockerPassword=${password} -PDockerTag=latest"
+                    sh "./gradlew jib -PDockerPassword=${password}"
+                    sh "./gradlew jib -PDockerPassword=${password} -PDockerTag=latest"
                 }
             }
         }
