@@ -1,11 +1,10 @@
 package com.discordbolt.boltbot.repository;
 
 import com.discordbolt.boltbot.repository.entity.GuildData;
-import org.springframework.data.repository.CrudRepository;
-
 import java.util.List;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface GuildRepository extends CrudRepository<GuildData, Long> {
+public interface GuildRepository extends MongoRepository<GuildData, Long> {
 
     List<GuildData> findByName(String name);
 }
