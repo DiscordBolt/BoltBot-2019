@@ -5,11 +5,19 @@ import java.util.List;
 
 public class UserModel {
 
-    public long count;
-    public List<UserData> users;
+    private long count;
+    private List<UserData> users;
 
     public UserModel(List<UserData> users) {
         this.count = users.size();
         this.users = users;
+    }
+
+    public long getCount() {
+        return count;
+    }
+
+    public List<UserData> getUsers() {
+        return users;
     }
 }
