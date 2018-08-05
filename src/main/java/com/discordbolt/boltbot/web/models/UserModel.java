@@ -13,6 +13,9 @@ public class UserModel {
         this.users = users;
     }
 
+    public UserModel() {
+    }
+
     public long getCount() {
         return count;
     }

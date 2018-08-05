@@ -13,6 +13,9 @@ public class GuildModel {
         this.guilds = guilds;
     }
 
+    public GuildModel() {
+    }
+
     public long getCount() {
         return count;
     }
