@@ -1,3 +1,45 @@
 <configuration>
-    <include file="logging.xml"/>
+    <property scope="context" name="LOG_FORMAT"
+              value="%d{yyyy.MM.dd HH:mm:ss.SSS} %-5level [%-12thread] [%-50logger{50}] - %msg%n"/>
+
+    <logger name="discord4j" level="INFO"/>
+    <logger name="com.discordbolt" level="INFO"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_FORMAT}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>TRACE</level>
+        </filter>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>server.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Daily log file rollover -->
+            <fileNamePattern>logs/%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+
+            <!-- Keep 30 days max 1GB -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <Pattern>${LOG_FORMAT}</Pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>TRACE</level>
+        </filter>
+    </appender>
+
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>512</queueSize>
+        <appender-ref ref="FILE"/>
+    </appender>
+
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC"/>
+    </root>
 </configuration>
