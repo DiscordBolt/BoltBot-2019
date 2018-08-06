@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        boltBotVersion = "3.0"
+        boltBotVersion = "3.1-SNAPSHOT"
 
         springBootVersion = "2.0.3.RELEASE"
         discord4jVersion = "v3-SNAPSHOT"
