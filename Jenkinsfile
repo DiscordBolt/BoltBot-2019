@@ -47,13 +47,13 @@ pipeline {
             }
             steps {
                 sh 'chmod +x gradlew'
-                sh './gradlew build -x test'
+                sh './gradlew build -x test --stacktrace'
                 archiveArtifacts artifacts: 'build/libs/**/*.jar', fingerprint: true
             }
         }
         stage('Test') {
             steps {
-                sh './gradlew test'
+                sh './gradlew test --stacktrace'
             }
             post {
                 always {
