@@ -7,6 +7,7 @@ import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.guild.MemberJoinEvent;
 import discord4j.core.event.domain.guild.MemberLeaveEvent;
+import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 import reactor.core.publisher.Mono;
@@ -18,7 +19,11 @@ public class PresenceMessage implements BotModule {
     @Override
     public void initialize(DiscordClient client) {
         this.client = client;
-        registerEvents();
+        client.getEventDispatcher().on(ReadyEvent.class)
+                .map(r -> r.getGuilds().size())
+                .flatMap(i -> client.getEventDispatcher().on(GuildCreateEvent.class).take(i).last())
+                .doOnNext(this::updateStatusMessage)
+                .subscribe(t -> registerEvents());
     }
 
     private void registerEvents() {
