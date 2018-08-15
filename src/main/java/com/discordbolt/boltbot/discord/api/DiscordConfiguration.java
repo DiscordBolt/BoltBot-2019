@@ -16,7 +16,7 @@ public class DiscordConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordConfiguration.class);
 
     @Bean
-    public DiscordClient getDiscordClient(@Value("${discord.token}") String token, @Value("${boltbot.version}") String version) {
+    public DiscordClient getDiscordClient(@Value("${discord.token}") String token, @Value("${boltbot.version:DEV-SNAPSHOT}") String version) {
         LOGGER.info("Starting BoltBot version {}", version);
         LOGGER.info("Starting configuration of Discord Client");
         DiscordClient client = new DiscordClientBuilder(token).build();
