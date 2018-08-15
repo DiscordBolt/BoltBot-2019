@@ -1,14 +1,15 @@
 buildscript {
     ext {
-        boltBotVersion = "3.1-SNAPSHOT"
+        boltBotVersion = '3.1-SNAPSHOT'
 
-        springBootVersion = "2.0.3.RELEASE"
-        discord4jVersion = "v3-SNAPSHOT"
-        storeVersion = "master-SNAPSHOT"
-        commandVersion = "v2.1.1"
+        springBootVersion = '2.1.0.M1'
+        discord4jVersion = 'v3-SNAPSHOT'
+        commandVersion = 'dev-SNAPSHOT'
     }
     repositories {
         mavenCentral()
+        maven { url 'https://repo.spring.io/snapshot' }
+        maven { url 'https://repo.spring.io/milestone' }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
@@ -38,14 +39,13 @@ bootJar {
 
 repositories {
     mavenCentral()
-    maven {
-        // Discord 4J & Command API
-        url "https://jitpack.io"
-    }
-    maven {
-        // Spring Data
-        url "https://repository.jboss.org/nexus/content/repositories/releases"
-    }
+    // Discord 4J & Command API
+    maven { url 'https://jitpack.io' }
+    // Reactor Spring Fix
+    maven { url 'https://repo.spring.io/snapshot' }
+    maven { url 'https://repo.spring.io/milestone' }
+    // Spring Data
+    maven { url 'https://repository.jboss.org/nexus/content/repositories/releases' }
 }
 
 dependencies {
@@ -55,7 +55,6 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: "$springBootVersion"
     // Discord4J
     implementation group: 'com.discord4j.discord4j', name: 'discord4j-core', version: "$discord4jVersion"
-    implementation group: 'com.github.discord4j.stores', name: 'stores-jdk', version: "$storeVersion"
     // Command API
     implementation group: 'com.github.DiscordBolt', name: 'CommandAPI', version: "$commandVersion"
     // Reflections (For BotModules)
@@ -92,14 +91,14 @@ jib {
         image = 'openjdk:10-jre'
     }
     to {
-        if (project.hasProperty("DockerTag")) {
+        if (project.hasProperty('DockerTag')) {
             image = "techtony96/boltbot:" + project.findProperty("DockerTag")
         } else {
             image = "techtony96/boltbot:$boltBotVersion-" + getCommitHash()
         }
         auth {
             username = 'techtony96'
-            password = project.findProperty("DockerPassword")
+            password = project.findProperty('DockerPassword')
         }
     }
     container {
