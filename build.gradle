@@ -20,7 +20,7 @@ plugins {
     id 'java-library'
     id 'idea'
     id 'eclipse'
-    id 'com.google.cloud.tools.jib' version '0.9.7'
+    id 'com.google.cloud.tools.jib' version '0.9.12'
 }
 
 apply plugin: 'org.springframework.boot'
