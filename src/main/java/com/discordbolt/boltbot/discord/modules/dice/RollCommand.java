@@ -6,6 +6,7 @@ import com.discordbolt.api.commands.exceptions.CommandArgumentException;
 import discord4j.core.object.entity.TextChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,10 +15,10 @@ public class RollCommand extends CustomCommand {
 
     private static final Pattern DIE_PATTERN = Pattern.compile("(?:([0-9]+)?[dD])?([0-9]+)");
 
-    private static String[] command = {"roll"};
-    private static String description = "Roll some dice";
-    private static String usage = "Roll #d##";
-    private static String module = "Dice";
+    private static final String[] command = {"roll"};
+    private static final String description = "Roll some dice";
+    private static final String usage = "Roll #d##";
+    private static final String module = "Dice";
 
     public RollCommand() {
         super(command, description, usage, module);
@@ -42,13 +43,13 @@ public class RollCommand extends CustomCommand {
             return;
         }
 
-        EmbedCreateSpec embed = DiceModule.getDieEmbed(numDice, numSides);
-        String embedTitle = "asdf"; //TODO Get the actual total roll from the embed
+        int[] rollResult = DiceModule.roll(numSides, numDice);
+        EmbedCreateSpec embed = DiceModule.getDieEmbed(rollResult, numSides);
 
         commandContext.getChannel()
                 .ofType(TextChannel.class)
                 .filter(textChannel -> textChannel.getTopic().toLowerCase().contains("--print-rolls"))
-                .flatMap(c -> commandContext.replyWith(embedTitle, embed))
+                .flatMap(c -> commandContext.replyWith(String.valueOf(Arrays.stream(rollResult).sum()), embed))
                 .switchIfEmpty(commandContext.replyWith(embed))
                 .subscribe();
     }

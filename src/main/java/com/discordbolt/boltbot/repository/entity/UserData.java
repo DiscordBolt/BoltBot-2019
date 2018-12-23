@@ -1,8 +1,11 @@
 package com.discordbolt.boltbot.repository.entity;
 
 import discord4j.core.object.entity.User;
+import discord4j.core.object.presence.Status;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.Instant;
 
 @Document(collection = "users")
 public class UserData {
@@ -10,7 +13,10 @@ public class UserData {
     @Id
     private long id;
     private String name;
-    private int discriminator;
+    private String discriminator; //FIXME change to string (because 0001)
+    private Status lastStatus;
+    private Instant lastOnline;
+    private Instant lastStatusChange;
 
     protected UserData() {
     }
@@ -18,13 +24,13 @@ public class UserData {
     public UserData(long id, String name, String discriminator) {
         this.id = id;
         this.name = name;
-        this.discriminator = Integer.valueOf(discriminator);
+        this.discriminator = discriminator;
     }
 
     public UserData(User user) {
         this.id = user.getId().asLong();
         this.name = user.getUsername();
-        this.discriminator = Integer.valueOf(user.getDiscriminator());
+        this.discriminator = user.getDiscriminator();
     }
 
     public UserData update(User user) {
@@ -51,15 +57,44 @@ public class UserData {
         return name;
     }
 
-    public void setName(String name) {
+    public UserData setName(String name) {
         this.name = name;
+        return this;
     }
 
-    public int getDiscriminator() {
+    public String getDiscriminator() {
         return discriminator;
     }
 
-    public void setDiscriminator(String discriminator) {
-        this.discriminator = Integer.valueOf(discriminator);
+    public UserData setDiscriminator(String discriminator) {
+        this.discriminator = discriminator;
+        return this;
+    }
+
+    public Instant getLastOnline() {
+        return lastOnline;
+    }
+
+    public UserData setLastOnline(Instant instant) {
+        this.lastOnline = instant;
+        return this;
+    }
+
+    public Instant getLastStatusChange() {
+        return lastStatusChange;
+    }
+
+    public UserData setLastStatusChange(Instant instant) {
+        this.lastStatusChange = instant;
+        return this;
+    }
+
+    public Status getLastStatus() {
+        return lastStatus;
+    }
+
+    public UserData setLastStatus(Status status) {
+        this.lastStatus = status == null ? Status.OFFLINE : status;
+        return this;
     }
 }
