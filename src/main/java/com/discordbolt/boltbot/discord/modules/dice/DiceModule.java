@@ -33,9 +33,9 @@ public class DiceModule implements BotModule {
         return result;
     }
 
-    protected static EmbedCreateSpec getDieEmbed(int numDice, int numSides) {
-        int[] results = roll(numSides, numDice);
-        int total = Arrays.stream(results).sum();
+    protected static EmbedCreateSpec getDieEmbed(int[] rollResult, int numSides) {
+        int numDice = rollResult.length;
+        int total = Arrays.stream(rollResult).sum();
 
         EmbedCreateSpec embed = new EmbedCreateSpec();
         embed.setColor(EMBED_COLOR);
@@ -48,7 +48,7 @@ public class DiceModule implements BotModule {
 
         if (numDice > 1) {
             embed.setDescription(EmbedUtil.ZERO_WIDTH_SPACE);
-            embed.addField(numDice + "d" + numSides, Arrays.stream(results).mapToObj(i -> ((Integer) i).toString()).collect(Collectors.joining(" + ")), false);
+            embed.addField(numDice + "d" + numSides, Arrays.stream(rollResult).mapToObj(i -> ((Integer) i).toString()).collect(Collectors.joining(" + ")), false);
         } else {
             embed.setDescription(numDice + "d" + numSides);
         }
