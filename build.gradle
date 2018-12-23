@@ -2,7 +2,7 @@ buildscript {
     ext {
         boltBotVersion = '3.2-SNAPSHOT'
 
-        springBootVersion = '2.1.0.M1'
+        springBootVersion = '2.1.1.RELEASE'
         discord4jVersion = 'v3-SNAPSHOT'
         commandVersion = 'dev-SNAPSHOT'
     }
@@ -41,7 +41,7 @@ repositories {
     mavenCentral()
     // Discord 4J & Command API
     maven { url 'https://jitpack.io' }
-    // Reactor Spring Fix
+    // Reactor Spring Fix TODO remove this. Should no longer be needed
     maven { url 'https://repo.spring.io/snapshot' }
     maven { url 'https://repo.spring.io/milestone' }
     // Spring Data
