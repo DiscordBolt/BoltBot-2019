@@ -51,14 +51,14 @@ public class UserControllerIT {
     @Before
     public void setUp() throws Exception {
         this.base = new URL("http://localhost:" + port + "/users");
-        userRepository.saveAll(Arrays.asList(user1, user2, user3));
+        userRepository.saveAll(Arrays.asList(user1, user2, user3)).subscribe();
 
         objectMapper = new ObjectMapper();
     }
 
     @After
     public void tearDown() {
-        userRepository.deleteAll();
+        userRepository.deleteAll().subscribe();
     }
 
     @Test
