@@ -43,7 +43,8 @@ pipeline {
     stages {
         stage('Build') {
             environment {
-                DISCORD_TOKEN = credentials('discordToken');
+                DISCORD_TOKEN = credentials('discordToken')
+                TWITCH_CLIENT_ID = credentials('twitchClientId')
             }
             steps {
                 sh 'chmod +x gradlew'
