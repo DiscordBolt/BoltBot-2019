@@ -1,11 +1,12 @@
 package com.discordbolt.boltbot.repository.entity;
 
 import discord4j.core.object.entity.Guild;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "guilds")
-public class GuildData {
+public class GuildData implements Comparable<GuildData> {
 
     @Id
     private long id;
@@ -77,5 +78,10 @@ public class GuildData {
 
     public void setStreamAnnounceChannel(long streamAnnounceChannel) {
         this.streamAnnounceChannel = streamAnnounceChannel;
+    }
+
+    @Override
+    public int compareTo(@NotNull GuildData other) {
+        return Long.compare(this.getId(), other.getId());
     }
 }

@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.StreamSupport;
-
 @Component("CommandBean")
 @Profile("prod")
 public class CommandBean {
@@ -32,11 +30,10 @@ public class CommandBean {
         // Initialize command manager (scans and registers commands with @BotCommand)
         commandManager = new CommandManager(client, BoltService.PACKAGE_PREFIX);
         // Restore saved per-guild command prefixes
-        StreamSupport.stream(BeanUtil.getBean(GuildRepository.class)
+        BeanUtil.getBean(GuildRepository.class)
                 .findAll()
-                .spliterator(), false)
                 .filter(data -> data.getCommandPrefix() != null)
-                .forEach(data -> commandManager.setCommandPrefix(data.getId(), data.getCommandPrefix()));
+                .subscribe(data -> commandManager.setCommandPrefix(data.getId(), data.getCommandPrefix()));
 
         commandManager.onCommandExecution(context -> {
             // TODO store stats about each command execution.

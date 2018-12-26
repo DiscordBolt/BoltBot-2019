@@ -2,18 +2,19 @@ package com.discordbolt.boltbot.repository.entity;
 
 import discord4j.core.object.entity.User;
 import discord4j.core.object.presence.Status;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 
 @Document(collection = "users")
-public class UserData {
+public class UserData implements Comparable<UserData> {
 
     @Id
     private long id;
     private String name;
-    private String discriminator; //FIXME change to string (because 0001)
+    private String discriminator;
     private Status lastStatus;
     private Instant lastOnline;
     private Instant lastStatusChange;
@@ -96,5 +97,10 @@ public class UserData {
     public UserData setLastStatus(Status status) {
         this.lastStatus = status == null ? Status.OFFLINE : status;
         return this;
+    }
+
+    @Override
+    public int compareTo(@NotNull UserData other) {
+        return Long.compare(this.getId(), other.getId());
     }
 }

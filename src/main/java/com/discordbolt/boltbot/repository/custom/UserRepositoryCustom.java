@@ -2,10 +2,9 @@ package com.discordbolt.boltbot.repository.custom;
 
 import com.discordbolt.boltbot.repository.entity.UserData;
 import discord4j.core.object.util.Snowflake;
-
-import java.util.Optional;
+import reactor.core.publisher.Mono;
 
 public interface UserRepositoryCustom {
 
-    Optional<UserData> findById(Snowflake userSnowflake);
+    Mono<UserData> findById(Snowflake userSnowflake);
 }

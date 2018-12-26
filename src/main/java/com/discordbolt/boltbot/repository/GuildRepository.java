@@ -2,11 +2,10 @@ package com.discordbolt.boltbot.repository;
 
 import com.discordbolt.boltbot.repository.custom.GuildRepositoryCustom;
 import com.discordbolt.boltbot.repository.entity.GuildData;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import reactor.core.publisher.Flux;
 
-import java.util.List;
+public interface GuildRepository extends ReactiveMongoRepository<GuildData, Long>, GuildRepositoryCustom {
 
-public interface GuildRepository extends MongoRepository<GuildData, Long>, GuildRepositoryCustom {
-
-    List<GuildData> findByName(String name);
+    Flux<GuildData> findByName(String name);
 }
