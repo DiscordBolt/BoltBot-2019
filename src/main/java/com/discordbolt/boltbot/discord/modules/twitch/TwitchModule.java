@@ -48,7 +48,7 @@ public class TwitchModule implements BotModule {
     }
 
     private Mono<Message> announceChannel(PresenceUpdateEvent a) {
-        if (Instant.now().isBefore(cooldowns.get(a.getUserId().asLong())))
+        if (cooldowns.containsKey(a.getUserId().asLong()) && Instant.now().isBefore(cooldowns.get(a.getUserId().asLong())))
             return Mono.empty(); // cooldown period has not been passed yet
         return BeanUtil.getBean(GuildRepository.class)
                 .findById(a.getGuildId())
