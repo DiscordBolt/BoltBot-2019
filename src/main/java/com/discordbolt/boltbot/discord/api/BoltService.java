@@ -44,6 +44,7 @@ public class BoltService {
 
         botModules = new Reflections(PACKAGE_PREFIX).getSubTypesOf(BotModule.class).stream().map(c -> {
             try {
+                LOGGER.info("Initializing Module '{}'", c.getName());
                 BotModule m = c.getDeclaredConstructor().newInstance();
                 m.initialize(client);
                 return Optional.of(m);
