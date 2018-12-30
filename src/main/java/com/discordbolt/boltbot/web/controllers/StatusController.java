@@ -7,6 +7,7 @@ import com.sun.management.OperatingSystemMXBean;
 import discord4j.core.DiscordClient;
 import discord4j.core.util.VersionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ import java.lang.management.RuntimeMXBean;
 
 @RestController
 @RequestMapping(path = "/status")
+@Profile("prod")
 public class StatusController {
 
     @Autowired
