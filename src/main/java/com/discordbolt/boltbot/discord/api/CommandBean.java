@@ -53,4 +53,8 @@ public class CommandBean {
         LOGGER.info("Unregistering '{}'", command);
         commandManager.unregisterCommand(command);
     }
+
+    public void setCommandPrefix(long guildId, String newPrefix) {
+        commandManager.setCommandPrefix(guildId, newPrefix);
+    }
 }
