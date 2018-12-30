@@ -12,5 +12,6 @@ public class AdministrationModule implements BotModule {
         BeanUtil.getBean(CommandBean.class).registerCommand(new DisconnectCommand(client));
         BeanUtil.getBean(CommandBean.class).registerCommand(new ListRolesCommand());
         BeanUtil.getBean(CommandBean.class).registerCommand(new CommandPrefixCommand());
+        BeanUtil.getBean(CommandBean.class).registerCommand(new MoveCommand());
     }
 }
