@@ -4,7 +4,7 @@ buildscript {
 
         springBootVersion = '2.1.1.RELEASE'
         discord4jVersion = 'v3-SNAPSHOT'
-        commandVersion = 'dev-SNAPSHOT'
+        commandVersion = 'master-SNAPSHOT'
     }
     repositories {
         mavenCentral()
