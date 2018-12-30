@@ -10,5 +10,6 @@ public class AdministrationModule implements BotModule {
     @Override
     public void initialize(DiscordClient client) {
         BeanUtil.getBean(CommandBean.class).registerCommand(new DisconnectCommand(client));
+        BeanUtil.getBean(CommandBean.class).registerCommand(new ListRolesCommand());
     }
 }
