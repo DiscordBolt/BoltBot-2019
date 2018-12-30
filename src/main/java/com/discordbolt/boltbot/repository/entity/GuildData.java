@@ -1,9 +1,10 @@
 package com.discordbolt.boltbot.repository.entity;
 
 import discord4j.core.object.entity.Guild;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import javax.validation.constraints.NotNull;
 
 @Document(collection = "guilds")
 public class GuildData implements Comparable<GuildData> {
