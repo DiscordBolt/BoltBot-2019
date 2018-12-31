@@ -4,8 +4,10 @@ import com.discordbolt.api.commands.CommandContext;
 import com.discordbolt.api.commands.CustomCommand;
 import com.discordbolt.api.commands.exceptions.CommandBotPermissionException;
 import com.discordbolt.api.commands.exceptions.CommandStateException;
+import com.discordbolt.boltbot.discord.system.botlog.BotLog;
 import discord4j.core.DiscordClient;
 import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Permission;
 import discord4j.core.spec.VoiceChannelCreateSpec;
 import reactor.core.publisher.Mono;
@@ -42,6 +44,7 @@ public class DisconnectCommand extends CustomCommand {
                 .zipWith(commandContext.getGuild().flatMap(guild -> guild.createVoiceChannel(new VoiceChannelCreateSpec().setName("disconnect"))))
                 .flatMap(tuple -> tuple.getT1().edit(spec -> spec.setNewVoiceChannel(tuple.getT2().getId())).thenReturn(tuple.getT2()))
                 .flatMap(channel -> channel.delete())
+                .doOnComplete(() -> BotLog.logAction(commandContext.getGuild(), String.format("%s just disconnected users %s", commandContext.getUser().block().getUsername(), String.join(", ", commandContext.getMessage().getUserMentions().map(User::getUsername).collectList().block()))))
                 .subscribe(t -> {
                 }, error -> commandContext.replyWith(error.getMessage()).subscribe());
     }

@@ -3,6 +3,7 @@ package com.discordbolt.boltbot.discord.modules.administration;
 import com.discordbolt.api.commands.CommandContext;
 import com.discordbolt.api.commands.CustomCommand;
 import com.discordbolt.boltbot.discord.api.CommandBean;
+import com.discordbolt.boltbot.discord.system.botlog.BotLog;
 import com.discordbolt.boltbot.discord.util.BeanUtil;
 import com.discordbolt.boltbot.repository.GuildRepository;
 import discord4j.core.object.util.Permission;
@@ -31,6 +32,7 @@ public class CommandPrefixCommand extends CustomCommand {
                 .flatMap(guildRepository::save)
                 .doOnNext(guildData -> BeanUtil.getBean(CommandBean.class).setCommandPrefix(guildData.getId(), guildData.getCommandPrefix()))
                 .flatMap(data -> commandContext.replyWith("Successfully set command prefix to `" + data.getCommandPrefix() + "`.\nPrefix all commands with `" + data.getCommandPrefix() + "`."))
+                .doOnSuccess(message -> BotLog.logAction(commandContext.getGuild(), String.format("%s just set the command prefix to `%s`", commandContext.getUser().block().getUsername(), newPrefix)))
                 .subscribe();
     }
 }

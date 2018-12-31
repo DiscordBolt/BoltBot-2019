@@ -3,6 +3,7 @@ package com.discordbolt.boltbot.discord.modules.administration;
 import com.discordbolt.api.commands.CommandContext;
 import com.discordbolt.api.commands.CustomCommand;
 import com.discordbolt.api.commands.exceptions.CommandStateException;
+import com.discordbolt.boltbot.discord.system.botlog.BotLog;
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
@@ -61,6 +62,7 @@ public class MoveCommand extends CustomCommand {
                 .switchIfEmpty(Mono.error(new CommandStateException("No users were found to move.")))
                 .flatMap(tuple -> tuple.getT1().asMember(tuple.getT2().getGuildId()).flatMap(member -> member.edit(spec -> spec.setNewVoiceChannel(tuple.getT2().getId()))))
                 .flatMap(t -> commandContext.replyWith("Successfully moved all users."))
+                .doOnComplete(() -> BotLog.logAction(commandContext.getGuild(), String.format("%s just moved users %s", commandContext.getUser().block().getUsername(), String.join(", ", users.map(User::getUsername).collectList().block()))))
                 .subscribe(t -> {
                 }, error -> commandContext.replyWith(error.getMessage()).subscribe());
     }
