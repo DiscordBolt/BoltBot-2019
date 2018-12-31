@@ -7,6 +7,7 @@ import com.discordbolt.boltbot.discord.util.TimeUtil;
 import com.discordbolt.boltbot.repository.UserRepository;
 import discord4j.core.DiscordClient;
 import discord4j.core.object.entity.Guild;
+import discord4j.core.object.presence.Presence;
 import discord4j.core.object.presence.Status;
 import reactor.util.function.Tuples;
 
@@ -37,9 +38,9 @@ public class SeenCommand extends CustomCommand {
                         .next())
                 .map(member -> Tuples.of(member, userRepository.findById(member.getId()), member.getPresence()))
                 .flatMap(tuple -> tuple.getT2().map(t -> Tuples.of(tuple.getT1(), t, tuple.getT3())))
-                .flatMap(tuple -> tuple.getT3().map(t -> Tuples.of(tuple.getT1(), tuple.getT2(), t)))
+                .flatMap(tuple -> tuple.getT3().map(Presence::getStatus).defaultIfEmpty(Status.OFFLINE).map(t -> Tuples.of(tuple.getT1(), tuple.getT2(), t)))
                 .flatMap(tuple -> {
-                    if (tuple.getT3().getStatus() == Status.ONLINE)
+                    if (tuple.getT3() == Status.ONLINE)
                         return commandContext.replyWith(tuple.getT1().getDisplayName() + " is currently online!");
                     else
                         return commandContext.replyWith(tuple.getT1().getDisplayName() + " was last online " + TimeUtil.timeAgo(tuple.getT2().getLastOnline()) + " ago.");
