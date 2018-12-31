@@ -63,12 +63,12 @@ public class BoltService {
         return version;
     }
 
-    @BotCommand(command = "ping", description = "ping", usage = "ping", module = "misc")
+    @BotCommand(command = "ping", description = "ping", usage = "ping", module = "misc", secret = true)
     public static void ping(CommandContext context) {
         context.replyWith("Pong!").subscribe();
     }
 
-    @BotCommand(command = "version", description = "Version of Bolt", usage = "version", module = "misc", aliases = "v")
+    @BotCommand(command = "version", description = "Version of Bolt", usage = "version", module = "misc", aliases = "v", secret = true)
     public static void version(CommandContext context) {
         context.replyWith("BoltBot is currently running version " + BeanUtil.getBean(BoltService.class).getVersion()).subscribe();
     }

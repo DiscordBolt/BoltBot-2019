@@ -16,6 +16,7 @@ public class ListRolesCommand extends CustomCommand {
     public ListRolesCommand() {
         super(command, description, usage, module);
         super.setPermissions(Permission.MANAGE_ROLES);
+        super.setSecret(true);
     }
 
     @Override
