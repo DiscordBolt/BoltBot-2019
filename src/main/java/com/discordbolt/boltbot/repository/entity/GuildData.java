@@ -4,8 +4,10 @@ import discord4j.core.object.entity.Guild;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
+
 @Document(collection = "guilds")
-public class GuildData {
+public class GuildData implements Comparable<GuildData> {
 
     @Id
     private long id;
@@ -51,31 +53,40 @@ public class GuildData {
         return name;
     }
 
-    public void setName(String name) {
+    public GuildData setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getCommandPrefix() {
         return commandPrefix;
     }
 
-    public void setCommandPrefix(String commandPrefix) {
+    public GuildData setCommandPrefix(String commandPrefix) {
         this.commandPrefix = commandPrefix;
+        return this;
     }
 
     public String getTagPrefix() {
         return tagPrefix;
     }
 
-    public void setTagPrefix(String tagPrefix) {
+    public GuildData setTagPrefix(String tagPrefix) {
         this.tagPrefix = tagPrefix;
+        return this;
     }
 
     public long getStreamAnnounceChannel() {
         return streamAnnounceChannel;
     }
 
-    public void setStreamAnnounceChannel(long streamAnnounceChannel) {
+    public GuildData setStreamAnnounceChannel(long streamAnnounceChannel) {
         this.streamAnnounceChannel = streamAnnounceChannel;
+        return this;
+    }
+
+    @Override
+    public int compareTo(@NotNull GuildData other) {
+        return Long.compare(this.getId(), other.getId());
     }
 }

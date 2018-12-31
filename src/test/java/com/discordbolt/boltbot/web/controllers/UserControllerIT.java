@@ -1,16 +1,9 @@
 package com.discordbolt.boltbot.web.controllers;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-
 import com.discordbolt.boltbot.repository.UserRepository;
 import com.discordbolt.boltbot.repository.entity.UserData;
-import com.discordbolt.boltbot.web.models.UserModel;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.net.URL;
-import java.util.Arrays;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +16,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -50,22 +51,22 @@ public class UserControllerIT {
     @Before
     public void setUp() throws Exception {
         this.base = new URL("http://localhost:" + port + "/users");
-        userRepository.saveAll(Arrays.asList(user1, user2, user3));
+        userRepository.saveAll(Arrays.asList(user1, user2, user3)).blockLast();
 
         objectMapper = new ObjectMapper();
     }
 
     @After
     public void tearDown() {
-        userRepository.deleteAll();
+        userRepository.deleteAll().block();
     }
 
     @Test
     public void testGetAllUsers() throws Exception {
         ResponseEntity<String> response = template.getForEntity(base.toString(), String.class);
-        UserModel userModel = objectMapper.readValue(response.getBody(), new TypeReference<UserModel>() {
+        List<UserData> users = objectMapper.readValue(response.getBody(), new TypeReference<List<UserData>>() {
         });
-        assertThat(Arrays.asList(user1, user2, user3), equalTo(userModel.getUsers()));
+        assertThat(Arrays.asList(user1, user2, user3), equalTo(users));
     }
 
     @Test

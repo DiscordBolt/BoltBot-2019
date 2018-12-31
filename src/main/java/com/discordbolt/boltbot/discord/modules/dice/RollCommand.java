@@ -38,7 +38,12 @@ public class RollCommand extends CustomCommand {
         int numDice = Integer.valueOf(Optional.ofNullable(m.group(1)).orElse("1"));
         int numSides = Integer.valueOf(Optional.ofNullable(m.group(2)).orElseThrow(() -> new CommandArgumentException("Your die was not formatted correctly. !Roll #d##")));
 
-        if (numDice < 1 || numSides <= 1 || numDice > 100 || numSides > 100) {
+        if (numDice < 1 || numDice > 100) {
+            commandContext.replyWith("That is an invalid number of dice.").subscribe();
+            return;
+        }
+
+        if (numSides <= 1 || numSides > 1000) {
             commandContext.replyWith("Your die has an invalid number of sides.").subscribe();
             return;
         }

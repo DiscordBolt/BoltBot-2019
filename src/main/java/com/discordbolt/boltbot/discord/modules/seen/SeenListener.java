@@ -2,13 +2,13 @@ package com.discordbolt.boltbot.discord.modules.seen;
 
 import com.discordbolt.boltbot.discord.util.BeanUtil;
 import com.discordbolt.boltbot.repository.UserRepository;
-import com.discordbolt.boltbot.repository.entity.UserData;
 import discord4j.core.DiscordClient;
 import discord4j.core.event.domain.PresenceUpdateEvent;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.object.entity.Guild;
-import discord4j.core.object.presence.Presence;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.presence.Status;
+import reactor.util.function.Tuples;
 
 import java.time.Instant;
 
@@ -22,36 +22,48 @@ public class SeenListener {
         userRepository = BeanUtil.getBean(UserRepository.class);
 
         //Update all users join guild
-        //FIXME make this better
         client.getEventDispatcher().on(GuildCreateEvent.class)
                 .map(GuildCreateEvent::getGuild)
                 .flatMap(Guild::getMembers)
-                .subscribe(member -> {
-                    UserData data = userRepository.findById(member.getId()).orElse(null);
-                    if (data != null) {
-                        data.setLastStatusChange(Instant.now());
-                        Status currentPresence = member.getPresence().map(Presence::getStatus).block();
-                        data.setLastStatus(currentPresence);
-                        if (currentPresence == Status.ONLINE) {
-                            data.setLastOnline(Instant.now());
-                        }
-                        userRepository.save(data);
-                    }
-
-                });
+                .map(m -> Tuples.of(m, m.getPresence(), userRepository.findById(m.getId())))
+                .flatMap(tuple -> tuple.getT2().map(t -> Tuples.of(tuple.getT1(), t, tuple.getT3())))
+                .flatMap(tuple -> tuple.getT3().map(t -> Tuples.of(tuple.getT1(), tuple.getT2(), t)))
+                .map(tuple -> {
+                    // Save the current status of each user
+                    tuple.getT3().setLastStatusChange(Instant.now());
+                    tuple.getT3().setLastStatus(tuple.getT2().getStatus());
+                    // Save when they were last online if not online
+                    if (tuple.getT2().getStatus() != Status.ONLINE)
+                        tuple.getT3().setLastOnline(Instant.now());
+                    return tuple.getT3();
+                })
+                .flatMap(userRepository::save)
+                .subscribe();
 
         // Keep track of when a user was last online
         client.getEventDispatcher().on(PresenceUpdateEvent.class)
-                .filter(e -> e.getCurrent().getStatus() != Status.ONLINE)
-                .subscribe(e -> userRepository.findById(e.getUserId()).ifPresent(userData -> userRepository.save(userData.setLastOnline(Instant.now()))));
+                .filter(event -> event.getOld().isPresent())
+                .filter(event -> event.getOld().get().getStatus() == Status.ONLINE)
+                .filter(event -> event.getCurrent().getStatus() != Status.ONLINE)
+                .flatMap(PresenceUpdateEvent::getMember)
+                .map(Member::getId)
+                .flatMap(userRepository::findById)
+                .doOnNext(userData -> userData.setLastOnline(Instant.now()))
+                .flatMap(userRepository::save)
+                .subscribe();
 
         // Keep track of the most recent presence
         client.getEventDispatcher().on(PresenceUpdateEvent.class)
-                .subscribe(e -> userRepository.findById(e.getUserId()).ifPresent(userData -> {
-                            userData.setLastStatusChange(Instant.now());
-                            userData.setLastStatus(e.getCurrent().getStatus());
-                            userRepository.save(userData);
-                        }
-                ));
+                .flatMap(PresenceUpdateEvent::getMember)
+                .map(m -> Tuples.of(m, m.getPresence(), userRepository.findById(m.getId())))
+                .flatMap(tuple -> tuple.getT2().map(t -> Tuples.of(tuple.getT1(), t, tuple.getT3())))
+                .flatMap(tuple -> tuple.getT3().map(t -> Tuples.of(tuple.getT1(), tuple.getT2(), t)))
+                .map(tuple -> {
+                    tuple.getT3().setLastStatus(tuple.getT2().getStatus());
+                    tuple.getT3().setLastStatusChange(Instant.now());
+                    return tuple.getT3();
+                })
+                .flatMap(userRepository::save)
+                .subscribe();
     }
 }

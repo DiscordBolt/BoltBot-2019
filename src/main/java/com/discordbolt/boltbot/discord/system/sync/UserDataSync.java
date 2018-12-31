@@ -8,7 +8,7 @@ import discord4j.core.DiscordClient;
 import discord4j.core.event.domain.UserUpdateEvent;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.MemberJoinEvent;
-import discord4j.core.event.domain.guild.MemberLeaveEvent;
+import discord4j.core.object.entity.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,26 +20,34 @@ public class UserDataSync implements BotModule {
 
     @Override
     public void initialize(DiscordClient client) {
-        client.getEventDispatcher().on(MemberJoinEvent.class).subscribe(this::memberJoin);
-        client.getEventDispatcher().on(MemberLeaveEvent.class).subscribe(this::memberLeave);
-        client.getEventDispatcher().on(UserUpdateEvent.class).subscribe(this::memberUpdate);
-        client.getEventDispatcher().on(GuildCreateEvent.class).subscribe(this::updateGuildMembers);
-    }
+        // Member join event
+        client.getEventDispatcher().on(MemberJoinEvent.class)
+                .map(MemberJoinEvent::getMember)
+                .flatMap(member -> userRepository.findById(member.getId())
+                        .defaultIfEmpty(new UserData(member))
+                        .map(data -> data.update(member)))
+                .flatMap(userRepository::save)
+                .subscribe();
 
-    private void memberJoin(MemberJoinEvent event) {
-        userRepository.findById(event.getMember().getId().asLong()).ifPresentOrElse(userData -> userRepository.save(userData.update(event.getMember())), () -> userRepository.save(new UserData(event.getMember())));
-    }
 
-    private void memberLeave(MemberLeaveEvent event) {
-        userRepository.findById(event.getUser().getId().asLong()).ifPresentOrElse(userData -> userRepository.delete(userData), () -> LOGGER.error("Unable to find User '{}' while attempting to delete UserData.", event.getUser().getId().asString()));
-    }
+        // User update event
+        client.getEventDispatcher().on(UserUpdateEvent.class)
+                .map(UserUpdateEvent::getCurrent)
+                .flatMap(user -> userRepository.findById(user.getId())
+                        .defaultIfEmpty(new UserData(user))
+                        .map(data -> data.update(user)))
+                .flatMap(userRepository::save)
+                .subscribe();
 
-    private void memberUpdate(UserUpdateEvent event) {
-        userRepository.findById(event.getCurrent().getId().asLong()).ifPresentOrElse(userData -> userRepository.save(userData.update(event.getCurrent())), () -> userRepository.save(new UserData(event.getCurrent())));
-    }
 
-    private void updateGuildMembers(GuildCreateEvent event) {
-        //TODO Is it possible to make this a batch update? (Currently it updates/creates users individually
-        event.getGuild().getMembers().subscribe(member -> userRepository.findById(member.getId().asLong()).ifPresentOrElse(userData -> userRepository.save(userData.update(member)), () -> userRepository.save(new UserData(member))));
+        // Join Guild
+        client.getEventDispatcher().on(GuildCreateEvent.class)
+                .map(GuildCreateEvent::getGuild)
+                .flatMap(Guild::getMembers)
+                .flatMap(member -> userRepository.findById(member.getId())
+                        .defaultIfEmpty(new UserData(member))
+                        .map(data -> data.update(member)))
+                .flatMap(userRepository::save)
+                .subscribe();
     }
 }

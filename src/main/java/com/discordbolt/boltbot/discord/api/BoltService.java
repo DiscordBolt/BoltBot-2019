@@ -44,6 +44,7 @@ public class BoltService {
 
         botModules = new Reflections(PACKAGE_PREFIX).getSubTypesOf(BotModule.class).stream().map(c -> {
             try {
+                LOGGER.info("Initializing Module '{}'", c.getName());
                 BotModule m = c.getDeclaredConstructor().newInstance();
                 m.initialize(client);
                 return Optional.of(m);
@@ -62,12 +63,12 @@ public class BoltService {
         return version;
     }
 
-    @BotCommand(command = "ping", description = "ping", usage = "ping", module = "misc")
+    @BotCommand(command = "ping", description = "ping", usage = "ping", module = "misc", secret = true)
     public static void ping(CommandContext context) {
         context.replyWith("Pong!").subscribe();
     }
 
-    @BotCommand(command = "version", description = "Version of Bolt", usage = "version", module = "misc", aliases = "v")
+    @BotCommand(command = "version", description = "Version of Bolt", usage = "version", module = "misc", aliases = "v", secret = true)
     public static void version(CommandContext context) {
         context.replyWith("BoltBot is currently running version " + BeanUtil.getBean(BoltService.class).getVersion()).subscribe();
     }
