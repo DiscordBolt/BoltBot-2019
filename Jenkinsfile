@@ -58,13 +58,9 @@ pipeline {
             }
         }
         stage('Deploy') {
-            when {
-                branch 'master'
-            }
             steps {
                 withCredentials([string(credentialsId: 'dockerPassword', variable: 'password')]) {
                     sh "./gradlew jib -PDockerPassword=${password}"
-                    sh "./gradlew jib -PDockerPassword=${password} -PDockerTag=latest"
                 }
             }
         }

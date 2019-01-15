@@ -18,7 +18,7 @@ plugins {
     id 'java-library'
     id 'idea'
     id 'eclipse'
-    id 'com.google.cloud.tools.jib' version '0.9.12'
+    id 'com.google.cloud.tools.jib' version '0.10.1'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -80,19 +80,30 @@ def getCommitHash() {
     'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
 
+def getBranchName() {
+    'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
+}
+
 classes {
     dependsOn defineProperties
 }
 
 jib {
     from {
-        image = 'openjdk:10-jre'
+        image = 'openjdk:11.0.1-jre'
     }
     to {
-        if (project.hasProperty('DockerTag')) {
-            image = "techtony96/boltbot:" + project.findProperty("DockerTag")
-        } else {
-            image = "techtony96/boltbot:$boltBotVersion-" + getCommitHash()
+        image = "techtony96/boltbot"
+        switch (getBranchName()) {
+            case 'master':
+                tags = ['latest', "$boltBotVersion-" + getCommitHash()]
+                break
+            case 'dev':
+                tags = ['dev-latest', "$boltBotVersion-" + getCommitHash()]
+                break
+            default:
+                tags = ["$boltBotVersion-" + getCommitHash()]
+                break
         }
         auth {
             username = 'techtony96'
