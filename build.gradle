@@ -89,16 +89,13 @@ jib {
         image = 'openjdk:11.0.1-jre'
     }
     to {
-        image = 'techtony96/boltbot'
+        image = "techtony96/boltbot:$boltBotVersion-".toString() + getCommitHash()
         switch (getBranchName()) {
             case 'master':
-                tags = ['latest', "$boltBotVersion-".toString() + getCommitHash()]
+                tags = ['latest']
                 break
             case 'dev':
-                tags = ['dev-latest', "$boltBotVersion-".toString() + getCommitHash()]
-                break
-            default:
-                tags = ["$boltBotVersion-".toString() + getCommitHash()]
+                tags = ['dev-latest']
                 break
         }
         auth {
