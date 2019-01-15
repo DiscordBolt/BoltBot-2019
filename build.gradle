@@ -63,13 +63,9 @@ dependencies {
     testCompile group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo'
 }
 
-task defineProperties() {
-    dependsOn processResources
-    def propertyFile = "$buildDir/resources/main/application.properties"
-    inputs.file(propertyFile)
-    outputs.file(propertyFile)
+processResources {
     doLast {
-        file(propertyFile).withWriter { w ->
+        file("$buildDir/resources/main/application.properties").withWriter { w ->
             Properties p = new Properties()
             p.load(new FileInputStream(new File('src/main/resources/application.properties')))
             p['boltbot.version'] = project.version.toString()
@@ -86,10 +82,6 @@ def getCommitHash() {
 
 def getBranchName() {
     'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
-}
-
-classes {
-    dependsOn defineProperties
 }
 
 jib {
