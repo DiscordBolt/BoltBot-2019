@@ -53,7 +53,7 @@ public class RollCommand extends CustomCommand {
 
         commandContext.getChannel()
                 .ofType(TextChannel.class)
-                .filter(textChannel -> textChannel.getTopic().toLowerCase().contains("--print-rolls"))
+                .filter(textChannel -> textChannel.getTopic().orElse("").toLowerCase().contains("--print-rolls"))
                 .flatMap(c -> commandContext.replyWith(String.valueOf(Arrays.stream(rollResult).sum()), embed))
                 .switchIfEmpty(commandContext.replyWith(embed))
                 .subscribe();
