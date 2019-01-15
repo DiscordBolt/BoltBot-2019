@@ -71,6 +71,10 @@ processResources {
             p['boltbot.version'] = project.version.toString()
             p['discord.token'] = System.getenv('DISCORD_TOKEN')
             p['twitch.clientid'] = System.getenv('TWITCH_CLIENT_ID')
+            if (getBranchName() != 'master') {
+                p['spring.data.mongodb.host'] = 'mongodb-dev'
+                p['discord.token'] = System.getenv('DISCORD_TOKEN_DEV')
+            }
             p.store w, null
         }
     }

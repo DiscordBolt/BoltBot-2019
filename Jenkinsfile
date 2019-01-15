@@ -44,6 +44,7 @@ pipeline {
         stage('Build') {
             environment {
                 DISCORD_TOKEN = credentials('discordToken')
+                DISCORD_TOKEN_DEV = credentials('discordTokenDev')
                 TWITCH_CLIENT_ID = credentials('twitchClientId')
             }
             steps {
