@@ -8,8 +8,6 @@ buildscript {
     }
     repositories {
         mavenCentral()
-        maven { url 'https://repo.spring.io/snapshot' }
-        maven { url 'https://repo.spring.io/milestone' }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
@@ -41,9 +39,6 @@ repositories {
     mavenCentral()
     // Discord 4J & Command API
     maven { url 'https://jitpack.io' }
-    // Reactor Spring Fix TODO remove this. Should no longer be needed
-    maven { url 'https://repo.spring.io/snapshot' }
-    maven { url 'https://repo.spring.io/milestone' }
     // Spring Data
     maven { url 'https://repository.jboss.org/nexus/content/repositories/releases' }
 }
