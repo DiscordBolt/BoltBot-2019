@@ -63,9 +63,13 @@ dependencies {
     testCompile group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo'
 }
 
-task defineProperties(dependsOn: processResources) {
+task defineProperties() {
+    dependsOn processResources
+    def propertyFile = "$buildDir/resources/main/application.properties"
+    inputs.file(propertyFile)
+    outputs.file(propertyFile)
     doLast {
-        file("$buildDir/resources/main/application.properties").withWriter { w ->
+        file(propertyFile).withWriter { w ->
             Properties p = new Properties()
             p.load(new FileInputStream(new File('src/main/resources/application.properties')))
             p['boltbot.version'] = project.version.toString()
