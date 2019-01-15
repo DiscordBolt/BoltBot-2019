@@ -36,7 +36,7 @@ def isPRMergeBuild() {
 pipeline {
     agent {
         docker {
-            image 'gradle:4.9-jdk10'
+            image 'openjdk:11.0.1-jdk'
         }
     }
 
