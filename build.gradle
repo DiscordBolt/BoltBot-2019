@@ -18,7 +18,7 @@ plugins {
     id 'java-library'
     id 'idea'
     id 'eclipse'
-    id 'com.google.cloud.tools.jib' version '0.10.1'
+    id 'com.google.cloud.tools.jib' version '1.0.0-rc2'
 }
 
 apply plugin: 'org.springframework.boot'
@@ -89,16 +89,16 @@ jib {
         image = 'openjdk:11.0.1-jre'
     }
     to {
-        image = "techtony96/boltbot"
+        image = 'techtony96/boltbot'
         switch (getBranchName()) {
             case 'master':
-                tags = ['latest', "$boltBotVersion-" + getCommitHash()]
+                tags = ['latest', "$boltBotVersion-".toString() + getCommitHash()]
                 break
             case 'dev':
-                tags = ['dev-latest', "$boltBotVersion-" + getCommitHash()]
+                tags = ['dev-latest', "$boltBotVersion-".toString() + getCommitHash()]
                 break
             default:
-                tags = ["$boltBotVersion-" + getCommitHash()]
+                tags = ["$boltBotVersion-".toString() + getCommitHash()]
                 break
         }
         auth {
