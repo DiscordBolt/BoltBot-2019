@@ -112,6 +112,6 @@ jib {
 }
 
 wrapper {
-    gradleVersion = '4.9'
+    gradleVersion = '5.1.1'
     distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }
