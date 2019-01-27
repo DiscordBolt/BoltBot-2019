@@ -9,7 +9,6 @@ import discord4j.core.DiscordClient;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Permission;
-import discord4j.core.spec.VoiceChannelCreateSpec;
 import reactor.core.publisher.Mono;
 
 import java.util.EnumSet;
@@ -27,6 +26,7 @@ public class DisconnectCommand extends CustomCommand {
         super(command, description, usage, module);
         super.setMinArgumentCount(2);
         super.setPermissions(Permission.MOVE_MEMBERS);
+        super.setBotRequiredPermissions(Permission.MOVE_MEMBERS, Permission.MANAGE_CHANNELS);
         this.client = client;
     }
 
@@ -41,7 +41,7 @@ public class DisconnectCommand extends CustomCommand {
                 .flatMap(user -> commandContext.getGuild().flatMap(guild -> user.asMember(guild.getId())))
                 .filterWhen(member -> member.getVoiceState().map(voiceState -> voiceState.getChannelId().isPresent()))
                 .switchIfEmpty(Mono.error(new CommandStateException("No specified members were connected to a voice channel.")))
-                .zipWith(commandContext.getGuild().flatMap(guild -> guild.createVoiceChannel(new VoiceChannelCreateSpec().setName("disconnect"))))
+                .zipWith(commandContext.getGuild().flatMap(guild -> guild.createVoiceChannel(spec -> spec.setName("disconnect"))))
                 .flatMap(tuple -> tuple.getT1().edit(spec -> spec.setNewVoiceChannel(tuple.getT2().getId())).thenReturn(tuple.getT2()))
                 .flatMap(channel -> channel.delete())
                 .doOnComplete(() -> BotLog.logAction(commandContext.getGuild(), String.format("%s just disconnected users %s", commandContext.getUser().block().getUsername(), String.join(", ", commandContext.getMessage().getUserMentions().map(User::getUsername).collectList().block()))))
