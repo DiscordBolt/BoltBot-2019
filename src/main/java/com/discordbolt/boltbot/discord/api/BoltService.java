@@ -33,7 +33,7 @@ public class BoltService {
     private List<BotModule> botModules;
 
     @Autowired
-    public BoltService(DiscordConfiguration config, @Value("${boltbot.version:DEV-SNAPSHOT}") String version, @Value("${boltbot.commit:undefined}") String commit) {
+    public BoltService(DiscordConfiguration config, @Value("${boltbot.version:SNAPSHOT}") String version, @Value("${boltbot.commit:undefined}") String commit) {
         LOGGER.info("Starting BoltBot version {}", version);
         this.client = config.getClient();
         this.version = version;
