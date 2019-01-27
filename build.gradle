@@ -69,6 +69,7 @@ processResources {
             Properties p = new Properties()
             p.load(new FileInputStream(new File('src/main/resources/application.properties')))
             p['boltbot.version'] = project.version.toString()
+            p['boltbot.commit'] = getCommitHash()
             p['discord.token'] = System.getenv('DISCORD_TOKEN')
             p['twitch.clientid'] = System.getenv('TWITCH_CLIENT_ID')
             if (getBranchName() != 'master') {

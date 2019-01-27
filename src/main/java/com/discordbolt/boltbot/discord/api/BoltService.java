@@ -4,6 +4,7 @@ import com.discordbolt.api.commands.BotCommand;
 import com.discordbolt.api.commands.CommandContext;
 import com.discordbolt.boltbot.discord.util.BeanUtil;
 import discord4j.core.DiscordClient;
+import discord4j.core.util.VersionUtil;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -27,14 +29,15 @@ public class BoltService {
     private static final Logger LOGGER = LoggerFactory.getLogger(BoltService.class);
 
     private DiscordClient client;
-    private String version;
+    private String version, commit;
     private List<BotModule> botModules;
 
     @Autowired
-    public BoltService(DiscordConfiguration config, @Value("${boltbot.version:DEV-SNAPSHOT}") String version) {
+    public BoltService(DiscordConfiguration config, @Value("${boltbot.version:DEV-SNAPSHOT}") String version, @Value("${boltbot.commit:undefined}") String commit) {
         LOGGER.info("Starting BoltBot version {}", version);
         this.client = config.getClient();
         this.version = version;
+        this.commit = commit;
         initModules();
         config.login();
     }
@@ -63,6 +66,10 @@ public class BoltService {
         return version;
     }
 
+    public String getCommit() {
+        return commit;
+    }
+
     @BotCommand(command = "ping", description = "ping", usage = "ping", module = "misc", secret = true)
     public static void ping(CommandContext context) {
         context.replyWith("Pong!").subscribe();
@@ -70,6 +77,11 @@ public class BoltService {
 
     @BotCommand(command = "version", description = "Version of Bolt", usage = "version", module = "misc", aliases = "v", secret = true)
     public static void version(CommandContext context) {
-        context.replyWith("BoltBot is currently running version " + BeanUtil.getBean(BoltService.class).getVersion()).subscribe();
+        context.replyWith(spec -> {
+            spec.setColor(new Color(16768100));
+            spec.addField("Version", BeanUtil.getBean(BoltService.class).getVersion(), true);
+            spec.addField("Commit", BeanUtil.getBean(BoltService.class).getCommit(), true);
+            spec.addField("D4J Version", VersionUtil.getProperties().getProperty(VersionUtil.APPLICATION_VERSION), true);
+        }).subscribe();
     }
 }
