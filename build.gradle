@@ -62,7 +62,7 @@ processResources {
         file("$buildDir/resources/main/application.properties").withWriter { w ->
             Properties p = new Properties()
             p.load(new FileInputStream(new File('src/main/resources/application.properties')))
-            p['boltbot.version'] = "$project_version"
+            p['boltbot.version'] = "$project_version".toString()
             p['boltbot.commit'] = getCommitHash()
             p['discord.token'] = System.getenv('DISCORD_TOKEN')
             p['twitch.clientid'] = System.getenv('TWITCH_CLIENT_ID')
