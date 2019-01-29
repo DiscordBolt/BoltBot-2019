@@ -3,7 +3,7 @@ buildscript {
         boltBotVersion = '3.4-SNAPSHOT'
 
         springBootVersion = '2.1.1.RELEASE'
-        discord4jVersion = 'v3-SNAPSHOT'
+        discord4jVersion = '3.0.0.M1'
         commandVersion = 'dev-SNAPSHOT' // Change once 2.2.1 is released
     }
     repositories {
@@ -37,6 +37,8 @@ bootJar {
 
 repositories {
     mavenCentral()
+    // Discord4J & Lava Player
+    jcenter()
     // Discord 4J & Command API
     maven { url 'https://jitpack.io' }
     // Spring Data
