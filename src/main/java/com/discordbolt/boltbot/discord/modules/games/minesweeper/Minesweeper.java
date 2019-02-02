@@ -7,6 +7,7 @@ import discord4j.core.DiscordClient;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.Random;
 
 public class Minesweeper implements BotModule {
 
@@ -99,16 +100,78 @@ public class Minesweeper implements BotModule {
     private int[][] generateBoard(int boardLength, int bombCount, int safeZone) {
         if (safeZone < 1 || safeZone > boardLength)
             throw new IllegalArgumentException("Safezone is an invalid size.");
-        return null;
+        if(Math.pow(boardLength,2)-Math.pow(safeZone,2) < bombCount)
+            throw new IllegalArgumentException("Not enough valid locations for bombs.");
+        int[][] board = new int[boardLength][boardLength];
+
+        int safeStart = (boardLength-1)/2 - (safeZone-1)/2;
+        for(int y = safeStart; y < safeStart+safeZone; y++){
+            for(int x = safeStart; x < safeStart+safeZone; x++){
+                board[x][y] = -2;
+            }
+        }
+
+        Random gen = new Random();
+        while(bombCount > 0){
+            int x = gen.nextInt(boardLength);
+            int y = gen.nextInt(boardLength);
+            if(board[x][y] != -1 && board[x][y] != -2){
+                board[x][y] = -1;
+                bombCount--;
+            }
+        }
+
+        for(int y = 0; y < boardLength; y++){
+            for(int x = 0; x < boardLength; x++){
+               if(board[x][y] != -1){
+                   int mineCount = 0;
+                   for(int yi = -1; yi <=1; yi++){
+                       for(int xi = -1; xi <=1; xi++){
+                           if(xi < 0 || xi >= boardLength || yi < 0 || yi >= boardLength){
+                               continue;
+                           }
+                           if(board[xi][yi] == -1){
+                               mineCount++;
+                           }
+                       }
+                   }
+                   board[x][y] = mineCount;
+               }
+            }
+        }
+
+        return board;
     }
 
     /**
      * Generate a mask that unhides certain game squares
      *
      * @param gameBoard
-     * @return A 2D mask where true is shown and false is hidden
+     * @return A 2D mask where false is shown and true is hidden
      */
     private boolean[][] calculateMask(int[][] gameBoard) {
-        return null;
+        boolean[][] mask = new boolean[gameBoard.length][gameBoard.length];
+        for(int x = 0; x < gameBoard.length; x++){
+            for(int y = 0; y < gameBoard.length; y++){
+                mask[x][y] = true;
+            }
+        }
+
+        revealSquare((gameBoard.length-1)/2,(gameBoard.length-1)/2, gameBoard, mask);
+        return mask;
+    }
+
+    private void revealSquare(int x, int y, int[][] board, boolean[][] mask){
+        if(x < 0 || x >= board.length || y < 0 || y >= board.length || mask[x][y] == false){
+           return;
+        }
+        mask[x][y] = false;
+        if(board[x][y] == 0){
+            for(int yi = -1; yi <=1; yi++){
+                for(int xi = -1; xi <=1; xi++){
+                    revealSquare(xi,yi,board,mask);
+                }
+            }
+        }
     }
 }
