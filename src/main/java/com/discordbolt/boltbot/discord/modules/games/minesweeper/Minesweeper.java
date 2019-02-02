@@ -2,22 +2,17 @@ package com.discordbolt.boltbot.discord.modules.games.minesweeper;
 
 import com.discordbolt.api.commands.BotCommand;
 import com.discordbolt.api.commands.CommandContext;
-import com.discordbolt.boltbot.discord.api.BotModule;
-import discord4j.core.DiscordClient;
+import com.discordbolt.api.commands.exceptions.CommandException;
+import com.discordbolt.api.commands.exceptions.CommandStateException;
 
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
-public class Minesweeper implements BotModule {
+public class Minesweeper {
 
-    @Override
-    public void initialize(DiscordClient client) {
-
-    }
+    private static final int SAFE_ZONE = 3;
 
     @BotCommand(command = "minesweeper", description = "Play a game of minesweeper", usage = "Minesweeper [Easy/Medium/Hard] [Small/Medium/Large]", module = "Games", allowDM = true)
-    public static void command(CommandContext cc) {
+    public static void command(CommandContext cc) throws CommandException {
         Optional<GameDifficulty> difficulty = Arrays.stream(GameDifficulty.values())
                 .map(GameDifficulty::name)
                 .map(String::toLowerCase)
@@ -31,6 +26,27 @@ public class Minesweeper implements BotModule {
                 .filter(cc.getMessageContent()::contains)
                 .map(BoardSize::valueOf)
                 .findAny();
+
+        int boardSize = size.orElse(BoardSize.MEDIUM).getBoardLength();
+        int bombCount = difficulty.orElse(GameDifficulty.MEDIUM).getBombCount();
+
+        int[][] gameBoard = generateBoard(boardSize, bombCount, SAFE_ZONE);
+        boolean[][] mask = calculateMask(gameBoard);
+
+        StringBuilder board = new StringBuilder(String.format("Find the %d bombs.", bombCount));
+
+        for (int row = 0; row < boardSize; row++) {
+            for (int column = 0; column < boardSize; column++) {
+                boolean hidden = mask[row][column];
+                if (hidden) board.append("||");
+                board.append(BoardEmoji.getByTile(gameBoard[row][column]).getEmoji());
+                if (hidden) board.append("||");
+            }
+        }
+
+        if (board.length() > 2000)
+            throw new CommandStateException("Generated board is too large to fit in a Discord message!");
+        cc.replyWith(board.toString()).subscribe();
     }
 
     public enum GameDifficulty {
@@ -44,7 +60,7 @@ public class Minesweeper implements BotModule {
             this.bombCount = bombCount;
         }
 
-        public int getBomeCount() {
+        public int getBombCount() {
             return bombCount;
         }
     }
@@ -66,22 +82,32 @@ public class Minesweeper implements BotModule {
     }
 
     private enum BoardEmoji {
-        BOMB("\uD83D\uDCA3"),
-        EMPTY("\u2B1C"),
-        ZERO("0\u20E3"),
-        ONE("1\u20E3"),
-        TWO("2\u20E3"),
-        THREE("3\u20E3"),
-        FOUR("4\u20E3"),
-        FIVE("5\u20E3"),
-        SIX("6\u20E3"),
-        SEVEN("7\u20E3"),
-        EIGHT("8\u20E3");
+        BOMB(-1, "\uD83D\uDCA3"),
+        EMPTY(0, "\u2B1C"),
+        ONE(1, "1\u20E3"),
+        TWO(2, "2\u20E3"),
+        THREE(3, "3\u20E3"),
+        FOUR(4, "4\u20E3"),
+        FIVE(5, "5\u20E3"),
+        SIX(6, "6\u20E3"),
+        SEVEN(7, "7\u20E3"),
+        EIGHT(8, "8\u20E3");
 
+        private static final Map<Integer, BoardEmoji> map = new HashMap<>(values().length, 1);
+
+        private int tile;
         private String emoji;
 
-        BoardEmoji(String emoji) {
+        BoardEmoji(int tile, String emoji) {
+            this.tile = tile;
             this.emoji = emoji;
+        }
+
+        public static BoardEmoji getByTile(int tile) {
+            BoardEmoji result = map.get(tile);
+            if (result == null)
+                throw new IllegalArgumentException("Invalid tile ID: " + tile);
+            return result;
         }
 
         public String getEmoji() {
@@ -97,7 +123,7 @@ public class Minesweeper implements BotModule {
      * @return
      * @throws IllegalArgumentException when input parameters are invalid
      */
-    private int[][] generateBoard(int boardLength, int bombCount, int safeZone) {
+    private static int[][] generateBoard(int boardLength, int bombCount, int safeZone) {
         if (safeZone < 1 || safeZone > boardLength)
             throw new IllegalArgumentException("Safezone is an invalid size.");
         if(Math.pow(boardLength,2)-Math.pow(safeZone,2) < bombCount)
@@ -149,7 +175,7 @@ public class Minesweeper implements BotModule {
      * @param gameBoard
      * @return A 2D mask where false is shown and true is hidden
      */
-    private boolean[][] calculateMask(int[][] gameBoard) {
+    private static boolean[][] calculateMask(int[][] gameBoard) {
         boolean[][] mask = new boolean[gameBoard.length][gameBoard.length];
         for(int x = 0; x < gameBoard.length; x++){
             for(int y = 0; y < gameBoard.length; y++){
@@ -161,7 +187,7 @@ public class Minesweeper implements BotModule {
         return mask;
     }
 
-    private void revealSquare(int x, int y, int[][] board, boolean[][] mask){
+    private static void revealSquare(int x, int y, int[][] board, boolean[][] mask) {
         if(x < 0 || x >= board.length || y < 0 || y >= board.length || mask[x][y] == false){
            return;
         }
