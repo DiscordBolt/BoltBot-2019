@@ -95,6 +95,10 @@ public class Minesweeper {
 
         private static final Map<Integer, BoardEmoji> map = new HashMap<>(values().length, 1);
 
+        static {
+            for (BoardEmoji e : values()) map.put(e.tile, e);
+        }
+
         private int tile;
         private String emoji;
 
