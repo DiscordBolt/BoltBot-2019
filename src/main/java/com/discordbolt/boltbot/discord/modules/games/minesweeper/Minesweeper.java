@@ -33,7 +33,7 @@ public class Minesweeper {
         int[][] gameBoard = generateBoard(boardSize, bombCount, SAFE_ZONE);
         boolean[][] mask = calculateMask(gameBoard);
 
-        StringBuilder board = new StringBuilder(String.format("Find the %d bombs.", bombCount));
+        StringBuilder board = new StringBuilder(String.format("Find the %d bombs.\n", bombCount));
 
         for (int row = 0; row < boardSize; row++) {
             for (int column = 0; column < boardSize; column++) {
@@ -42,6 +42,7 @@ public class Minesweeper {
                 board.append(BoardEmoji.getByTile(gameBoard[row][column]).getEmoji());
                 if (hidden) board.append("||");
             }
+            board.append('\n');
         }
 
         if (board.length() > 2000)
@@ -157,10 +158,10 @@ public class Minesweeper {
                    int mineCount = 0;
                    for(int yi = -1; yi <=1; yi++){
                        for(int xi = -1; xi <=1; xi++){
-                           if(xi < 0 || xi >= boardLength || yi < 0 || yi >= boardLength){
+                           if (x + xi < 0 || x + xi >= boardLength || y + yi < 0 || y + yi >= boardLength) {
                                continue;
                            }
-                           if(board[xi][yi] == -1){
+                           if (board[x + xi][y + yi] == -1) {
                                mineCount++;
                            }
                        }
@@ -199,7 +200,7 @@ public class Minesweeper {
         if(board[x][y] == 0){
             for(int yi = -1; yi <=1; yi++){
                 for(int xi = -1; xi <=1; xi++){
-                    revealSquare(xi,yi,board,mask);
+                    revealSquare(x + xi, y + yi, board, mask);
                 }
             }
         }
