@@ -17,6 +17,7 @@ public class Minesweeper {
                 .map(GameDifficulty::name)
                 .map(String::toLowerCase)
                 .filter(cc.getMessageContent()::contains)
+                .map(String::toUpperCase)
                 .map(GameDifficulty::valueOf)
                 .findAny();
 
@@ -24,6 +25,7 @@ public class Minesweeper {
                 .map(BoardSize::name)
                 .map(String::toLowerCase)
                 .filter(cc.getMessageContent()::contains)
+                .map(String::toUpperCase)
                 .map(BoardSize::valueOf)
                 .findAny();
 
