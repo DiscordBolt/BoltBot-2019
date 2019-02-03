@@ -59,8 +59,6 @@ public class Minesweeper {
             board.append('\n');
         }
 
-        LOGGER.info(board.length() + " ");
-
         if (board.length() > 2000)
             throw new CommandStateException("Generated board is too large to fit in a Discord message!");
         cc.replyWith(board.toString()).subscribe();
