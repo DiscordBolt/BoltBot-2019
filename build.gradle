@@ -1,81 +1,75 @@
-buildscript {
-    ext {
-        boltBotVersion = '3.3'
-
-        springBootVersion = '2.1.1.RELEASE'
-        discord4jVersion = 'v3-SNAPSHOT'
-        commandVersion = 'master-SNAPSHOT'
-    }
-    repositories {
-        mavenCentral()
-        maven { url 'https://repo.spring.io/snapshot' }
-        maven { url 'https://repo.spring.io/milestone' }
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion")
-    }
-}
-
 plugins {
-    id 'java-library'
+    id 'java'
     id 'idea'
     id 'eclipse'
-    id 'com.google.cloud.tools.jib' version '0.9.12'
+    id 'io.spring.dependency-management' version '1.0.6.RELEASE'
+    id 'org.springframework.boot' version '2.1.2.RELEASE'
+    id 'com.google.cloud.tools.jib' version '1.0.0'
 }
 
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
+ext {
+    github_org = 'DiscordBolt'
+    project_name = 'BoltBot'
+    artifact_group = 'com.discordbolt'
+    project_version = '3.4'
 
-group 'com.discordbolt'
-version "$boltBotVersion"
+    spring_boot_version = '2.1.2.RELEASE'
+    d4j_version = '3.0.0.M1'
+    command_version = 'dev-SNAPSHOT' // Change once 2.2.1 is released
+}
 
-sourceCompatibility = 10
-targetCompatibility = 10
+group "$artifact_group"
+version "$project_version"
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 bootJar {
-    baseName = 'boltbot'
-    version = "$boltBotVersion"
+    baseName = "$project_name"
+    version = "$project_version"
 }
 
 repositories {
     mavenCentral()
+    // Discord4J & Lava Player
+    jcenter()
     // Discord 4J & Command API
     maven { url 'https://jitpack.io' }
-    // Reactor Spring Fix TODO remove this. Should no longer be needed
-    maven { url 'https://repo.spring.io/snapshot' }
-    maven { url 'https://repo.spring.io/milestone' }
-    // Spring Data
-    maven { url 'https://repository.jboss.org/nexus/content/repositories/releases' }
 }
 
 dependencies {
     // Spring Boot
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "$springBootVersion"
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "$spring_boot_version"
     // Spring Data
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: "$springBootVersion"
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: "$spring_boot_version"
     // Spring MongoDB Reactive
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb-reactive', version: "$springBootVersion"
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb-reactive', version: "$spring_boot_version"
     // Discord4J
-    implementation group: 'com.discord4j.discord4j', name: 'discord4j-core', version: "$discord4jVersion"
+    implementation group: 'com.discord4j.discord4j', name: 'discord4j-core', version: "$d4j_version"
     // Command API
-    implementation group: 'com.github.DiscordBolt', name: 'CommandAPI', version: "$commandVersion"
+    implementation group: 'com.github.DiscordBolt', name: 'CommandAPI', version: "$command_version"
     // Reflections (For BotModules)
     implementation group: 'org.reflections', name: 'reflections', version: '0.9.11'
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "$springBootVersion"
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "$spring_boot_version"
     testCompile group: 'org.mockito', name: 'mockito-core', version: '2.18.3'
     testCompile group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo'
 }
 
-task defineProperties(dependsOn: processResources) {
+processResources {
     doLast {
         file("$buildDir/resources/main/application.properties").withWriter { w ->
             Properties p = new Properties()
             p.load(new FileInputStream(new File('src/main/resources/application.properties')))
-            p['boltbot.version'] = project.version.toString()
+            p['boltbot.version'] = "$project_version".toString()
+            p['boltbot.commit'] = getCommitHash()
             p['discord.token'] = System.getenv('DISCORD_TOKEN')
             p['twitch.clientid'] = System.getenv('TWITCH_CLIENT_ID')
+            if (getBranchName() != 'master') {
+                p['spring.data.mongodb.database'] = 'BoltBot-Dev'
+                p['discord.token'] = System.getenv('DISCORD_TOKEN_DEV')
+            }
             p.store w, null
         }
     }
@@ -85,19 +79,23 @@ def getCommitHash() {
     'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
 
-classes {
-    dependsOn defineProperties
+def getBranchName() {
+    'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
 }
 
 jib {
     from {
-        image = 'openjdk:10-jre'
+        image = 'openjdk:11.0.1-jre'
     }
     to {
-        if (project.hasProperty('DockerTag')) {
-            image = "techtony96/boltbot:" + project.findProperty("DockerTag")
-        } else {
-            image = "techtony96/boltbot:$boltBotVersion-" + getCommitHash()
+        image = "techtony96/boltbot:$project_version-".toString() + getCommitHash()
+        switch (getBranchName()) {
+            case 'master':
+                tags = ['latest']
+                break
+            case 'dev':
+                tags = ['dev-latest']
+                break
         }
         auth {
             username = 'techtony96'
@@ -109,9 +107,4 @@ jib {
         mainClass = 'com.discordbolt.boltbot.BoltBot'
         args = ['--spring.config.location=/app/resources/application.properties']
     }
-}
-
-wrapper {
-    gradleVersion = '4.9'
-    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
 }

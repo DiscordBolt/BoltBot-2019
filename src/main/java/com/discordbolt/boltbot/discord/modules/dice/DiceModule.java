@@ -10,6 +10,7 @@ import discord4j.core.spec.EmbedCreateSpec;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class DiceModule implements BotModule {
@@ -33,27 +34,27 @@ public class DiceModule implements BotModule {
         return result;
     }
 
-    protected static EmbedCreateSpec getDieEmbed(int[] rollResult, int numSides) {
+    protected static Consumer<EmbedCreateSpec> getDieEmbed(int[] rollResult, int numSides) {
         int numDice = rollResult.length;
         int total = Arrays.stream(rollResult).sum();
 
-        EmbedCreateSpec embed = new EmbedCreateSpec();
-        embed.setColor(EMBED_COLOR);
+        return embed -> {
+            embed.setColor(EMBED_COLOR);
 
-        if (numSides == 2 && numDice == 1) {
-            embed.setTitle(total == 1 ? "Heads" : "Tails");
-        } else {
-            embed.setTitle(Integer.toString(total));
-        }
+            if (numSides == 2 && numDice == 1) {
+                embed.setTitle(total == 1 ? "Heads" : "Tails");
+            } else {
+                embed.setTitle(Integer.toString(total));
+            }
 
-        if (numDice > 1) {
-            embed.setDescription(EmbedUtil.ZERO_WIDTH_SPACE);
-            embed.addField(numDice + "d" + numSides, Arrays.stream(rollResult).mapToObj(i -> ((Integer) i).toString()).collect(Collectors.joining(" + ")), false);
-        } else {
-            embed.setDescription(numDice + "d" + numSides);
-        }
-        embed.setThumbnail(getDieURL(numSides, total, 250));
-        return embed;
+            if (numDice > 1) {
+                embed.setDescription(EmbedUtil.ZERO_WIDTH_SPACE);
+                embed.addField(numDice + "d" + numSides, Arrays.stream(rollResult).mapToObj(i -> ((Integer) i).toString()).collect(Collectors.joining(" + ")), false);
+            } else {
+                embed.setDescription(numDice + "d" + numSides);
+            }
+            embed.setThumbnail(getDieURL(numSides, total, 250));
+        };
     }
 
     /**

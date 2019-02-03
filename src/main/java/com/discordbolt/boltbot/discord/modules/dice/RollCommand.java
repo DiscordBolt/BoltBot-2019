@@ -8,6 +8,7 @@ import discord4j.core.spec.EmbedCreateSpec;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,11 +50,11 @@ public class RollCommand extends CustomCommand {
         }
 
         int[] rollResult = DiceModule.roll(numSides, numDice);
-        EmbedCreateSpec embed = DiceModule.getDieEmbed(rollResult, numSides);
+        Consumer<EmbedCreateSpec> embed = DiceModule.getDieEmbed(rollResult, numSides);
 
         commandContext.getChannel()
                 .ofType(TextChannel.class)
-                .filter(textChannel -> textChannel.getTopic().toLowerCase().contains("--print-rolls"))
+                .filter(textChannel -> textChannel.getTopic().orElse("").toLowerCase().contains("--print-rolls"))
                 .flatMap(c -> commandContext.replyWith(String.valueOf(Arrays.stream(rollResult).sum()), embed))
                 .switchIfEmpty(commandContext.replyWith(embed))
                 .subscribe();

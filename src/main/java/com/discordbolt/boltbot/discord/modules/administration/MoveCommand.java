@@ -25,6 +25,7 @@ public class MoveCommand extends CustomCommand {
     public MoveCommand() {
         super(command, description, usage, module);
         super.setPermissions(Permission.MOVE_MEMBERS);
+        super.setBotRequiredPermissions(Permission.MOVE_MEMBERS);
         super.setMinArgumentCount(3);
         //TODO Set ratelimit through command api
     }

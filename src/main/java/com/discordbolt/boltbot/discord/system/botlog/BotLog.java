@@ -16,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class BotLog implements BotModule {
 
@@ -53,14 +54,14 @@ public class BotLog implements BotModule {
                 .subscribe(textChannel -> loggingChannels.put(guild.getId().asLong(), textChannel), error -> LOGGER.warn("Unable to create #bot-log channel in " + guild.getId().asString() + ". Reason: " + error.getMessage()));
     }
 
-    private TextChannelCreateSpec createChannelSpec(Snowflake guildId, Snowflake botId) {
-        TextChannelCreateSpec spec = new TextChannelCreateSpec();
-        spec.setName("bot-log");
-        spec.setTopic("Bolt logging channel for administrative actions taken.");
-        spec.setPermissionOverwrites(Set.of(
-                PermissionOverwrite.forRole(guildId, PermissionSet.none(), PermissionSet.of(Permission.VIEW_CHANNEL)),
-                PermissionOverwrite.forMember(botId, PermissionSet.of(Permission.VIEW_CHANNEL, Permission.SEND_MESSAGES), PermissionSet.none()))
-        );
-        return spec;
+    private Consumer<TextChannelCreateSpec> createChannelSpec(Snowflake guildId, Snowflake botId) {
+        return spec -> {
+            spec.setName("bot-log");
+            spec.setTopic("Bolt logging channel for administrative actions taken.");
+            spec.setPermissionOverwrites(Set.of(
+                    PermissionOverwrite.forRole(guildId, PermissionSet.none(), PermissionSet.of(Permission.VIEW_CHANNEL)),
+                    PermissionOverwrite.forMember(botId, PermissionSet.of(Permission.VIEW_CHANNEL, Permission.SEND_MESSAGES), PermissionSet.none()))
+            );
+        };
     }
 }

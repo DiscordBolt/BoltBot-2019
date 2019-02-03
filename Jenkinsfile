@@ -36,7 +36,7 @@ def isPRMergeBuild() {
 pipeline {
     agent {
         docker {
-            image 'gradle:4.9-jdk10'
+            image 'openjdk:11.0.1-jdk'
         }
     }
 
@@ -44,17 +44,13 @@ pipeline {
         stage('Build') {
             environment {
                 DISCORD_TOKEN = credentials('discordToken')
+                DISCORD_TOKEN_DEV = credentials('discordTokenDev')
                 TWITCH_CLIENT_ID = credentials('twitchClientId')
             }
             steps {
                 sh 'chmod +x gradlew'
-                sh './gradlew build -x test --stacktrace'
+                sh './gradlew build --stacktrace'
                 archiveArtifacts artifacts: 'build/libs/**/*.jar', fingerprint: true
-            }
-        }
-        stage('Test') {
-            steps {
-                sh './gradlew test --stacktrace'
             }
             post {
                 always {
@@ -63,13 +59,9 @@ pipeline {
             }
         }
         stage('Deploy') {
-            when {
-                branch 'master'
-            }
             steps {
                 withCredentials([string(credentialsId: 'dockerPassword', variable: 'password')]) {
                     sh "./gradlew jib -PDockerPassword=${password}"
-                    sh "./gradlew jib -PDockerPassword=${password} -PDockerTag=latest"
                 }
             }
         }

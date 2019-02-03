@@ -43,6 +43,7 @@ public class StatusController {
 
         ObjectNode status = mapper.createObjectNode();
         status.with("boltbot").put("version", boltService.getVersion());
+        status.with("boltbot").put("commit", boltService.getCommit());
         status.with("boltbot").put("d4j_version", VersionUtil.getProperties().getProperty(VersionUtil.APPLICATION_VERSION));
         status.with("boltbot").put("java_version", Runtime.version().toString());
         status.with("boltbot").put("uptime", runtimeBean.getUptime());
