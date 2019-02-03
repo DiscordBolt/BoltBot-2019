@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Minesweeper {
 
@@ -17,19 +18,18 @@ public class Minesweeper {
 
     @BotCommand(command = "minesweeper", description = "Play a game of minesweeper", usage = "Minesweeper [Easy/Medium/Hard] [Small/Medium/Large]", module = "Games", allowDM = true)
     public static void command(CommandContext cc) throws CommandException {
+        List<String> args = cc.getArguments().stream().map(String::toUpperCase).collect(Collectors.toList());
+
         Optional<GameDifficulty> difficulty = Arrays.stream(GameDifficulty.values())
                 .map(GameDifficulty::name)
-                .map(String::toLowerCase)
-                .filter(cc.getMessageContent()::contains)
-                .map(String::toUpperCase)
+                .filter(args::contains)
                 .map(GameDifficulty::valueOf)
                 .findAny();
 
         Optional<BoardSize> size = Arrays.stream(BoardSize.values())
                 .map(BoardSize::name)
-                .map(String::toLowerCase)
-                .filter(cc.getMessageContent()::contains)
                 .map(String::toUpperCase)
+                .filter(args::contains)
                 .map(BoardSize::valueOf)
                 .findAny();
 
@@ -70,7 +70,8 @@ public class Minesweeper {
         EASY(10),
         MEDIUM(25),
         HARD(50),
-        EXTREME(75);
+        EXTREME(75),
+        IMPOSSIBLE(100);
 
         private int bombCount;
 
