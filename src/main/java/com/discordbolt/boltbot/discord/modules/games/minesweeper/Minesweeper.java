@@ -36,8 +36,16 @@ public class Minesweeper {
         int boardSize = size.orElse(BoardSize.MEDIUM).getBoardLength();
         int bombCount = difficulty.orElse(GameDifficulty.MEDIUM).getBombCount();
 
-        int[][] gameBoard = generateBoard(boardSize, bombCount, SAFE_ZONE);
-        boolean[][] mask = calculateMask(gameBoard);
+        int[][] gameBoard;
+        boolean[][] mask;
+
+        try {
+            gameBoard = generateBoard(boardSize, bombCount, SAFE_ZONE);
+            mask = calculateMask(gameBoard);
+        } catch (IllegalArgumentException e) {
+            cc.replyWith(e.getMessage()).subscribe();
+            return;
+        }
 
         StringBuilder board = new StringBuilder(String.format("Find the %d bombs.\n", bombCount));
 
@@ -61,7 +69,8 @@ public class Minesweeper {
     public enum GameDifficulty {
         EASY(10),
         MEDIUM(25),
-        HARD(50);
+        HARD(50),
+        EXTREME(75);
 
         private int bombCount;
 
@@ -75,9 +84,11 @@ public class Minesweeper {
     }
 
     public enum BoardSize {
+        XSMALL(5),
         SMALL(7),
         MEDIUM(9),
-        LARGE(13);
+        LARGE(13),
+        XLARGE(15);
 
         private int boardLength;
 
@@ -140,7 +151,7 @@ public class Minesweeper {
         if (safeZone < 1 || safeZone > boardLength)
             throw new IllegalArgumentException("Safezone is an invalid size.");
         if(Math.pow(boardLength,2)-Math.pow(safeZone,2) < bombCount)
-            throw new IllegalArgumentException("Not enough valid locations for bombs.");
+            throw new IllegalArgumentException("Too many bombs for given board size.");
         int[][] board = new int[boardLength][boardLength];
 
         int safeStart = (boardLength-1)/2 - (safeZone-1)/2;
