@@ -4,12 +4,16 @@ import com.discordbolt.api.commands.BotCommand;
 import com.discordbolt.api.commands.CommandContext;
 import com.discordbolt.api.commands.exceptions.CommandException;
 import com.discordbolt.api.commands.exceptions.CommandStateException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class Minesweeper {
 
     private static final int SAFE_ZONE = 3;
+    private static final Logger LOGGER = LoggerFactory.getLogger(Minesweeper.class);
+
 
     @BotCommand(command = "minesweeper", description = "Play a game of minesweeper", usage = "Minesweeper [Easy/Medium/Hard] [Small/Medium/Large]", module = "Games", allowDM = true)
     public static void command(CommandContext cc) throws CommandException {
@@ -47,6 +51,8 @@ public class Minesweeper {
             board.append('\n');
         }
 
+        LOGGER.info(board.length() + " ");
+
         if (board.length() > 2000)
             throw new CommandStateException("Generated board is too large to fit in a Discord message!");
         cc.replyWith(board.toString()).subscribe();
@@ -70,8 +76,8 @@ public class Minesweeper {
 
     public enum BoardSize {
         SMALL(7),
-        MEDIUM(11),
-        LARGE(15);
+        MEDIUM(9),
+        LARGE(13);
 
         private int boardLength;
 
