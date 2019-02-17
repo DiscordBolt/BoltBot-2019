@@ -3,8 +3,8 @@ package com.discordbolt.boltbot.discord.api;
 import com.discordbolt.api.commands.BotCommand;
 import com.discordbolt.api.commands.CommandContext;
 import com.discordbolt.boltbot.discord.util.BeanUtil;
+import discord4j.common.GitProperties;
 import discord4j.core.DiscordClient;
-import discord4j.core.util.VersionUtil;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +81,7 @@ public class BoltService {
             spec.setColor(new Color(16768100));
             spec.addField("Version", BeanUtil.getBean(BoltService.class).getVersion(), true);
             spec.addField("Commit", BeanUtil.getBean(BoltService.class).getCommit(), true);
-            spec.addField("D4J Version", VersionUtil.getProperties().getProperty(VersionUtil.APPLICATION_VERSION), true);
+            spec.addField("D4J Version", GitProperties.getProperties().getProperty(GitProperties.APPLICATION_VERSION), true);
         }).subscribe();
     }
 }

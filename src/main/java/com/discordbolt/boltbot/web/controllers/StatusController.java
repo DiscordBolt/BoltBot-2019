@@ -4,8 +4,8 @@ import com.discordbolt.boltbot.discord.api.BoltService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.management.OperatingSystemMXBean;
+import discord4j.common.GitProperties;
 import discord4j.core.DiscordClient;
-import discord4j.core.util.VersionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +44,7 @@ public class StatusController {
         ObjectNode status = mapper.createObjectNode();
         status.with("boltbot").put("version", boltService.getVersion());
         status.with("boltbot").put("commit", boltService.getCommit());
-        status.with("boltbot").put("d4j_version", VersionUtil.getProperties().getProperty(VersionUtil.APPLICATION_VERSION));
+        status.with("boltbot").put("d4j_version", GitProperties.getProperties().getProperty(GitProperties.APPLICATION_VERSION));
         status.with("boltbot").put("java_version", Runtime.version().toString());
         status.with("boltbot").put("uptime", runtimeBean.getUptime());
         status.with("boltbot").put("cpu_load", osBean.getProcessCpuLoad());
