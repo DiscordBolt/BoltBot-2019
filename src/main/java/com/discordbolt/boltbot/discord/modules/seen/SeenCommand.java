@@ -36,9 +36,9 @@ public class SeenCommand extends CustomCommand {
                 .switchIfEmpty(commandContext.getGuild().flatMapMany(Guild::getMembers)
                         .filter(m -> m.getDisplayName().equalsIgnoreCase(commandContext.combineArgs(1, commandContext.getArgCount() - 1)) || m.getUsername().equalsIgnoreCase(commandContext.combineArgs(1, commandContext.getArgCount() - 1)))
                         .next())
-                .map(member -> Tuples.of(member, userRepository.findById(member.getId()), member.getPresence()))
+                .map(member -> Tuples.of(member, userRepository.findById(member.getId()), member.getPresence().map(Presence::getStatus)))
                 .flatMap(tuple -> tuple.getT2().map(t -> Tuples.of(tuple.getT1(), t, tuple.getT3())))
-                .flatMap(tuple -> tuple.getT3().map(Presence::getStatus).defaultIfEmpty(Status.OFFLINE).map(t -> Tuples.of(tuple.getT1(), tuple.getT2(), t)))
+                .flatMap(tuple -> tuple.getT3().map(t -> Tuples.of(tuple.getT1(), tuple.getT2(), t)))
                 .flatMap(tuple -> {
                     if (tuple.getT3() == Status.ONLINE)
                         return commandContext.replyWith(tuple.getT1().getDisplayName() + " is currently online!");
