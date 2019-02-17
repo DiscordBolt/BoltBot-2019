@@ -14,7 +14,7 @@ ext {
     project_version = '3.5-SNAPSHOT'
 
     spring_boot_version = '2.1.2.RELEASE'
-    d4j_version = 'bugfix/470v2-SNAPSHOT'
+    d4j_version = 'be57c36'
     command_version = 'dev-SNAPSHOT' // Change once 2.2.1 is released
 }
 
